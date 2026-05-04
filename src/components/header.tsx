@@ -12,7 +12,6 @@ import { SearchField } from "@/components/ui/search-field";
 import { useBodyScrollLock } from "@/hooks/use-body-scroll-lock";
 import { useCatalogProducts } from "@/hooks/use-catalog-products";
 import { useMounted } from "@/hooks/use-mounted";
-import { productTypeLabels } from "@/lib/catalog-ui";
 import { drivers, legends, teams } from "@/lib/data/roster";
 import { sanitizeSearchQuery } from "@/lib/security-utils";
 import { getProductDisplayName } from "@/lib/storefront-text";
@@ -23,7 +22,6 @@ import { useCartStore } from "@/store/cart-store";
 
 const navItems = [
   { label: "НОВИНКИ", href: "/new" },
-  { label: "ОДЕЖДА", href: "/shop" },
   { label: "КОМАНДЫ", href: "/teams" },
   { label: "ПИЛОТЫ", href: "/pilots" },
   { label: "ЛЕГЕНДЫ", href: "/legends" },
@@ -54,17 +52,6 @@ function buildMenuColumns(title: string, links: MegaMenuLink[], columnCount: num
     links: chunk,
   }));
 }
-
-const clothingLinks: MegaMenuLink[] = [
-  { label: productTypeLabels["T-shirt"], href: "/shop?type=T-shirt" },
-  { label: productTypeLabels.Hoodie, href: "/shop?type=Hoodie" },
-  { label: productTypeLabels.Longsleeve, href: "/shop?type=Longsleeve" },
-  { label: productTypeLabels.Jacket, href: "/shop?type=Jacket" },
-  { label: productTypeLabels.Polo, href: "/shop?type=Polo" },
-  { label: productTypeLabels.Pants, href: "/shop?type=Pants" },
-  { label: productTypeLabels.Scarf, href: "/shop?type=Scarf" },
-  { label: "Смотреть всё", href: "/shop" },
-];
 
 const teamLinks: MegaMenuLink[] = [
   ...teams.map((team) => ({
@@ -103,9 +90,6 @@ const accessoryLinks: MegaMenuLink[] = [
 ];
 
 const megaMenus = {
-  "ОДЕЖДА": {
-    columns: buildMenuColumns("Категории", clothingLinks, 1),
-  },
   "КОМАНДЫ": {
     columns: buildMenuColumns("Команды", teamLinks, 2),
   },
@@ -121,10 +105,6 @@ const megaMenus = {
 } as const;
 
 const mobileGroups = [
-  {
-    title: "ОДЕЖДА",
-    links: megaMenus["ОДЕЖДА"].columns.flatMap((column) => column.links),
-  },
   {
     title: "КОМАНДЫ",
     links: megaMenus["КОМАНДЫ"].columns.flatMap((column) => column.links),

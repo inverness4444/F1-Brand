@@ -11,6 +11,9 @@ type NewsletterSignupFormProps = {
   className?: string;
   inputClassName?: string;
   buttonClassName?: string;
+  placeholder?: string;
+  submitLabel?: string;
+  submittingLabel?: string;
   successMessage?: string;
 };
 
@@ -18,6 +21,9 @@ export function NewsletterSignupForm({
   className,
   inputClassName,
   buttonClassName,
+  placeholder = "Ваш e-mail",
+  submitLabel = "Подписаться",
+  submittingLabel = "Отправляем",
   successMessage = "Подписка оформлена. Проверьте почту для подтверждения.",
 }: NewsletterSignupFormProps) {
   const pushToast = useToastStore((state) => state.pushToast);
@@ -55,7 +61,7 @@ export function NewsletterSignupForm({
           autoComplete="email"
           inputMode="email"
           maxLength={254}
-          placeholder="Ваш e-mail"
+          placeholder={placeholder}
           className={inputClassName}
           aria-invalid={error ? true : false}
         />
@@ -63,10 +69,10 @@ export function NewsletterSignupForm({
           {isSubmitting ? (
             <>
               <Loader2 className="size-4 animate-spin" />
-              Отправляем
+              {submittingLabel}
             </>
           ) : (
-            "Подписаться"
+            submitLabel
           )}
         </button>
       </form>

@@ -7,14 +7,6 @@ import { EmptyCatalogState } from "@/components/empty-catalog-state";
 
 const tiles = [
   {
-    title: "Гоночная одежда",
-    href: "/shop",
-    description: "Базовые модели, верхние слои и чистая спортивная подача.",
-    source: "newArrivals" as const,
-    imageSrc: "/category-racing-clothing.jpg",
-    imageClassName: "h-full w-full object-cover object-[center_68%]",
-  },
-  {
     title: "Командная коллекция",
     href: "/teams",
     description: "Коллекции команд Formula 1 в стиле официального магазина спортивной одежды.",
@@ -65,7 +57,7 @@ export function CategoryTiles() {
           Основные разделы магазина в подаче современного спортивного ритейла.
         </h2>
       </div>
-      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-5 md:grid-cols-3">
         {tiles.map((tile) => {
           const product = catalog[tile.source][0];
           const imageSrc = tile.imageSrc ?? product?.image;
