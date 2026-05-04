@@ -1,0 +1,8 @@
+<svg width="420" height="420" viewBox="0 0 420 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="110" y="58" width="200" height="304" rx="16" fill="white" stroke="#D1D5DB" stroke-width="8"/>
+  <rect x="130" y="82" width="160" height="174" rx="10" fill="#111827"/>
+  <path d="M148 112L180 160L214 132L270 212" stroke="#F97316" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="174" cy="126" r="16" fill="#2563EB"/>
+  <text x="210" y="292" fill="#111827" font-family="Arial, sans-serif" font-size="28" font-weight="700" text-anchor="middle">POSTER</text>
+  <text x="210" y="324" fill="#6B7280" font-family="Arial, sans-serif" font-size="20" font-weight="700" text-anchor="middle">FORMULA 1</text>
+</svg>

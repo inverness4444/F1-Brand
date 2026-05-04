@@ -1,0 +1,146 @@
+import type { CartSelection, OrderItem } from "@/lib/account-types";
+import { readStorage, storageKeys } from "@/lib/browser-storage";
+import { getProductDisplayName } from "@/lib/storefront-text";
+import { SECURITY_LIMITS } from "@/lib/security-utils";
+import { cartSelectionSchema, persistedCartStateSchema } from "@/lib/validation-schemas";
+import type { Product } from "@/lib/types";
+
+type PersistedCartSnapshot = {
+  state?: {
+    items?: CartSelection[];
+  };
+};
+
+export const CART_STORAGE_KEY = storageKeys.cart;
+export const MAX_CART_ITEM_QUANTITY = SECURITY_LIMITS.maxCartItemQuantity;
+
+type ValidatedCartEntry = {
+  selection: CartSelection;
+  product: Product;
+};
+
+export function readPersistedCart() {
+  const snapshot = readStorage<PersistedCartSnapshot | null>(
+    CART_STORAGE_KEY,
+    null,
+    persistedCartStateSchema.nullable(),
+  );
+  return snapshot?.state?.items ?? [];
+}
+
+export function validateCartSelections(
+  selections: CartSelection[],
+  productMap: Map<string, Product>,
+) {
+  return selections.reduce<{
+    valid: ValidatedCartEntry[];
+    invalid: Array<{ productId?: string; reason: string }>;
+  }>(
+    (result, selection) => {
+      const parsedSelection = cartSelectionSchema.safeParse(selection);
+
+      if (!parsedSelection.success) {
+        result.invalid.push({
+          productId: selection?.productId,
+          reason: "Некорректный формат позиции корзины.",
+        });
+        return result;
+      }
+
+      const normalizedSelection = parsedSelection.data;
+      const product = productMap.get(normalizedSelection.productId);
+
+      if (!product) {
+        result.invalid.push({
+          productId: normalizedSelection.productId,
+          reason: "Товар больше не доступен.",
+        });
+        return result;
+      }
+
+      if (!product.colors.includes(normalizedSelection.color)) {
+        result.invalid.push({
+          productId: normalizedSelection.productId,
+          reason: "Выбран недоступный цвет.",
+        });
+        return result;
+      }
+
+      if (!product.sizes.includes(normalizedSelection.size)) {
+        result.invalid.push({
+          productId: normalizedSelection.productId,
+          reason: "Выбран недоступный размер.",
+        });
+        return result;
+      }
+
+      result.valid.push({
+        selection: normalizedSelection,
+        product,
+      });
+      return result;
+    },
+    {
+      valid: [],
+      invalid: [],
+    },
+  );
+}
+
+export function buildCartItems(
+  selections: CartSelection[],
+  productMap: Map<string, Product>,
+) {
+  return validateCartSelections(selections, productMap).valid;
+}
+
+export function calculateCartSummary(
+  selections: CartSelection[],
+  productMap: Map<string, Product>,
+) {
+  const items = buildCartItems(selections, productMap);
+  const shippableItems = items.filter((entry) => entry.product.requiresShipping);
+  const subtotal = items.reduce(
+    (sum, entry) => sum + entry.product.price * entry.selection.quantity,
+    0,
+  );
+  const shippableSubtotal = shippableItems.reduce(
+    (sum, entry) => sum + entry.product.price * entry.selection.quantity,
+    0,
+  );
+  const requiresShipping = shippableItems.length > 0;
+  const shippingCost = !requiresShipping || shippableSubtotal >= 4000 || shippableSubtotal === 0 ? 0 : 390;
+  const containsGiftCertificates = items.some((entry) => entry.product.productType === "gift_certificate");
+  const onlyGiftCertificates = items.length > 0 && items.every((entry) => entry.product.productType === "gift_certificate");
+
+  return {
+    items,
+    subtotal,
+    shippableSubtotal,
+    shippingCost,
+    total: subtotal + shippingCost,
+    requiresShipping,
+    containsGiftCertificates,
+    onlyGiftCertificates,
+  };
+}
+
+export function toOrderItems(
+  selections: CartSelection[],
+  productMap: Map<string, Product>,
+): OrderItem[] {
+  return buildCartItems(selections, productMap).map(({ selection, product }) => ({
+    productId: product.id,
+    slug: product.slug,
+    name: getProductDisplayName(product),
+    image: product.image,
+    productType: product.type,
+    productKind: product.productType,
+    requiresShipping: product.requiresShipping,
+    color: selection.color,
+    size: selection.size,
+    quantity: selection.quantity,
+    unitPrice: product.price,
+    lineTotal: product.price * selection.quantity,
+  }));
+}

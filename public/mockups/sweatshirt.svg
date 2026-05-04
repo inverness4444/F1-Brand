@@ -1,0 +1,13 @@
+<svg width="420" height="420" viewBox="0 0 420 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="420" height="420" rx="56" fill="url(#bg)"/>
+  <path d="M126 126L164 92H256L294 126L328 188L292 208L272 168V324H148V168L128 208L92 188L126 126Z" stroke="white" stroke-opacity=".86" stroke-width="10" fill="rgba(255,255,255,.04)"/>
+  <path d="M170 108H250" stroke="#38BDF8" stroke-width="7" stroke-linecap="round"/>
+  <path d="M176 220H244" stroke="white" stroke-opacity=".26" stroke-width="7" stroke-linecap="round"/>
+  <text x="210" y="286" fill="white" fill-opacity=".82" font-family="Arial, sans-serif" font-size="30" font-weight="700" text-anchor="middle">SPEED LAB</text>
+  <defs>
+    <linearGradient id="bg" x1="40" y1="24" x2="380" y2="398" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0F1826"/>
+      <stop offset="1" stop-color="#05070D"/>
+    </linearGradient>
+  </defs>
+</svg>

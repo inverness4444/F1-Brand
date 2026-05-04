@@ -1,0 +1,13 @@
+<svg width="420" height="420" viewBox="0 0 420 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="420" height="420" rx="56" fill="url(#bg)"/>
+  <path d="M164 94C170 72 188 58 210 58C232 58 250 72 256 94L274 122L306 132L334 188L298 210L282 182V324H138V182L122 210L86 188L114 132L146 122L164 94Z" stroke="white" stroke-opacity=".85" stroke-width="10" fill="rgba(255,255,255,.04)"/>
+  <path d="M210 142V324" stroke="white" stroke-opacity=".36" stroke-width="8" stroke-linecap="round"/>
+  <path d="M176 108C186 132 196 142 210 142C224 142 234 132 244 108" stroke="#FF7A1A" stroke-width="8" stroke-linecap="round"/>
+  <text x="210" y="286" fill="white" fill-opacity=".84" font-family="Arial, sans-serif" font-size="30" font-weight="700" text-anchor="middle">ZIP ISSUE</text>
+  <defs>
+    <linearGradient id="bg" x1="40" y1="24" x2="382" y2="404" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0E1724"/>
+      <stop offset="1" stop-color="#04060B"/>
+    </linearGradient>
+  </defs>
+</svg>

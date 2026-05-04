@@ -1,0 +1,11 @@
+<svg width="420" height="420" viewBox="0 0 420 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="92" y="70" width="236" height="280" rx="22" fill="white" stroke="#D1D5DB" stroke-width="8"/>
+  <rect x="92" y="70" width="236" height="66" rx="22" fill="#DC2626"/>
+  <path d="M144 54V98" stroke="#111827" stroke-width="10" stroke-linecap="round"/>
+  <path d="M276 54V98" stroke="#111827" stroke-width="10" stroke-linecap="round"/>
+  <text x="210" y="114" fill="white" font-family="Arial, sans-serif" font-size="28" font-weight="700" text-anchor="middle">2026</text>
+  <text x="210" y="188" fill="#111827" font-family="Arial, sans-serif" font-size="42" font-weight="700" text-anchor="middle">F1</text>
+  <text x="210" y="226" fill="#6B7280" font-family="Arial, sans-serif" font-size="24" font-weight="700" text-anchor="middle">CALENDAR</text>
+  <path d="M126 260H294" stroke="#E5E7EB" stroke-width="8" stroke-linecap="round"/>
+  <path d="M126 292H294" stroke="#E5E7EB" stroke-width="8" stroke-linecap="round"/>
+</svg>

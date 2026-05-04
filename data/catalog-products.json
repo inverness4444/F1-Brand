@@ -1,0 +1,186 @@
+[
+  {
+    "id": "custom-1777482612047",
+    "slug": "custom-1777482612047",
+    "name": "Подарочный сертификат",
+    "category": "Gifts",
+    "collection": "Essentials",
+    "collectionTags": [
+      "Essentials",
+      "New Arrivals"
+    ],
+    "driverName": null,
+    "driverSlug": null,
+    "teamName": null,
+    "teamSlug": null,
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 5000,
+    "productType": "gift_certificate",
+    "requiresShipping": false,
+    "colors": [
+      "Black",
+      "White"
+    ],
+    "sizes": [
+      "One Size"
+    ],
+    "type": "Gift Certificate",
+    "badge": "New",
+    "image": "/recovered-products/custom-1777482612047-cover.jpg",
+    "gallery": [
+      "/recovered-products/custom-1777482612047-gallery-1.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-04-29T17:10:12.047Z",
+    "hexPalette": [
+      "#111111",
+      "#D7C8B7",
+      "#ECE4D7"
+    ]
+  },
+  {
+    "id": "custom-1777482553731",
+    "slug": "custom-1777482553731",
+    "name": "Подарочный сертификат",
+    "category": "Gifts",
+    "collection": "Essentials",
+    "collectionTags": [
+      "Essentials",
+      "New Arrivals"
+    ],
+    "driverName": null,
+    "driverSlug": null,
+    "teamName": null,
+    "teamSlug": null,
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "gift_certificate",
+    "requiresShipping": false,
+    "colors": [
+      "Black",
+      "White"
+    ],
+    "sizes": [
+      "One Size"
+    ],
+    "type": "Gift Certificate",
+    "badge": "New",
+    "image": "/recovered-products/custom-1777482553731-cover.jpg",
+    "gallery": [
+      "/recovered-products/custom-1777482553731-gallery-1.jpg"
+    ],
+    "description": "Подарочный сертификат работает как цифровой товар: после покупки вы получите одноразовый код, который можно активировать в аккаунте и использовать баланс частями для оплаты любых товаров магазина.",
+    "shortDescription": "Цифровой подарочный сертификат: активируйте код в личном кабинете и оплачивайте любые товары балансом частями.",
+    "popularity": 75,
+    "createdAt": "2026-04-29T17:09:13.731Z",
+    "hexPalette": [
+      "#111111",
+      "#D7C8B7",
+      "#ECE4D7"
+    ]
+  },
+  {
+    "id": "custom-1777482490798",
+    "slug": "custom-1777482490798",
+    "name": "Футболка Lewis Hamilton 44",
+    "category": "Pilots",
+    "collection": "Essentials",
+    "collectionTags": [
+      "Essentials",
+      "New Arrivals"
+    ],
+    "driverName": "Lewis Hamilton",
+    "driverSlug": "lewis-hamilton",
+    "teamName": "Ferrari",
+    "teamSlug": "ferrari",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/recovered-products/custom-1777482490798-cover.jpg",
+    "gallery": [
+      "/recovered-products/custom-1777482490798-gallery-1.jpg",
+      "/recovered-products/custom-1777482490798-gallery-2.png",
+      "/recovered-products/custom-1777482490798-gallery-3.png"
+    ],
+    "description": "Футболка из коллекции Lewis Hamilton. Модель выполнена в эстетике фирменного магазина командной одежды: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой Formula 1.",
+    "shortDescription": "Футболка из коллекции Lewis Hamilton в стилистике фирменного магазина спортивной одежды.",
+    "popularity": 75,
+    "createdAt": "2026-04-29T17:08:10.798Z",
+    "number": 44,
+    "hexPalette": [
+      "#D5332C",
+      "#111111",
+      "#F5CF51"
+    ]
+  },
+  {
+    "id": "custom-1777416741928",
+    "slug": "custom-1777416741928",
+    "name": "Футболка Lewis Hamilton Black Out",
+    "category": "Pilots",
+    "collection": "Essentials",
+    "collectionTags": [
+      "Essentials",
+      "New Arrivals"
+    ],
+    "driverName": "Lewis Hamilton",
+    "driverSlug": "lewis-hamilton",
+    "teamName": "Ferrari",
+    "teamSlug": "ferrari",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/recovered-products/custom-1777416741928-cover.jpg",
+    "gallery": [
+      "/recovered-products/custom-1777416741928-gallery-1.jpg"
+    ],
+    "description": "Футболка из коллекции Lewis Hamilton. Модель выполнена в эстетике фирменного магазина командной одежды: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой Formula 1.",
+    "shortDescription": "Футболка из коллекции Lewis Hamilton в стилистике фирменного магазина спортивной одежды.",
+    "popularity": 75,
+    "createdAt": "2026-04-28T22:52:21.928Z",
+    "number": 44,
+    "hexPalette": [
+      "#D5332C",
+      "#111111",
+      "#F5CF51"
+    ]
+  }
+]

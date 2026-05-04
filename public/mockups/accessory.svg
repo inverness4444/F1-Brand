@@ -1,0 +1,8 @@
+<svg width="420" height="420" viewBox="0 0 420 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="92" y="128" width="236" height="168" rx="34" fill="#111827"/>
+  <rect x="122" y="154" width="176" height="116" rx="24" fill="#F8FAFC"/>
+  <circle cx="210" cy="212" r="34" fill="#DC2626"/>
+  <text x="210" y="220" fill="white" font-family="Arial, sans-serif" font-size="20" font-weight="700" text-anchor="middle">F1</text>
+  <path d="M160 104C160 76.3858 182.386 54 210 54C237.614 54 260 76.3858 260 104V128H160V104Z" stroke="#111827" stroke-width="10"/>
+  <text x="210" y="330" fill="#111827" font-family="Arial, sans-serif" font-size="28" font-weight="700" text-anchor="middle">ACCESSORY</text>
+</svg>

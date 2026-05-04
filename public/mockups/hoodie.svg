@@ -1,0 +1,7 @@
+<svg width="420" height="420" viewBox="0 0 420 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M166 98C172 74 189 60 210 60C231 60 248 74 254 98L272 124L304 138L332 190L296 214L280 184V324H140V184L124 214L88 190L116 138L148 124L166 98Z" fill="#1F2937"/>
+  <path d="M176 110C188 134 198 144 210 144C222 144 232 134 244 110" stroke="#2563EB" stroke-width="8" stroke-linecap="round"/>
+  <path d="M186 218L174 298" stroke="#6B7280" stroke-width="8" stroke-linecap="round"/>
+  <path d="M234 218L246 298" stroke="#6B7280" stroke-width="8" stroke-linecap="round"/>
+  <text x="210" y="286" fill="white" font-family="Arial, sans-serif" font-size="28" font-weight="700" text-anchor="middle">FORMULA 1</text>
+</svg>
