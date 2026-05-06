@@ -32,8 +32,8 @@ const WHITESPACE_REGEX = /\s+/g;
 const MULTILINE_WHITESPACE_REGEX = /[^\S\r\n]+/g;
 const IDENTIFIER_SAFE_CHARS_REGEX = /[^a-z0-9_-]+/gi;
 const HEX_COLOR_REGEX = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i;
-const ALLOWED_IMAGE_URL_REGEX =
-  /^(?:\/|https?:\/\/|blob:|data:image\/(?:png|jpe?g|gif|webp|svg\+xml);base64,)/i;
+const DATA_IMAGE_BASE64_URL_REGEX = /^data:image\/(?:png|jpe?g|gif|webp);base64,[a-z0-9+/=\s]+$/i;
+const ALLOWED_IMAGE_URL_REGEX = /^(?:\/|https?:\/\/|blob:)/i;
 
 function collapseWhitespace(value: string, allowLineBreaks: boolean) {
   if (!allowLineBreaks) {
@@ -110,7 +110,17 @@ export function sanitizeHexColor(value: string) {
 }
 
 export function sanitizeAssetUrl(value: string) {
-  const normalized = sanitizeText(value, { maxLength: 4096 });
+  const raw = typeof value === "string" ? value.trim().replace(CONTROL_CHARACTERS_REGEX, "") : "";
+
+  if (!raw) {
+    return "";
+  }
+
+  if (DATA_IMAGE_BASE64_URL_REGEX.test(raw)) {
+    return raw.replace(/\s+/g, "");
+  }
+
+  const normalized = sanitizeText(raw, { maxLength: 4096 });
 
   if (!normalized) {
     return "";

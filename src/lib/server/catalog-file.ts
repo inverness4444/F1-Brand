@@ -1,5 +1,6 @@
 import "server-only";
 
+import crypto from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
@@ -9,7 +10,70 @@ import type { Product } from "@/lib/types";
 
 const catalogDirectoryPath = path.join(process.cwd(), "data");
 const catalogFilePath = path.join(catalogDirectoryPath, "catalog-products.json");
+const catalogImageDirectoryPath = path.join(process.cwd(), "public", "catalog-products");
 const recoveredCatalogProducts = recoveredCatalogProductsData as Product[];
+const dataImageRegex = /^data:(image\/(?:png|jpe?g|gif|webp));base64,([a-z0-9+/=\s]+)$/i;
+
+function toAssetFileName(value: unknown, fallback: string) {
+  return String(value || fallback)
+    .toLowerCase()
+    .replace(/[^a-z0-9а-яё_-]+/gi, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80) || fallback;
+}
+
+function getImageExtension(mimeType: string) {
+  if (mimeType.includes("png")) {
+    return "png";
+  }
+
+  if (mimeType.includes("webp")) {
+    return "webp";
+  }
+
+  if (mimeType.includes("gif")) {
+    return "gif";
+  }
+
+  return "jpg";
+}
+
+async function materializeDataImage(value: string, baseName: string, suffix: string) {
+  const match = value.match(dataImageRegex);
+
+  if (!match) {
+    return value;
+  }
+
+  const buffer = Buffer.from(match[2].replace(/\s+/g, ""), "base64");
+  const hash = crypto.createHash("sha1").update(buffer).digest("hex").slice(0, 12);
+  const extension = getImageExtension(match[1]);
+  const fileName = `${baseName}-${suffix}-${hash}.${extension}`;
+
+  await mkdir(catalogImageDirectoryPath, { recursive: true });
+  await writeFile(path.join(catalogImageDirectoryPath, fileName), buffer);
+
+  return `/catalog-products/${fileName}`;
+}
+
+async function materializeProductImages(product: Product, index: number) {
+  const baseName = toAssetFileName(product.slug || product.id || product.name, `product-${index + 1}`);
+  const image = await materializeDataImage(product.image, baseName, "cover");
+  const gallery = await Promise.all(
+    (product.gallery ?? []).map((galleryImage, galleryIndex) =>
+      materializeDataImage(galleryImage, baseName, `gallery-${galleryIndex + 1}`),
+    ),
+  );
+  const normalizedGallery =
+    typeof image === "string" && image ? [image, ...gallery.filter((item) => item !== image)] : gallery;
+
+  return {
+    ...product,
+    image,
+    gallery: [...new Set(normalizedGallery.filter((item): item is string => typeof item === "string" && Boolean(item)))],
+  };
+}
 
 async function ensureCatalogFile() {
   try {
@@ -43,8 +107,11 @@ export async function readCatalogProductsFromFile() {
 
 export async function writeCatalogProductsToFile(products: Product[]) {
   const normalizedProducts = catalogProductsPayloadSchema.parse({ products }).products;
+  const materializedProducts = await Promise.all(normalizedProducts.map(materializeProductImages));
+  const validatedProducts = catalogProductsPayloadSchema.parse({ products: materializedProducts }).products;
+
   await mkdir(catalogDirectoryPath, { recursive: true });
-  await writeFile(catalogFilePath, JSON.stringify(normalizedProducts, null, 2), "utf8");
+  await writeFile(catalogFilePath, JSON.stringify(validatedProducts, null, 2), "utf8");
 }
 
 export { catalogFilePath };

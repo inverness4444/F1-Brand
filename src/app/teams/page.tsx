@@ -1,5 +1,5 @@
 import { ShopShell } from "@/components/shop-shell";
 
 export default function TeamsPage() {
-  return <ShopShell />;
+  return <ShopShell section="teams" />;
 }

@@ -1,5 +1,5 @@
 import { ShopShell } from "@/components/shop-shell";
 
 export default function PilotsPage() {
-  return <ShopShell />;
+  return <ShopShell section="pilots" />;
 }

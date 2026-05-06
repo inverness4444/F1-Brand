@@ -466,12 +466,16 @@ export function CatalogEditor() {
     }
 
     const images = await Promise.all(files.map((file) => fileToDataUrl(file)));
+    const defaultImage = imageByType[draft.type];
+    const shouldUseUploadedImageAsMain =
+      !draft.image || draft.image === defaultImage || draft.gallery.every((image) => image === draft.image || image === defaultImage);
     const nextGallery = [...draft.gallery, ...images].filter(Boolean);
+    const nextImage = shouldUseUploadedImageAsMain ? images[0] : draft.image;
 
     setDraft({
       ...draft,
-      gallery: [...new Set(nextGallery)],
-      image: draft.image || images[0],
+      gallery: [...new Set([nextImage, ...nextGallery])],
+      image: nextImage,
     });
 
     event.target.value = "";

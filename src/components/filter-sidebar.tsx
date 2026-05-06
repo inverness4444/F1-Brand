@@ -6,9 +6,12 @@ import type {
   CatalogCategory,
   FeaturedCollection,
   ProductColor,
+  ProductSize,
   ProductType,
 } from "@/lib/types";
 import { colorLabelRu } from "@/lib/storefront-text";
+
+type FilterSize = Exclude<ProductSize, "One Size">;
 
 const categoryOptions: Array<{ label: string; value: CatalogCategory | "All" }> = [
   { label: "Все товары", value: "All" },
@@ -44,6 +47,11 @@ export function FilterSidebar({
   category,
   priceRange,
   colors,
+  availableCategories = categoryOptions,
+  availableCollections = [...collectionOptions],
+  availableColors = [...colorOptions],
+  availableTypes = [...productTypeOptions],
+  availableSizes = [...sizeOptions],
   availableTeams,
   availableDrivers,
   availableLegends,
@@ -63,11 +71,22 @@ export function FilterSidebar({
   toggleCollection,
   toggleSize,
   clearAll,
+  showCategoryFilter = true,
+  showTeamFilter = true,
+  showDriverFilter = true,
+  showLegendFilter = true,
+  showPriceFilter = true,
+  priceBounds = [990, 24990],
 }: {
   mobile?: boolean;
   category: CatalogCategory | "All";
   priceRange: [number, number];
   colors: ProductColor[];
+  availableCategories?: Array<{ label: string; value: CatalogCategory | "All" }>;
+  availableCollections?: FeaturedCollection[];
+  availableColors?: ProductColor[];
+  availableTypes?: ProductType[];
+  availableSizes?: FilterSize[];
   availableTeams: string[];
   availableDrivers: string[];
   availableLegends: string[];
@@ -75,7 +94,7 @@ export function FilterSidebar({
   drivers: string[];
   legends: string[];
   types: ProductType[];
-  sizes: Array<"XS" | "S" | "M" | "L" | "XL" | "XXL">;
+  sizes: FilterSize[];
   collections: FeaturedCollection[];
   setCategory: (value: CatalogCategory | "All") => void;
   setPriceRange: (value: [number, number]) => void;
@@ -85,8 +104,14 @@ export function FilterSidebar({
   toggleLegend: (value: string) => void;
   toggleType: (value: ProductType) => void;
   toggleCollection: (value: FeaturedCollection) => void;
-  toggleSize: (value: "XS" | "S" | "M" | "L" | "XL" | "XXL") => void;
+  toggleSize: (value: FilterSize) => void;
   clearAll: () => void;
+  showCategoryFilter?: boolean;
+  showTeamFilter?: boolean;
+  showDriverFilter?: boolean;
+  showLegendFilter?: boolean;
+  showPriceFilter?: boolean;
+  priceBounds?: [number, number];
 }) {
   const asideClassName = mobile
     ? "px-0 pb-8"
@@ -98,57 +123,64 @@ export function FilterSidebar({
   return (
     <aside className={asideClassName}>
       <div className="space-y-5">
-        <details open className={sectionClassName}>
-          <summary className={summaryClassName}>
-            <span>Раздел</span>
-            <span className="text-[#7c7c7c]">▾</span>
-          </summary>
-          <div className="mt-4 space-y-3">
-            {categoryOptions.map((option) => (
-              <CheckboxRow
-                key={option.value}
-                label={option.label}
-                checked={category === option.value}
-                onChange={() => setCategory(option.value)}
-              />
-            ))}
-          </div>
-        </details>
+        {showCategoryFilter && availableCategories.length > 0 ? (
+          <details open className={sectionClassName}>
+            <summary className={summaryClassName}>
+              <span>Раздел</span>
+              <span className="text-[#7c7c7c]">▾</span>
+            </summary>
+            <div className="mt-4 space-y-3">
+              {availableCategories.map((option) => (
+                <CheckboxRow
+                  key={option.value}
+                  label={option.label}
+                  checked={category === option.value}
+                  onChange={() => setCategory(option.value)}
+                />
+              ))}
+            </div>
+          </details>
+        ) : null}
 
-        <details open className={sectionClassName}>
-          <summary className={summaryClassName}>
-            <span>Коллекция</span>
-            <span className="text-[#7c7c7c]">▾</span>
-          </summary>
-          <div className="mt-4 space-y-3">
-            {collectionOptions.map((option) => (
-              <CheckboxRow
-                key={option}
-                label={collectionLabels[option]}
-                checked={collections.includes(option)}
-                onChange={() => toggleCollection(option)}
-              />
-            ))}
-          </div>
-        </details>
+        {availableCollections.length > 0 ? (
+          <details open className={sectionClassName}>
+            <summary className={summaryClassName}>
+              <span>Коллекция</span>
+              <span className="text-[#7c7c7c]">▾</span>
+            </summary>
+            <div className="mt-4 space-y-3">
+              {availableCollections.map((option) => (
+                <CheckboxRow
+                  key={option}
+                  label={collectionLabels[option]}
+                  checked={collections.includes(option)}
+                  onChange={() => toggleCollection(option)}
+                />
+              ))}
+            </div>
+          </details>
+        ) : null}
 
-        <details open className={sectionClassName}>
-          <summary className={summaryClassName}>
-            <span>Категория</span>
-            <span className="text-[#7c7c7c]">▾</span>
-          </summary>
-          <div className="mt-4 space-y-3">
-            {productTypeOptions.map((type) => (
-              <CheckboxRow
-                key={type}
-                label={productTypeLabels[type]}
-                checked={types.includes(type)}
-                onChange={() => toggleType(type)}
-              />
-            ))}
-          </div>
-        </details>
+        {availableTypes.length > 0 ? (
+          <details open className={sectionClassName}>
+            <summary className={summaryClassName}>
+              <span>Категория</span>
+              <span className="text-[#7c7c7c]">▾</span>
+            </summary>
+            <div className="mt-4 space-y-3">
+              {availableTypes.map((type) => (
+                <CheckboxRow
+                  key={type}
+                  label={productTypeLabels[type]}
+                  checked={types.includes(type)}
+                  onChange={() => toggleType(type)}
+                />
+              ))}
+            </div>
+          </details>
+        ) : null}
 
+        {showTeamFilter && availableTeams.length > 0 ? (
         <details open className={sectionClassName}>
           <summary className={summaryClassName}>
             <span>Команда</span>
@@ -165,7 +197,9 @@ export function FilterSidebar({
             ))}
           </div>
         </details>
+        ) : null}
 
+        {showDriverFilter && availableDrivers.length > 0 ? (
         <details className={sectionClassName}>
           <summary className={summaryClassName}>
             <span>Пилот</span>
@@ -182,7 +216,9 @@ export function FilterSidebar({
             ))}
           </div>
         </details>
+        ) : null}
 
+        {showLegendFilter && availableLegends.length > 0 ? (
         <details className={sectionClassName}>
           <summary className={summaryClassName}>
             <span>Легенды</span>
@@ -199,14 +235,16 @@ export function FilterSidebar({
             ))}
           </div>
         </details>
+        ) : null}
 
+        {availableSizes.length > 0 ? (
         <details className={sectionClassName}>
           <summary className={summaryClassName}>
             <span>Размер</span>
             <span className="text-[#7c7c7c]">▾</span>
           </summary>
           <div className="mt-4 grid grid-cols-3 gap-2.5">
-            {sizeOptions.map((size) => (
+            {availableSizes.map((size) => (
               <button
                 key={size}
                 type="button"
@@ -222,14 +260,16 @@ export function FilterSidebar({
             ))}
           </div>
         </details>
+        ) : null}
 
+        {availableColors.length > 0 ? (
         <details className={sectionClassName}>
           <summary className={summaryClassName}>
             <span>Цвет</span>
             <span className="text-[#7c7c7c]">▾</span>
           </summary>
           <div className="mt-4 space-y-3">
-            {colorOptions.map((color) => (
+            {availableColors.map((color) => (
               <label key={color} className="flex cursor-pointer items-center gap-3 text-[0.96rem] text-[#111111]">
                 <input
                   type="checkbox"
@@ -249,42 +289,45 @@ export function FilterSidebar({
             ))}
           </div>
         </details>
+        ) : null}
 
-        <details open className={sectionClassName}>
-          <summary className={summaryClassName}>
-            <span>Цена</span>
-            <span className="text-[#7c7c7c]">▾</span>
-          </summary>
-          <div className="mt-4 space-y-4">
-            <div className="grid grid-cols-2 gap-3">
+        {showPriceFilter ? (
+          <details open className={sectionClassName}>
+            <summary className={summaryClassName}>
+              <span>Цена</span>
+              <span className="text-[#7c7c7c]">▾</span>
+            </summary>
+            <div className="mt-4 space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <input
+                  type="number"
+                  min={priceBounds[0]}
+                  max={priceBounds[1]}
+                  value={priceRange[0]}
+                  onChange={(event) => setPriceRange([Number(event.target.value), priceRange[1]])}
+                  className="h-12 border border-[var(--line)] bg-white px-4 text-[0.95rem] text-[#111111] outline-none"
+                />
+                <input
+                  type="number"
+                  min={priceBounds[0]}
+                  max={priceBounds[1]}
+                  value={priceRange[1]}
+                  onChange={(event) => setPriceRange([priceRange[0], Number(event.target.value)])}
+                  className="h-12 border border-[var(--line)] bg-white px-4 text-[0.95rem] text-[#111111] outline-none"
+                />
+              </div>
               <input
-                type="number"
-                min={990}
-                max={24990}
-                value={priceRange[0]}
-                onChange={(event) => setPriceRange([Number(event.target.value), priceRange[1]])}
-                className="h-12 border border-[var(--line)] bg-white px-4 text-[0.95rem] text-[#111111] outline-none"
-              />
-              <input
-                type="number"
-                min={990}
-                max={24990}
+                type="range"
+                min={priceBounds[0]}
+                max={priceBounds[1]}
+                step={100}
                 value={priceRange[1]}
                 onChange={(event) => setPriceRange([priceRange[0], Number(event.target.value)])}
-                className="h-12 border border-[var(--line)] bg-white px-4 text-[0.95rem] text-[#111111] outline-none"
+                className="w-full accent-black"
               />
             </div>
-            <input
-              type="range"
-              min={990}
-              max={24990}
-              step={100}
-              value={priceRange[1]}
-              onChange={(event) => setPriceRange([priceRange[0], Number(event.target.value)])}
-              className="w-full accent-black"
-            />
-          </div>
-        </details>
+          </details>
+        ) : null}
 
         {mobile ? (
           <button

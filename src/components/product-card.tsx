@@ -3,8 +3,10 @@
 import { motion } from "framer-motion";
 import { Star } from "lucide-react";
 import Link from "next/link";
+import type { SyntheticEvent } from "react";
 
 import type { Product } from "@/lib/types";
+import { imageByType } from "@/lib/data/products";
 import { formatPrice, getProductHref } from "@/lib/utils";
 import { getProductDisplayName } from "@/lib/storefront-text";
 import { ProductBadgeTag } from "@/components/product-badge";
@@ -17,12 +19,19 @@ export function ProductCard({
   variant?: "catalog" | "showcase";
 }) {
   const productHref = getProductHref(product);
-  const hoverImage = product.gallery[1] ?? product.image;
+  const fallbackImage = imageByType[product.type];
+  const hoverImage = (product.gallery ?? []).find((image) => image && image !== product.image) ?? product.image;
   const hasAlternateImage = hoverImage !== product.image;
   const rating = Math.max(4, Math.min(5, Math.round(product.popularity / 16)));
   const isGiftCertificate = product.productType === "gift_certificate";
   const imageBaseClassName =
     "absolute inset-0 h-full w-full transition duration-500 transform-gpu [will-change:transform]";
+  const handleImageError = (event: SyntheticEvent<HTMLImageElement>) => {
+    const image = event.currentTarget;
+    if (image.dataset.fallbackApplied === "true") return;
+    image.dataset.fallbackApplied = "true";
+    image.src = fallbackImage;
+  };
 
   if (variant === "catalog") {
     const imageFitClassName = isGiftCertificate ? "object-contain object-center" : "object-cover object-center";
@@ -46,12 +55,14 @@ export function ProductCard({
               <img
                 src={product.image}
                 alt={product.name}
+                onError={handleImageError}
                 className={`${imageBaseClassName} ${imageFitClassName} ${imagePlacementClassName} ${primaryHoverClassName}`}
               />
               {hasAlternateImage ? (
                 <img
                   src={hoverImage}
                   alt=""
+                  onError={handleImageError}
                   className={`${imageBaseClassName} ${imageFitClassName} ${imagePlacementClassName} opacity-0 ${secondaryHoverClassName}`}
                 />
               ) : null}
@@ -108,12 +119,14 @@ export function ProductCard({
             <img
               src={product.image}
               alt={product.name}
+              onError={handleImageError}
               className={`${imageBaseClassName} ${imageFitClassName} ${imagePlacementClassName} ${primaryHoverClassName}`}
             />
             {hasAlternateImage ? (
               <img
                 src={hoverImage}
                 alt=""
+                onError={handleImageError}
                 className={`${imageBaseClassName} ${imageFitClassName} ${imagePlacementClassName} opacity-0 ${secondaryHoverClassName}`}
               />
             ) : null}

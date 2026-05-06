@@ -1,9 +1,10 @@
 "use client";
 
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type SyntheticEvent } from "react";
 
 import type { Product } from "@/lib/types";
+import { imageByType } from "@/lib/data/products";
 import { cn } from "@/lib/utils";
 
 export function ProductGallery({ product }: { product: Product }) {
@@ -16,6 +17,13 @@ export function ProductGallery({ product }: { product: Product }) {
   const activeImage = gallery[activeIndex] ?? gallery[0];
   const viewedCount = Math.max(4, Math.round(product.popularity / 10));
   const isGiftCertificate = product.productType === "gift_certificate";
+  const fallbackImage = imageByType[product.type];
+  const handleImageError = (event: SyntheticEvent<HTMLImageElement>) => {
+    const image = event.currentTarget;
+    if (image.dataset.fallbackApplied === "true") return;
+    image.dataset.fallbackApplied = "true";
+    image.src = fallbackImage;
+  };
 
   const setActiveImage = (nextIndex: number) => {
     if (gallery.length === 0) {
@@ -65,6 +73,7 @@ export function ProductGallery({ product }: { product: Product }) {
               <img
                 src={image}
                 alt={product.name}
+                onError={handleImageError}
                 className={cn("h-full w-full", thumbnailImageClassName)}
               />
             </div>
@@ -103,6 +112,7 @@ export function ProductGallery({ product }: { product: Product }) {
                 <img
                   src={image}
                   alt={product.name}
+                  onError={handleImageError}
                   className={cn("h-full w-full transition duration-300", thumbnailImageClassName)}
                 />
               </div>
@@ -128,7 +138,12 @@ export function ProductGallery({ product }: { product: Product }) {
           </div>
 
           <div className="flex min-h-[320px] items-center justify-center sm:min-h-[560px] xl:min-h-[660px]">
-            <img src={activeImage} alt={product.name} className="max-h-[72vh] w-full object-contain sm:max-h-full" />
+            <img
+              src={activeImage}
+              alt={product.name}
+              onError={handleImageError}
+              className="max-h-[72vh] w-full object-contain sm:max-h-full"
+            />
           </div>
         </div>
       </div>

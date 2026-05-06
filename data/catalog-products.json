@@ -20,8 +20,7 @@
     "productType": "gift_certificate",
     "requiresShipping": false,
     "colors": [
-      "Black",
-      "White"
+      "Black"
     ],
     "sizes": [
       "One Size"
@@ -30,10 +29,10 @@
     "badge": "New",
     "image": "/recovered-products/custom-1777482612047-cover.jpg",
     "gallery": [
-      "/recovered-products/custom-1777482612047-gallery-1.jpg"
+      "/recovered-products/custom-1777482612047-cover.jpg"
     ],
-    "description": "Опишите материал, посадку и особенности модели.",
-    "shortDescription": "Короткое описание товара для каталога.",
+    "description": "Подарочный сертификат работает как цифровой товар: после покупки вы получите одноразовый код, который можно активировать в аккаунте и использовать баланс частями для оплаты любых товаров магазина.",
+    "shortDescription": "Цифровой подарочный сертификат: активируйте код в личном кабинете и оплачивайте любые товары балансом частями.",
     "popularity": 75,
     "createdAt": "2026-04-29T17:10:12.047Z",
     "hexPalette": [
@@ -63,7 +62,6 @@
     "productType": "gift_certificate",
     "requiresShipping": false,
     "colors": [
-      "Black",
       "White"
     ],
     "sizes": [
@@ -73,7 +71,7 @@
     "badge": "New",
     "image": "/recovered-products/custom-1777482553731-cover.jpg",
     "gallery": [
-      "/recovered-products/custom-1777482553731-gallery-1.jpg"
+      "/recovered-products/custom-1777482553731-cover.jpg"
     ],
     "description": "Подарочный сертификат работает как цифровой товар: после покупки вы получите одноразовый код, который можно активировать в аккаунте и использовать баланс частями для оплаты любых товаров магазина.",
     "shortDescription": "Цифровой подарочный сертификат: активируйте код в личном кабинете и оплачивайте любые товары балансом частями.",
@@ -120,7 +118,7 @@
     "badge": "Preorder",
     "image": "/recovered-products/custom-1777482490798-cover.jpg",
     "gallery": [
-      "/recovered-products/custom-1777482490798-gallery-1.jpg",
+      "/recovered-products/custom-1777482490798-cover.jpg",
       "/recovered-products/custom-1777482490798-gallery-2.png",
       "/recovered-products/custom-1777482490798-gallery-3.png"
     ],
@@ -170,7 +168,7 @@
     "badge": "Preorder",
     "image": "/recovered-products/custom-1777416741928-cover.jpg",
     "gallery": [
-      "/recovered-products/custom-1777416741928-gallery-1.jpg"
+      "/recovered-products/custom-1777416741928-cover.jpg"
     ],
     "description": "Футболка из коллекции Lewis Hamilton. Модель выполнена в эстетике фирменного магазина командной одежды: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой Formula 1.",
     "shortDescription": "Футболка из коллекции Lewis Hamilton в стилистике фирменного магазина спортивной одежды.",
