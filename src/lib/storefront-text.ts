@@ -29,6 +29,10 @@ export const collectionLabelRu: Record<Product["collection"], string> = {
   Sale: "Распродажа",
 };
 
+export function getCollectionLabel(collection: string) {
+  return collection ? collectionLabelRu[collection] ?? collection : "Без коллекции";
+}
+
 export const colorLabelRu: Record<ProductColor, string> = {
   Black: "Чёрный",
   White: "Белый",
@@ -61,6 +65,7 @@ export const categoryLabelRu = {
   Pilots: "Пилоты",
   Teams: "Команды",
   Legends: "Легенды",
+  Accessories: "Аксессуары",
   Essentials: "База",
   Gifts: "Подарочные сертификаты",
 } as const;
@@ -156,7 +161,9 @@ export function getProductDisplayName(product: Pick<Product, "name" | "type">) {
   return result;
 }
 
-export function getProductShortDescription(product: Pick<Product, "teamName" | "driverName" | "legendName" | "type" | "collection">) {
+export function getProductShortDescription(
+  product: Pick<Product, "teamName" | "driverName" | "legendName" | "type" | "collection" | "category">,
+) {
   if (product.type === "Gift Certificate") {
     return "Цифровой подарочный сертификат: активируйте код в личном кабинете и оплачивайте любые товары балансом частями.";
   }
@@ -173,10 +180,12 @@ export function getProductShortDescription(product: Pick<Product, "teamName" | "
     return `${productTypeLabelRu[product.type]} из архивной коллекции ${product.legendName} в выверенном стиле.`;
   }
 
-  return `${productTypeLabelRu[product.type]} из раздела «${collectionLabelRu[product.collection]}» с акцентом на чистый спортивный дизайн.`;
+  return `${productTypeLabelRu[product.type]} из раздела «${categoryLabelRu[product.category]}» с акцентом на чистый спортивный дизайн.`;
 }
 
-export function getProductDescription(product: Pick<Product, "teamName" | "driverName" | "legendName" | "type" | "collection">) {
+export function getProductDescription(
+  product: Pick<Product, "teamName" | "driverName" | "legendName" | "type" | "collection" | "category">,
+) {
   if (product.type === "Gift Certificate") {
     return "Подарочный сертификат работает как цифровой товар: после покупки вы получите одноразовый код, который можно активировать в аккаунте и использовать баланс частями для оплаты любых товаров магазина.";
   }
@@ -193,7 +202,7 @@ export function getProductDescription(product: Pick<Product, "teamName" | "drive
     return `${productTypeLabelRu[product.type]} из коллекции легенд ${product.legendName}. В основе спокойный, выверенный подход: архивное вдохновение Formula 1, аккуратная типографика и современная спортивная подача.`;
   }
 
-  return `${productTypeLabelRu[product.type]} из раздела «${collectionLabelRu[product.collection]}». Базовая модель с чистой коммерческой подачей, вдохновлённой официальными магазинами спортивной одежды.`;
+  return `${productTypeLabelRu[product.type]} из раздела «${categoryLabelRu[product.category]}». Базовая модель с чистой коммерческой подачей, вдохновлённой официальными магазинами спортивной одежды.`;
 }
 
 export function getTeamDescription(team: Team) {

@@ -1,14 +1,8 @@
 "use client";
 
-import { collectionLabels, collectionOptions, colorSwatches, productTypeLabels } from "@/lib/catalog-ui";
+import { colorSwatches, productTypeLabels } from "@/lib/catalog-ui";
 import { colorOptions, productTypeOptions, sizeOptions } from "@/lib/data/roster";
-import type {
-  CatalogCategory,
-  FeaturedCollection,
-  ProductColor,
-  ProductSize,
-  ProductType,
-} from "@/lib/types";
+import type { CatalogCategory, ProductColor, ProductSize, ProductType } from "@/lib/types";
 import { colorLabelRu } from "@/lib/storefront-text";
 
 type FilterSize = Exclude<ProductSize, "One Size">;
@@ -18,7 +12,7 @@ const categoryOptions: Array<{ label: string; value: CatalogCategory | "All" }> 
   { label: "Пилоты", value: "Pilots" },
   { label: "Команды", value: "Teams" },
   { label: "Легенды", value: "Legends" },
-  { label: "База", value: "Essentials" },
+  { label: "Аксессуары", value: "Accessories" },
   { label: "Подарки", value: "Gifts" },
 ];
 
@@ -48,27 +42,27 @@ export function FilterSidebar({
   priceRange,
   colors,
   availableCategories = categoryOptions,
-  availableCollections = [...collectionOptions],
   availableColors = [...colorOptions],
   availableTypes = [...productTypeOptions],
   availableSizes = [...sizeOptions],
   availableTeams,
   availableDrivers,
   availableLegends,
+  availableCollections = [],
   teams,
   drivers,
   legends,
+  collections,
   types,
   sizes,
-  collections,
   setCategory,
   setPriceRange,
   toggleColor,
   toggleTeam,
   toggleDriver,
   toggleLegend,
-  toggleType,
   toggleCollection,
+  toggleType,
   toggleSize,
   clearAll,
   showCategoryFilter = true,
@@ -83,27 +77,27 @@ export function FilterSidebar({
   priceRange: [number, number];
   colors: ProductColor[];
   availableCategories?: Array<{ label: string; value: CatalogCategory | "All" }>;
-  availableCollections?: FeaturedCollection[];
   availableColors?: ProductColor[];
   availableTypes?: ProductType[];
   availableSizes?: FilterSize[];
   availableTeams: string[];
   availableDrivers: string[];
   availableLegends: string[];
+  availableCollections?: string[];
   teams: string[];
   drivers: string[];
   legends: string[];
+  collections: string[];
   types: ProductType[];
   sizes: FilterSize[];
-  collections: FeaturedCollection[];
   setCategory: (value: CatalogCategory | "All") => void;
   setPriceRange: (value: [number, number]) => void;
   toggleColor: (value: ProductColor) => void;
   toggleTeam: (value: string) => void;
   toggleDriver: (value: string) => void;
   toggleLegend: (value: string) => void;
+  toggleCollection: (value: string) => void;
   toggleType: (value: ProductType) => void;
-  toggleCollection: (value: FeaturedCollection) => void;
   toggleSize: (value: FilterSize) => void;
   clearAll: () => void;
   showCategoryFilter?: boolean;
@@ -119,6 +113,8 @@ export function FilterSidebar({
   const sectionClassName = "border-t border-[var(--line)] pt-5";
   const summaryClassName =
     "flex cursor-pointer list-none items-center justify-between text-[1.02rem] font-medium text-[#111111] [&::-webkit-details-marker]:hidden";
+  const priceInputClassName =
+    "h-14 w-full border border-[var(--line)] bg-white px-4 pr-10 text-[1.18rem] font-medium text-[#111111] outline-none [-moz-appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none";
 
   return (
     <aside className={asideClassName}>
@@ -136,25 +132,6 @@ export function FilterSidebar({
                   label={option.label}
                   checked={category === option.value}
                   onChange={() => setCategory(option.value)}
-                />
-              ))}
-            </div>
-          </details>
-        ) : null}
-
-        {availableCollections.length > 0 ? (
-          <details open className={sectionClassName}>
-            <summary className={summaryClassName}>
-              <span>Коллекция</span>
-              <span className="text-[#7c7c7c]">▾</span>
-            </summary>
-            <div className="mt-4 space-y-3">
-              {availableCollections.map((option) => (
-                <CheckboxRow
-                  key={option}
-                  label={collectionLabels[option]}
-                  checked={collections.includes(option)}
-                  onChange={() => toggleCollection(option)}
                 />
               ))}
             </div>
@@ -237,6 +214,25 @@ export function FilterSidebar({
         </details>
         ) : null}
 
+        {availableCollections.length > 0 ? (
+        <details open className={sectionClassName}>
+          <summary className={summaryClassName}>
+            <span>Коллекция</span>
+            <span className="text-[#7c7c7c]">▾</span>
+          </summary>
+          <div className="mt-4 max-h-48 space-y-3 overflow-y-auto pr-2">
+            {availableCollections.map((option) => (
+              <CheckboxRow
+                key={option}
+                label={option}
+                checked={collections.includes(option)}
+                onChange={() => toggleCollection(option)}
+              />
+            ))}
+          </div>
+        </details>
+        ) : null}
+
         {availableSizes.length > 0 ? (
         <details className={sectionClassName}>
           <summary className={summaryClassName}>
@@ -298,24 +294,40 @@ export function FilterSidebar({
               <span className="text-[#7c7c7c]">▾</span>
             </summary>
             <div className="mt-4 space-y-4">
-              <div className="grid grid-cols-2 gap-3">
-                <input
-                  type="number"
-                  min={priceBounds[0]}
-                  max={priceBounds[1]}
-                  value={priceRange[0]}
-                  onChange={(event) => setPriceRange([Number(event.target.value), priceRange[1]])}
-                  className="h-12 border border-[var(--line)] bg-white px-4 text-[0.95rem] text-[#111111] outline-none"
-                />
-                <input
-                  type="number"
-                  min={priceBounds[0]}
-                  max={priceBounds[1]}
-                  value={priceRange[1]}
-                  onChange={(event) => setPriceRange([priceRange[0], Number(event.target.value)])}
-                  className="h-12 border border-[var(--line)] bg-white px-4 text-[0.95rem] text-[#111111] outline-none"
-                />
-              </div>
+              <label className="block space-y-1.5">
+                <span className="text-[0.78rem] font-medium uppercase tracking-[0.12em] text-[#777777]">От</span>
+                <span className="relative block">
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    min={priceBounds[0]}
+                    max={priceBounds[1]}
+                    value={priceRange[0]}
+                    onChange={(event) => setPriceRange([Number(event.target.value), priceRange[1]])}
+                    className={priceInputClassName}
+                  />
+                  <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[1.02rem] font-medium text-[#777777]">
+                    ₽
+                  </span>
+                </span>
+              </label>
+              <label className="block space-y-1.5">
+                <span className="text-[0.78rem] font-medium uppercase tracking-[0.12em] text-[#777777]">До</span>
+                <span className="relative block">
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    min={priceBounds[0]}
+                    max={priceBounds[1]}
+                    value={priceRange[1]}
+                    onChange={(event) => setPriceRange([priceRange[0], Number(event.target.value)])}
+                    className={priceInputClassName}
+                  />
+                  <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[1.02rem] font-medium text-[#777777]">
+                    ₽
+                  </span>
+                </span>
+              </label>
               <input
                 type="range"
                 min={priceBounds[0]}
@@ -323,7 +335,7 @@ export function FilterSidebar({
                 step={100}
                 value={priceRange[1]}
                 onChange={(event) => setPriceRange([priceRange[0], Number(event.target.value)])}
-                className="w-full accent-black"
+                className="h-2 w-full accent-black"
               />
             </div>
           </details>

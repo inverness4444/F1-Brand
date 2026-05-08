@@ -1,14 +1,16 @@
-export type CatalogCategory = "Pilots" | "Teams" | "Legends" | "Essentials" | "Gifts";
+export type CatalogCategory = "Pilots" | "Teams" | "Legends" | "Accessories" | "Essentials" | "Gifts";
 
 export type CommerceProductKind = "standard" | "gift_certificate";
 
-export type FeaturedCollection =
-  | "New Arrivals"
-  | "Teamwear"
-  | "Driver Collection"
-  | "Legends"
-  | "Essentials"
-  | "Sale";
+export type FeaturedCollection = string;
+
+export type CatalogCollection = {
+  id: string;
+  slug: string;
+  name: string;
+  productIds: string[];
+  createdAt: string;
+};
 
 export type ProductType =
   | "T-shirt"

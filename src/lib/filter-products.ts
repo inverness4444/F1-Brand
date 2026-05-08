@@ -1,6 +1,6 @@
 import type { Product, ShopFilters } from "@/lib/types";
 import {
-  collectionLabelRu,
+  getCollectionLabel,
   getProductDescription,
   getProductDisplayName,
   getProductShortDescription,
@@ -62,7 +62,7 @@ export function filterProducts(products: Product[], filters: ShopFilters) {
             product.teamName,
             product.legendName,
             product.collection,
-            collectionLabelRu[product.collection],
+            getCollectionLabel(product.collection),
             product.type,
             productTypeLabelRu[product.type],
             ...getProductSearchTerms(product),

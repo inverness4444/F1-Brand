@@ -39,15 +39,10 @@ const productColorSchema = z.enum([
 ]);
 const productSizeSchema = z.enum(["XS", "S", "M", "L", "XL", "XXL", "One Size"]);
 const productGenderSchema = z.enum(["Men", "Women", "Unisex"]);
-const catalogCategorySchema = z.enum(["Pilots", "Teams", "Legends", "Essentials", "Gifts"]);
-const featuredCollectionSchema = z.enum([
-  "New Arrivals",
-  "Teamwear",
-  "Driver Collection",
-  "Legends",
-  "Essentials",
-  "Sale",
-]);
+const catalogCategorySchema = z.enum(["Pilots", "Teams", "Legends", "Accessories", "Essentials", "Gifts"]);
+const productCollectionNameSchema = z
+  .string()
+  .transform((value) => sanitizeText(value, { maxLength: SECURITY_LIMITS.catalogMetadataMaxLength }));
 const productTypeSchema = z.enum([
   "T-shirt",
   "Hoodie",
@@ -242,7 +237,7 @@ export const filterParamSchema = z.object({
   driver: optionalTextSchema(SECURITY_LIMITS.profileTextMaxLength).transform((value) => value || undefined),
   legend: optionalTextSchema(SECURITY_LIMITS.profileTextMaxLength).transform((value) => value || undefined),
   type: productTypeSchema.optional(),
-  collection: featuredCollectionSchema.optional(),
+  collection: productCollectionNameSchema.optional().transform((value) => value || undefined),
   q: z
     .string()
     .optional()
@@ -421,8 +416,8 @@ export const productSchema = z.object({
   slug: z.string().transform((value) => sanitizeIdentifier(value, "")),
   name: requiredTextSchema(SECURITY_LIMITS.catalogNameMaxLength, "Укажите название товара."),
   category: catalogCategorySchema,
-  collection: featuredCollectionSchema,
-  collectionTags: z.array(featuredCollectionSchema).min(1).max(6),
+  collection: productCollectionNameSchema,
+  collectionTags: z.array(productCollectionNameSchema).max(16).transform((values) => values.filter(Boolean)),
   driverName: optionalTextSchema(SECURITY_LIMITS.catalogMetadataMaxLength).transform((value) => value || null),
   driverSlug: optionalTextSchema(SECURITY_LIMITS.catalogMetadataMaxLength).transform((value) => value || null),
   teamName: optionalTextSchema(SECURITY_LIMITS.catalogMetadataMaxLength).transform((value) => value || null),
@@ -453,8 +448,21 @@ export const productSchema = z.object({
   hexPalette: z.array(z.string().transform(sanitizeHexColor)).min(1).max(6),
 });
 
+export const catalogCollectionSchema = z.object({
+  id: z.string().transform((value) => sanitizeIdentifier(value, "")),
+  slug: z.string().transform((value) => sanitizeIdentifier(value, "")),
+  name: requiredTextSchema(SECURITY_LIMITS.catalogMetadataMaxLength, "Укажите название коллекции."),
+  productIds: z.array(z.string().transform((value) => sanitizeIdentifier(value, ""))).max(500).default([]),
+  createdAt: isoDateSchema,
+});
+
 export const catalogProductsPayloadSchema = z.object({
   products: z.array(productSchema).max(500),
+});
+
+export const catalogPayloadSchema = z.object({
+  products: z.array(productSchema).max(500),
+  collections: z.array(catalogCollectionSchema).max(100).default([]),
 });
 
 export const giftCertificateSchema = z.object({

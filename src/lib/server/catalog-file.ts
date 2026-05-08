@@ -5,11 +5,12 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import recoveredCatalogProductsData from "@/lib/data/recovered-products.json";
-import { catalogProductsPayloadSchema } from "@/lib/validation-schemas";
-import type { Product } from "@/lib/types";
+import { catalogPayloadSchema, catalogProductsPayloadSchema } from "@/lib/validation-schemas";
+import type { CatalogCollection, Product } from "@/lib/types";
 
 const catalogDirectoryPath = path.join(process.cwd(), "data");
 const catalogFilePath = path.join(catalogDirectoryPath, "catalog-products.json");
+const catalogCollectionsFilePath = path.join(catalogDirectoryPath, "catalog-collections.json");
 const catalogImageDirectoryPath = path.join(process.cwd(), "public", "catalog-products");
 const recoveredCatalogProducts = recoveredCatalogProductsData as Product[];
 const dataImageRegex = /^data:(image\/(?:png|jpe?g|gif|webp));base64,([a-z0-9+/=\s]+)$/i;
@@ -105,6 +106,36 @@ export async function readCatalogProductsFromFile() {
   }
 }
 
+async function ensureCatalogCollectionsFile() {
+  try {
+    await readFile(catalogCollectionsFilePath, "utf8");
+  } catch (error) {
+    const errorCode =
+      typeof error === "object" && error && "code" in error ? String((error as { code?: string }).code) : null;
+
+    if (errorCode !== "ENOENT") {
+      throw error;
+    }
+
+    await mkdir(catalogDirectoryPath, { recursive: true });
+    await writeFile(catalogCollectionsFilePath, JSON.stringify([], null, 2), "utf8");
+  }
+}
+
+export async function readCatalogCollectionsFromFile() {
+  await ensureCatalogCollectionsFile();
+
+  try {
+    const rawCatalog = await readFile(catalogCollectionsFilePath, "utf8");
+    const parsedCatalog = JSON.parse(rawCatalog);
+    return catalogPayloadSchema.parse({ products: [], collections: parsedCatalog }).collections;
+  } catch {
+    await writeCatalogCollectionsToFile([]);
+    console.error("Catalog collections file was invalid and has been restored.");
+    return [];
+  }
+}
+
 export async function writeCatalogProductsToFile(products: Product[]) {
   const normalizedProducts = catalogProductsPayloadSchema.parse({ products }).products;
   const materializedProducts = await Promise.all(normalizedProducts.map(materializeProductImages));
@@ -114,4 +145,16 @@ export async function writeCatalogProductsToFile(products: Product[]) {
   await writeFile(catalogFilePath, JSON.stringify(validatedProducts, null, 2), "utf8");
 }
 
-export { catalogFilePath };
+export async function writeCatalogCollectionsToFile(collections: CatalogCollection[]) {
+  const validatedCollections = catalogPayloadSchema.parse({ products: [], collections }).collections;
+
+  await mkdir(catalogDirectoryPath, { recursive: true });
+  await writeFile(catalogCollectionsFilePath, JSON.stringify(validatedCollections, null, 2), "utf8");
+}
+
+export async function writeCatalogToFiles(products: Product[], collections: CatalogCollection[]) {
+  await writeCatalogProductsToFile(products);
+  await writeCatalogCollectionsToFile(collections);
+}
+
+export { catalogCollectionsFilePath, catalogFilePath };

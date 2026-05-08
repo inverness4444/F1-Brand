@@ -1,74 +1,67 @@
-const sections = [
-  {
-    id: "delivery",
-    title: "Доставка",
-    body: "Бесплатная доставка от 4000 ₽. Заказы отправляются в аккуратной упаковке с подачей, как у настоящего фирменного магазина.",
-  },
-  {
-    id: "returns",
-    title: "Возврат",
-    body: "Простой возврат в течение 14 дней после получения, если вещь не была в носке и сохранила исходное состояние.",
-  },
-  {
-    id: "size-guide",
-    title: "Таблица размеров",
-    body: "Большинство моделей имеют спортивную regular-посадку в размерах от XS до XXL. Подробные размеры доступны и в карточке товара.",
-  },
-  {
-    id: "contact",
-    title: "Контакты",
-    body: "По вопросам заказа, поддержки или сотрудничества используйте контакты и ссылки, указанные в футере магазина.",
-  },
-  {
-    id: "faq",
-    title: "Вопросы и ответы",
-    body: "Магазин построен вокруг чистой подачи, рабочего каталога, фильтров, избранного, корзины и коллекционных страниц.",
-  },
-  {
-    id: "privacy",
-    title: "Политика конфиденциальности",
-    body: "Для этой demo-витрины данные аккаунта и корзины хранятся локально в браузере.",
-  },
-  {
-    id: "terms",
-    title: "Пользовательское соглашение",
-    body: "Эта витрина представляет собой демо-проект интернет-магазина с локальным хранением пользовательских данных.",
-  },
-  {
-    id: "offer",
-    title: "Договор оферты",
-    body: "Цены, каталог и данные аккаунта показаны в демонстрационных целях для полного сценария покупки.",
-  },
-];
+import type { Metadata } from "next";
+
+import { Breadcrumbs } from "@/components/info-pages";
+
+export const metadata: Metadata = {
+  title: "О магазине | Apex Store",
+  description: "О магазине Apex Store и подходе к коллекциям в эстетике Formula 1.",
+};
 
 export default function AboutPage() {
   return (
-    <div className="pb-14">
-      <section className="container-shell pt-6">
-        <div className="rounded-[2rem] border border-[var(--line)] bg-white px-6 py-8 lg:px-10 lg:py-10">
-          <p className="section-kicker">О магазине</p>
-          <h1 className="mt-4 font-[var(--font-heading)] text-[clamp(2.2rem,4vw,4.2rem)] font-semibold tracking-[-0.07em] text-[#111111]">
-            Витрина магазина одежды в эстетике Formula 1
+    <div className="pb-16">
+      <section className="container-shell pt-8">
+        <div className="mx-auto max-w-[1180px] border-b border-[var(--line)] pb-8">
+          <Breadcrumbs
+            items={[
+              { label: "Главная", href: "/" },
+              { label: "О магазине" },
+            ]}
+          />
+          <p className="section-kicker mt-8">О бренде</p>
+          <h1 className="mt-4 max-w-4xl break-words font-[var(--font-heading)] text-4xl font-semibold leading-none tracking-normal text-[#111111] sm:text-5xl lg:text-7xl">
+            Apex Store
           </h1>
-          <p className="mt-3 max-w-3xl text-base leading-8 text-[#5f615f]">
-            Apex Store собран как чистый коммерческий магазин одежды, где командные коллекции, капсулы пилотов и базовые модели выглядят как в современном спортивном ритейле.
+          <p className="mt-5 max-w-3xl text-base leading-8 text-[#5f615f] sm:text-lg">
+            Магазин одежды в эстетике Formula 1: командные коллекции, капсулы пилотов, аксессуары и подарочные сертификаты в чистой спортивной подаче.
           </p>
         </div>
       </section>
 
-      <section className="container-shell mt-10 grid gap-4 md:grid-cols-2">
-        {sections.map((section) => (
-          <div
-            key={section.id}
-            id={section.id}
-            className="scroll-mt-28 rounded-[1.4rem] border border-[var(--line)] bg-white p-5"
-          >
-            <h2 className="font-[var(--font-heading)] text-2xl font-semibold tracking-[-0.05em] text-[#111111]">
-              {section.title}
-            </h2>
-            <p className="mt-3 text-sm leading-7 text-[#5f615f]">{section.body}</p>
-          </div>
-        ))}
+      <section className="container-shell mt-8">
+        <div className="mx-auto grid max-w-[1180px] gap-4">
+          <section className="rounded-[1.1rem] border border-[var(--line)] bg-white p-6 sm:p-8">
+            <div className="grid gap-4 lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-10">
+              <h2 className="break-words font-[var(--font-heading)] text-2xl font-semibold tracking-normal text-[#111111]">
+                Подход к магазину
+              </h2>
+              <div className="space-y-4 text-[0.98rem] leading-8 text-[#5f615f] sm:text-base">
+                <p>
+                  Apex Store собран как премиальная e-commerce витрина спортивной одежды: без лишнего шума, с понятной навигацией, рабочим каталогом, фильтрами, карточками товаров, корзиной и личным кабинетом.
+                </p>
+                <p>
+                  В каталоге разделы разделены по смыслу: пилоты, команды, легенды и аксессуары. Это помогает покупателям быстрее находить нужные вещи и не смешивать разные типы коллекций.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <section id="size-guide" className="scroll-mt-28 rounded-[1.1rem] border border-[var(--line)] bg-white p-6 sm:p-8">
+            <div className="grid gap-4 lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-10">
+              <h2 className="break-words font-[var(--font-heading)] text-2xl font-semibold tracking-normal text-[#111111]">
+                Таблица размеров
+              </h2>
+              <div className="space-y-4 text-[0.98rem] leading-8 text-[#5f615f] sm:text-base">
+                <p>
+                  Большинство моделей представлены в размерах XS, S, M, L, XL и XXL. Для аксессуаров и подарочных сертификатов используется один размер.
+                </p>
+                <p>
+                  Подробный выбор размера доступен в карточке товара. Если сомневаетесь между двумя размерами, ориентируйтесь на желаемую посадку: regular ближе к размеру, oversize лучше брать по привычному размеру.
+                </p>
+              </div>
+            </div>
+          </section>
+        </div>
       </section>
     </div>
   );

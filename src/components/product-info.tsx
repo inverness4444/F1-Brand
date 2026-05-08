@@ -8,7 +8,7 @@ import { productTypeLabels } from "@/lib/catalog-ui";
 import type { Product, ProductSize } from "@/lib/types";
 import { cn, formatPrice } from "@/lib/utils";
 import {
-  collectionLabelRu,
+  getCollectionLabel,
   getProductDescription,
   getProductDisplayName,
   getProductShortDescription,
@@ -57,7 +57,7 @@ export function ProductInfo({ product }: { product: Product }) {
 
   return (
     <aside className="min-w-0 h-fit lg:sticky lg:top-28">
-      <p className="section-kicker">{collectionLabelRu[product.collection]}</p>
+      <p className="section-kicker">{getCollectionLabel(product.collection)}</p>
       <h1 className="mt-4 max-w-full break-words font-[var(--font-heading)] text-[clamp(2rem,9vw,3.4rem)] font-semibold leading-[0.96] tracking-[-0.06em] text-[#111111] sm:max-w-[12ch]">
         {getProductDisplayName(product)}
       </h1>
@@ -188,7 +188,7 @@ export function ProductInfo({ product }: { product: Product }) {
           <summary className="cursor-pointer text-sm font-semibold text-[#111111]">Детали товара</summary>
           <div className="mt-3 space-y-2 text-sm leading-7 text-[#5f615f]">
             <p>{productTypeLabels[product.type]}</p>
-            <p>{collectionLabelRu[product.collection]}</p>
+            <p>{getCollectionLabel(product.collection)}</p>
             <p>Чистая спортивная подача</p>
             <p>Коммерческая витрина в стиле официального магазина</p>
           </div>

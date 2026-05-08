@@ -15,7 +15,16 @@ import {
 } from "@/lib/data/roster";
 import { productTypeLabels } from "@/lib/catalog-ui";
 import { imageByType, sizesByType } from "@/lib/data/products";
-import type { CatalogCategory, Product, ProductBadge, ProductColor, ProductSize, ProductType } from "@/lib/types";
+import type {
+  CatalogCollection,
+  CatalogCategory,
+  FeaturedCollection,
+  Product,
+  ProductBadge,
+  ProductColor,
+  ProductSize,
+  ProductType,
+} from "@/lib/types";
 import {
   categoryLabelRu,
   colorLabelRu,
@@ -30,7 +39,23 @@ import { createProductDraft, useCatalogStore } from "@/store/catalog-store";
 import { Button, buttonClassName } from "@/components/ui/button";
 
 const badgeOptions: ProductBadge[] = ["New", "Hit", "Limited", "Preorder", "OutOfStock", "Sale"];
-const categoryOptions: CatalogCategory[] = ["Pilots", "Teams", "Legends", "Essentials", "Gifts"];
+const categoryOptions: CatalogCategory[] = ["Pilots", "Teams", "Legends", "Accessories", "Gifts"];
+const legacySystemCollectionNames = new Set([
+  "New Arrivals",
+  "Teamwear",
+  "Driver Collection",
+  "Legends",
+  "Essentials",
+  "Sale",
+]);
+const accessoryTypeValues = new Set<ProductType>([
+  "Scarf",
+  "Lego",
+  "Cap",
+  "Accessory",
+  "Calendar",
+  "Poster",
+]);
 
 const colorHexMap: Record<ProductColor, string> = {
   Black: "#111111",
@@ -56,6 +81,34 @@ const badgeMap: Record<ProductBadge, string> = {
   Sale: "Распродажа",
 };
 
+function getCustomCollectionTags(product: Pick<Product, "collection" | "collectionTags">) {
+  return [...new Set([product.collection, ...product.collectionTags])]
+    .filter((tag): tag is FeaturedCollection => Boolean(tag) && !legacySystemCollectionNames.has(tag));
+}
+
+function collectionTagsFor(badge: ProductBadge, customTags: FeaturedCollection[] = []) {
+  const tags = new Set<FeaturedCollection>(customTags.filter((tag) => tag && !legacySystemCollectionNames.has(tag)));
+
+  if (badge === "New") {
+    tags.add("New Arrivals");
+  }
+
+  if (badge === "Sale") {
+    tags.add("Sale");
+  }
+
+  return [...tags];
+}
+
+function collectionFieldsFor(product: Pick<Product, "badge" | "collection" | "collectionTags">, badge = product.badge) {
+  const customTags = getCustomCollectionTags(product);
+
+  return {
+    collection: customTags[0] ?? "",
+    collectionTags: collectionTagsFor(badge, customTags),
+  };
+}
+
 function cloneProduct(product: Product) {
   const cloned = JSON.parse(JSON.stringify(product)) as Product;
 
@@ -64,6 +117,39 @@ function cloneProduct(product: Product) {
     name: getProductDisplayName(product),
     shortDescription: getProductShortDescription(product),
     description: getProductDescription(product),
+  };
+}
+
+function cloneCollection(collection: CatalogCollection) {
+  return JSON.parse(JSON.stringify(collection)) as CatalogCollection;
+}
+
+function createCollectionDraft(existingCollections: CatalogCollection[]): CatalogCollection {
+  const baseName = "Новая коллекция";
+  const baseSlug = slugify(baseName) || `collection-${Date.now()}`;
+  const existingIds = new Set(existingCollections.map((collection) => collection.id));
+  const existingSlugs = new Set(existingCollections.map((collection) => collection.slug));
+  let index = 1;
+  let id = `custom-collection-${Date.now()}`;
+  let slug = baseSlug;
+
+  while (existingIds.has(id)) {
+    id = `custom-collection-${Date.now()}-${index}`;
+    index += 1;
+  }
+
+  index = 2;
+  while (existingSlugs.has(slug)) {
+    slug = `${baseSlug}-${index}`;
+    index += 1;
+  }
+
+  return {
+    id,
+    slug,
+    name: baseName,
+    productIds: [],
+    createdAt: new Date().toISOString(),
   };
 }
 
@@ -107,10 +193,20 @@ function joinGallery(images: string[]) {
 
 export function CatalogEditor() {
   const searchParams = useSearchParams();
-  const { products, hasHydrated } = useCatalogProducts();
-  const { upsertProduct, removeProduct, replaceProducts, resetProducts } = useCatalogStore();
+  const { collections, products, hasHydrated } = useCatalogProducts();
+  const {
+    removeCollection,
+    removeProduct,
+    replaceProducts,
+    resetProducts,
+    saveCollectionProducts,
+    upsertProduct,
+  } = useCatalogStore();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [draft, setDraft] = useState<Product | null>(null);
+  const [selectedCollectionId, setSelectedCollectionId] = useState<string | null>(null);
+  const [collectionDraft, setCollectionDraft] = useState<CatalogCollection | null>(null);
+  const [collectionProductQuery, setCollectionProductQuery] = useState("");
   const [query, setQuery] = useState("");
   const [message, setMessage] = useState("");
   const importInputRef = useRef<HTMLInputElement>(null);
@@ -154,6 +250,33 @@ export function CatalogEditor() {
     }
   }, [products, selectedId]);
 
+  useEffect(() => {
+    if (!hasHydrated) {
+      return;
+    }
+
+    if (!selectedCollectionId && !collectionDraft) {
+      if (collections[0]) {
+        setSelectedCollectionId(collections[0].id);
+        setCollectionDraft(cloneCollection(collections[0]));
+        return;
+      }
+
+      setCollectionDraft(createCollectionDraft(collections));
+    }
+  }, [collectionDraft, collections, hasHydrated, selectedCollectionId]);
+
+  useEffect(() => {
+    if (!selectedCollectionId) {
+      return;
+    }
+
+    const selectedCollection = collections.find((collection) => collection.id === selectedCollectionId);
+    if (selectedCollection) {
+      setCollectionDraft(cloneCollection(selectedCollection));
+    }
+  }, [collections, selectedCollectionId]);
+
   const filteredProducts = useMemo(() => {
     const normalizedQuery = sanitizeSearchQuery(query).toLowerCase();
 
@@ -178,10 +301,76 @@ export function CatalogEditor() {
     );
   }, [products, query]);
 
+  const filteredCollectionProducts = useMemo(() => {
+    const normalizedQuery = sanitizeSearchQuery(collectionProductQuery).toLowerCase();
+
+    if (!normalizedQuery) {
+      return products;
+    }
+
+    return products.filter((product) =>
+      [
+        product.name,
+        getProductDisplayName(product),
+        product.id,
+        product.driverName,
+        product.teamName,
+        product.legendName,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase()
+        .includes(normalizedQuery),
+    );
+  }, [collectionProductQuery, products]);
+
+  const availableDraftCollections = useMemo(() => {
+    return collections;
+  }, [collections]);
+
   const isPersistedProduct = draft ? products.some((product) => product.id === draft.id) : false;
+  const isPersistedCollection = collectionDraft
+    ? collections.some((collection) => collection.id === collectionDraft.id)
+    : false;
 
   const updateDraft = <Key extends keyof Product>(key: Key, value: Product[Key]) => {
     setDraft((current) => (current ? { ...current, [key]: value } : current));
+  };
+
+  const updateCollectionDraft = <Key extends keyof CatalogCollection>(key: Key, value: CatalogCollection[Key]) => {
+    setCollectionDraft((current) => (current ? { ...current, [key]: value } : current));
+  };
+
+  const toggleCollectionProduct = (productId: string) => {
+    setCollectionDraft((current) => {
+      if (!current) {
+        return current;
+      }
+
+      return {
+        ...current,
+        productIds: current.productIds.includes(productId)
+          ? current.productIds.filter((item) => item !== productId)
+          : [...current.productIds, productId],
+      };
+    });
+  };
+
+  const toggleDraftCollection = (collectionName: FeaturedCollection) => {
+    if (!draft) {
+      return;
+    }
+
+    const active = getCustomCollectionTags(draft).includes(collectionName);
+    const customTags = active
+      ? getCustomCollectionTags(draft).filter((tag) => tag !== collectionName)
+      : [collectionName, ...getCustomCollectionTags(draft)];
+
+    setDraft({
+      ...draft,
+      collection: customTags[0] ?? "",
+      collectionTags: collectionTagsFor(draft.badge, customTags),
+    });
   };
 
   const applyCategory = (category: CatalogCategory) => {
@@ -194,6 +383,7 @@ export function CatalogEditor() {
       setDraft({
         ...draft,
         category,
+        ...collectionFieldsFor(draft),
         driverName: driver.name,
         teamName: driver.teamName,
         legendName: null,
@@ -209,6 +399,7 @@ export function CatalogEditor() {
       setDraft({
         ...draft,
         category,
+        ...collectionFieldsFor(draft),
         driverName: null,
         teamName: team.name,
         legendName: null,
@@ -223,6 +414,7 @@ export function CatalogEditor() {
       setDraft({
         ...draft,
         category,
+        ...collectionFieldsFor(draft),
         driverName: null,
         teamName: null,
         legendName: null,
@@ -233,10 +425,43 @@ export function CatalogEditor() {
       return;
     }
 
+    if (category === "Accessories") {
+      const nextType = accessoryTypeValues.has(draft.type) ? draft.type : "Accessory";
+
+      setDraft({
+        ...draft,
+        category,
+        ...collectionFieldsFor(draft),
+        driverName: null,
+        teamName: null,
+        legendName: null,
+        sizes: [...sizesByType[nextType]],
+        type: nextType,
+        productType: "standard",
+        requiresShipping: true,
+        number: undefined,
+      });
+      return;
+    }
+
+    if (category === "Essentials") {
+      setDraft({
+        ...draft,
+        category,
+        ...collectionFieldsFor(draft),
+        driverName: null,
+        teamName: null,
+        legendName: null,
+        number: undefined,
+      });
+      return;
+    }
+
     const legend = legends.find((item) => item.name === draft.legendName) ?? legends[0];
     setDraft({
       ...draft,
       category,
+      ...collectionFieldsFor(draft),
       driverName: null,
       teamName: null,
       legendName: legend.name,
@@ -263,6 +488,24 @@ export function CatalogEditor() {
       image: shouldReplaceMainImage ? nextDefaultImage : draft.image,
       gallery: shouldReplaceGallery ? [shouldReplaceMainImage ? nextDefaultImage : draft.image] : draft.gallery,
       sizes: [...sizesByType[type]],
+      category: type === "Gift Certificate" ? "Gifts" : draft.category === "Gifts" ? "Accessories" : draft.category,
+      productType: type === "Gift Certificate" ? "gift_certificate" : "standard",
+      requiresShipping: type !== "Gift Certificate",
+      driverName: type === "Gift Certificate" ? null : draft.driverName,
+      teamName: type === "Gift Certificate" ? null : draft.teamName,
+      legendName: type === "Gift Certificate" ? null : draft.legendName,
+    });
+  };
+
+  const applyBadge = (badge: ProductBadge) => {
+    if (!draft) {
+      return;
+    }
+
+    setDraft({
+      ...draft,
+      badge,
+      ...collectionFieldsFor(draft, badge),
     });
   };
 
@@ -275,8 +518,11 @@ export function CatalogEditor() {
 
     setDraft({
       ...draft,
+      category: "Pilots",
+      ...collectionFieldsFor(draft),
       driverName: driverName || null,
       teamName: driver?.teamName ?? draft.teamName,
+      legendName: null,
       number: driver?.number ?? draft.number,
       colors: driver ? [...driver.colors] : draft.colors,
       hexPalette: driver ? [...driver.hexPalette] : draft.hexPalette,
@@ -292,7 +538,11 @@ export function CatalogEditor() {
 
     setDraft({
       ...draft,
+      category: "Teams",
+      ...collectionFieldsFor(draft),
+      driverName: null,
       teamName: teamName || null,
+      legendName: null,
       colors: team ? [...team.colors] : draft.colors,
       hexPalette: team ? [...team.hexPalette] : draft.hexPalette,
     });
@@ -307,6 +557,10 @@ export function CatalogEditor() {
 
     setDraft({
       ...draft,
+      category: "Legends",
+      ...collectionFieldsFor(draft),
+      driverName: null,
+      teamName: null,
       legendName: legendName || null,
       colors: legend ? [...legend.colors] : draft.colors,
       hexPalette: legend ? [...legend.hexPalette] : draft.hexPalette,
@@ -349,6 +603,58 @@ export function CatalogEditor() {
     setMessage("Создан новый черновик товара.");
   };
 
+  const handleNewCollection = () => {
+    setSelectedCollectionId(null);
+    setCollectionDraft(createCollectionDraft(collections));
+    setMessage("Создан черновик коллекции.");
+  };
+
+  const handleSaveCollection = async () => {
+    if (!collectionDraft) {
+      return;
+    }
+
+    const normalizedDraft: CatalogCollection = {
+      ...collectionDraft,
+      id: collectionDraft.id.trim() || slugify(collectionDraft.name) || `collection-${Date.now()}`,
+      slug: slugify(collectionDraft.slug || collectionDraft.name) || collectionDraft.id,
+      productIds: [...new Set(collectionDraft.productIds)],
+      createdAt: collectionDraft.createdAt || new Date().toISOString(),
+    };
+
+    try {
+      await saveCollectionProducts(normalizedDraft, normalizedDraft.productIds);
+      setSelectedCollectionId(normalizedDraft.id);
+      setMessage(`Коллекция «${normalizedDraft.name}» сохранена.`);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Не удалось сохранить коллекцию.");
+    }
+  };
+
+  const handleDeleteCollection = async () => {
+    if (!collectionDraft) {
+      return;
+    }
+
+    if (!isPersistedCollection) {
+      const nextCollection = collections[0] ? cloneCollection(collections[0]) : null;
+      setCollectionDraft(nextCollection);
+      setSelectedCollectionId(nextCollection?.id ?? null);
+      setMessage("Черновик коллекции удалён.");
+      return;
+    }
+
+    try {
+      await removeCollection(collectionDraft.id);
+      const nextCollection = collections.find((collection) => collection.id !== collectionDraft.id) ?? null;
+      setSelectedCollectionId(nextCollection?.id ?? null);
+      setCollectionDraft(nextCollection ? cloneCollection(nextCollection) : null);
+      setMessage(`Коллекция «${collectionDraft.name}» удалена.`);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Не удалось удалить коллекцию.");
+    }
+  };
+
   const handleSave = async () => {
     if (!draft) {
       return;
@@ -356,6 +662,7 @@ export function CatalogEditor() {
 
     const normalizedDraft: Product = {
       ...draft,
+      ...collectionFieldsFor(draft),
       id: draft.id.trim() || slugify(draft.name) || `custom-${Date.now()}`,
       slug: draft.slug.trim() || slugify(draft.name) || draft.id,
       gallery: draft.gallery.length > 0 ? draft.gallery : [draft.image],
@@ -537,6 +844,170 @@ export function CatalogEditor() {
         </div>
       </section>
 
+      <section className="container-shell mt-8">
+        <div className="surface-card rounded-[32px] p-5 sm:p-6">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-3xl">
+              <p className="section-kicker">Коллекции</p>
+              <h2 className="mt-2 text-2xl font-semibold text-slate-900">Управление коллекциями каталога</h2>
+              <p className="mt-3 text-sm leading-7 text-slate-600">
+                Коллекция — это отдельная серия или дроп одежды. Раздел товара выбирается в форме товара отдельно,
+                а коллекция появляется в фильтре только там, где есть привязанные к ней товары.
+              </p>
+            </div>
+            <Button onClick={handleNewCollection}>
+              <Plus className="size-4" />
+              Новая коллекция
+            </Button>
+          </div>
+
+          <div className="mt-5 grid gap-5 xl:grid-cols-[280px_minmax(0,1fr)]">
+            <div className="space-y-2">
+              {collections.length > 0 ? (
+                collections.map((collection) => {
+                  const active = collectionDraft?.id === collection.id;
+                  return (
+                    <button
+                      key={collection.id}
+                      type="button"
+                      onClick={() => {
+                        setSelectedCollectionId(collection.id);
+                        setCollectionDraft(cloneCollection(collection));
+                      }}
+                      className={cn(
+                        "w-full rounded-2xl border px-4 py-3 text-left transition",
+                        active
+                          ? "border-slate-900 bg-slate-950 text-white"
+                          : "border-slate-200 bg-white text-slate-800 hover:border-slate-300 hover:bg-slate-50",
+                      )}
+                    >
+                      <span className="block text-sm font-semibold">{collection.name}</span>
+                      <span className={cn("mt-1 block text-xs", active ? "text-slate-300" : "text-slate-500")}>
+                        {collection.productIds.length} товаров
+                      </span>
+                    </button>
+                  );
+                })
+              ) : (
+                <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4 text-sm text-slate-500">
+                  Коллекций пока нет.
+                </div>
+              )}
+            </div>
+
+            {collectionDraft ? (
+              <div className="grid gap-5 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+                <div className="rounded-3xl border border-slate-200 bg-white p-4">
+                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+                    <label className="space-y-2">
+                      <span className="text-sm font-medium text-slate-900">Название коллекции</span>
+                      <input
+                        value={collectionDraft.name}
+                        onChange={(event) => updateCollectionDraft("name", event.target.value)}
+                        className="input-base rounded-2xl"
+                      />
+                    </label>
+                    <label className="space-y-2">
+                      <span className="text-sm font-medium text-slate-900">Slug</span>
+                      <input
+                        value={collectionDraft.slug}
+                        onChange={(event) => updateCollectionDraft("slug", slugify(event.target.value))}
+                        className="input-base rounded-2xl"
+                      />
+                    </label>
+                  </div>
+
+                  <div className="mt-5 flex flex-wrap gap-3">
+                    <Button onClick={handleSaveCollection}>
+                      <Save className="size-4" />
+                      Сохранить коллекцию
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      onClick={handleDeleteCollection}
+                    >
+                      <Trash2 className="size-4" />
+                      {isPersistedCollection ? "Удалить" : "Удалить черновик"}
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="rounded-3xl border border-slate-200 bg-white p-4">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-slate-900">Товары в коллекции</p>
+                      <p className="mt-1 text-xs text-slate-500">Выбрано: {collectionDraft.productIds.length}</p>
+                    </div>
+                    <div className="relative w-full sm:max-w-xs">
+                      <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+                      <input
+                        value={collectionProductQuery}
+                        onChange={(event) => setCollectionProductQuery(sanitizeSearchQuery(event.target.value))}
+                        placeholder="Найти товар"
+                        className="input-base rounded-2xl pl-11"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mt-4 grid max-h-[480px] gap-2 overflow-y-auto pr-1">
+                    {filteredCollectionProducts.length > 0 ? (
+                      filteredCollectionProducts.map((product) => {
+                        const active = collectionDraft.productIds.includes(product.id);
+                        return (
+                          <button
+                            key={product.id}
+                            type="button"
+                            onClick={() => toggleCollectionProduct(product.id)}
+                            className={cn(
+                              "flex w-full items-center gap-3 rounded-2xl border p-3 text-left transition",
+                              active
+                                ? "border-red-300 bg-red-50"
+                                : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50",
+                            )}
+                          >
+                            <span
+                              className={cn(
+                                "flex size-5 shrink-0 items-center justify-center rounded border text-xs font-semibold",
+                                active ? "border-slate-900 bg-slate-900 text-white" : "border-slate-300 bg-white text-transparent",
+                              )}
+                            >
+                              ✓
+                            </span>
+                            <span className="flex size-16 shrink-0 items-center justify-center rounded-2xl bg-slate-50 p-2">
+                              <img src={product.image} alt={product.name} className="h-full w-full object-contain" />
+                            </span>
+                            <span className="min-w-0">
+                              <span className="line-clamp-2 text-sm font-semibold text-slate-900">
+                                {getProductDisplayName(product)}
+                              </span>
+                              <span className="mt-1 block text-xs text-slate-500">
+                                {categoryLabelRu[product.category]} ·{" "}
+                                {product.driverName ?? product.teamName ?? product.legendName ?? product.collection}
+                              </span>
+                            </span>
+                          </button>
+                        );
+                      })
+                    ) : (
+                      <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-5 text-sm text-slate-500">
+                        По этому поиску товаров нет.
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="rounded-3xl border border-dashed border-slate-300 bg-slate-50 p-6 text-center">
+                <h3 className="text-lg font-semibold text-slate-900">Выберите коллекцию</h3>
+                <p className="mt-2 text-sm leading-7 text-slate-500">
+                  Можно выбрать существующую коллекцию или создать новую.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
       <section className="container-shell mt-8 grid gap-6 xl:grid-cols-[360px_minmax(0,1fr)]">
         <aside className="surface-card rounded-[32px] p-4">
           <div className="relative">
@@ -554,7 +1025,7 @@ export function CatalogEditor() {
             <span>Найдено: {filteredProducts.length}</span>
           </div>
 
-          <div className="mt-4 space-y-3 overflow-y-auto pr-1 xl:max-h-[calc(100vh-280px)]">
+          <div className="mt-4 space-y-3">
             {filteredProducts.length > 0 ? (
               filteredProducts.map((product) => {
                 const active = draft?.id === product.id;
@@ -699,7 +1170,7 @@ export function CatalogEditor() {
                     <span className="text-sm font-medium text-slate-900">Бейдж</span>
                     <select
                       value={draft.badge}
-                      onChange={(event) => updateDraft("badge", event.target.value as ProductBadge)}
+                      onChange={(event) => applyBadge(event.target.value as ProductBadge)}
                       className="input-base rounded-2xl"
                     >
                       {badgeOptions.map((option) => (
@@ -759,6 +1230,38 @@ export function CatalogEditor() {
                     <option key={legend.slug} value={legend.name} />
                   ))}
                 </datalist>
+
+                <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                  <p className="text-sm font-medium text-slate-900">Коллекции товара</p>
+                  <p className="mt-1 text-xs leading-6 text-slate-500">
+                    Раздел товара выбирается выше. Здесь можно привязать товар к серии выпуска, например Black Out
+                    или Team Drop.
+                  </p>
+                  {availableDraftCollections.length > 0 ? (
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {availableDraftCollections.map((collection) => {
+                        const active = draft.collectionTags.includes(collection.name);
+                        return (
+                          <button
+                            key={collection.id}
+                            type="button"
+                            onClick={() => toggleDraftCollection(collection.name)}
+                            className={cn(
+                              "rounded-full border px-4 py-2 text-sm transition",
+                              active
+                                ? "border-slate-900 bg-slate-950 text-white"
+                                : "border-slate-300 bg-white text-slate-700 hover:border-slate-500",
+                            )}
+                          >
+                            {collection.name}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <p className="mt-3 text-sm text-slate-500">Коллекций пока нет. Создайте серию в блоке выше.</p>
+                  )}
+                </div>
 
                 <label className="space-y-2">
                   <span className="text-sm font-medium text-slate-900">Описание товара</span>

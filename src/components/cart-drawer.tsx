@@ -9,7 +9,7 @@ import { useCatalogProducts } from "@/hooks/use-catalog-products";
 import { useBodyScrollLock } from "@/hooks/use-body-scroll-lock";
 import { colorSwatches } from "@/lib/catalog-ui";
 import { formatPrice, getProductHref } from "@/lib/utils";
-import { collectionLabelRu, colorLabelRu, getProductDisplayName, sizeLabelRu } from "@/lib/storefront-text";
+import { colorLabelRu, getCollectionLabel, getProductDisplayName, sizeLabelRu } from "@/lib/storefront-text";
 import { giftCertificateService } from "@/services/gift-certificate-service";
 import { useCartStore } from "@/store/cart-store";
 import { Button, buttonClassName } from "@/components/ui/button";
@@ -150,7 +150,7 @@ export function CartDrawer() {
                                 {getProductDisplayName(entry!.product)}
                               </Link>
                               <p className="mt-1 text-xs uppercase tracking-[0.14em] text-[#7b7a75]">
-                                {collectionLabelRu[entry!.product.collection]}
+                                {getCollectionLabel(entry!.product.collection)}
                               </p>
                             </div>
                             <button

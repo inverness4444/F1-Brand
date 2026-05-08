@@ -1,16 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { readCatalogProductsFromFile, writeCatalogProductsToFile } from "@/lib/server/catalog-file";
+import {
+  readCatalogCollectionsFromFile,
+  readCatalogProductsFromFile,
+  writeCatalogToFiles,
+} from "@/lib/server/catalog-file";
 import { assertCsrfToken, assertSameOrigin, enforceRateLimit } from "@/lib/server/request-security";
-import { catalogProductsPayloadSchema } from "@/lib/validation-schemas";
+import { catalogPayloadSchema } from "@/lib/validation-schemas";
 
 export const runtime = "nodejs";
 
 export async function GET() {
   try {
-    const products = await readCatalogProductsFromFile();
+    const [products, collections] = await Promise.all([
+      readCatalogProductsFromFile(),
+      readCatalogCollectionsFromFile(),
+    ]);
     return NextResponse.json(
-      { products },
+      { products, collections },
       {
         headers: {
           "Cache-Control": "no-store, max-age=0",
@@ -51,12 +58,13 @@ export async function PUT(request: NextRequest) {
 
     assertSameOrigin(request);
     assertCsrfToken(request);
-    const payload = catalogProductsPayloadSchema.parse(await request.json());
-    await writeCatalogProductsToFile(payload.products);
+    const payload = catalogPayloadSchema.parse(await request.json());
+    await writeCatalogToFiles(payload.products, payload.collections);
 
     return NextResponse.json({
       ok: true,
       count: payload.products.length,
+      collections: payload.collections.length,
     });
   } catch (error) {
     if (error instanceof Error) {

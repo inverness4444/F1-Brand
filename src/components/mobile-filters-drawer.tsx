@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
 
 import { useBodyScrollLock } from "@/hooks/use-body-scroll-lock";
-import type { CatalogCategory, FeaturedCollection, ProductColor, ProductSize, ProductType } from "@/lib/types";
+import type { CatalogCategory, ProductColor, ProductSize, ProductType } from "@/lib/types";
 import { FilterSidebar } from "@/components/filter-sidebar";
 import { Button } from "@/components/ui/button";
 
@@ -16,19 +16,19 @@ type DrawerProps = {
   priceRange: [number, number];
   colors: ProductColor[];
   availableCategories?: Array<{ label: string; value: CatalogCategory | "All" }>;
-  availableCollections?: FeaturedCollection[];
   availableColors?: ProductColor[];
   availableTypes?: ProductType[];
   availableSizes?: FilterSize[];
   availableTeams: string[];
   availableDrivers: string[];
   availableLegends: string[];
+  availableCollections?: string[];
   teams: string[];
   drivers: string[];
   legends: string[];
+  collections: string[];
   types: ProductType[];
   sizes: FilterSize[];
-  collections: FeaturedCollection[];
   setOpen: (value: boolean) => void;
   setCategory: (value: CatalogCategory | "All") => void;
   setPriceRange: (value: [number, number]) => void;
@@ -36,8 +36,8 @@ type DrawerProps = {
   toggleTeam: (value: string) => void;
   toggleDriver: (value: string) => void;
   toggleLegend: (value: string) => void;
+  toggleCollection: (value: string) => void;
   toggleType: (value: ProductType) => void;
-  toggleCollection: (value: FeaturedCollection) => void;
   toggleSize: (value: FilterSize) => void;
   clearAll: () => void;
   showCategoryFilter?: boolean;

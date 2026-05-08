@@ -81,7 +81,6 @@ const accessoryLinks: MegaMenuLink[] = [
   { label: "Кепки", href: "/shop?type=Cap" },
   { label: "Шарфы", href: "/shop?type=Scarf" },
   { label: "Лего", href: "/shop?type=Lego" },
-  { label: "Funko Pop", href: "/shop?q=funko%20pop" },
   { label: "Аксессуары", href: "/shop?type=Accessory" },
   { label: "Постеры", href: "/shop?type=Poster" },
   { label: "Календари", href: "/shop?type=Calendar" },

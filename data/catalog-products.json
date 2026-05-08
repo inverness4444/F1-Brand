@@ -1,12 +1,109 @@
 [
   {
+    "id": "custom-1778091405277",
+    "slug": "custom-1778091405277",
+    "name": "Charles Leclerc Black Out",
+    "category": "Pilots",
+    "collection": "Blackout",
+    "collectionTags": [
+      "Blackout",
+      "New Arrivals"
+    ],
+    "driverName": "Charles Leclerc",
+    "driverSlug": "charles-leclerc",
+    "teamName": "Ferrari",
+    "teamSlug": "ferrari",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778091405277-cover-07ac45bc1856.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778091405277-cover-07ac45bc1856.jpg",
+      "/catalog-products/custom-1778091405277-gallery-1-07ac45bc1856.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-06T18:16:45.277Z",
+    "number": 16,
+    "hexPalette": [
+      "#D5332C",
+      "#111111",
+      "#F5CF51"
+    ]
+  },
+  {
+    "id": "custom-1778091497744",
+    "slug": "custom-1778091497744",
+    "name": "Max Verstappen Black Out",
+    "category": "Pilots",
+    "collection": "Blackout",
+    "collectionTags": [
+      "Blackout",
+      "New Arrivals"
+    ],
+    "driverName": "Max Verstappen",
+    "driverSlug": "max-verstappen",
+    "teamName": "Red Bull Racing",
+    "teamSlug": "red-bull-racing",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778091497744-cover-fde368a7687b.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778091497744-cover-fde368a7687b.jpg",
+      "/catalog-products/custom-1778091497744-gallery-1-fde368a7687b.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-06T18:18:17.744Z",
+    "number": 1,
+    "hexPalette": [
+      "#162540",
+      "#D8382E",
+      "#F0C03D"
+    ]
+  },
+  {
     "id": "custom-1777482612047",
     "slug": "custom-1777482612047",
     "name": "Подарочный сертификат",
     "category": "Gifts",
-    "collection": "Essentials",
+    "collection": "",
     "collectionTags": [
-      "Essentials",
       "New Arrivals"
     ],
     "driverName": null,
@@ -46,9 +143,8 @@
     "slug": "custom-1777482553731",
     "name": "Подарочный сертификат",
     "category": "Gifts",
-    "collection": "Essentials",
+    "collection": "",
     "collectionTags": [
-      "Essentials",
       "New Arrivals"
     ],
     "driverName": null,
@@ -88,9 +184,8 @@
     "slug": "custom-1777482490798",
     "name": "Футболка Lewis Hamilton 44",
     "category": "Pilots",
-    "collection": "Essentials",
+    "collection": "",
     "collectionTags": [
-      "Essentials",
       "New Arrivals"
     ],
     "driverName": "Lewis Hamilton",
@@ -138,9 +233,9 @@
     "slug": "custom-1777416741928",
     "name": "Футболка Lewis Hamilton Black Out",
     "category": "Pilots",
-    "collection": "Essentials",
+    "collection": "Blackout",
     "collectionTags": [
-      "Essentials",
+      "Blackout",
       "New Arrivals"
     ],
     "driverName": "Lewis Hamilton",
@@ -179,6 +274,55 @@
       "#D5332C",
       "#111111",
       "#F5CF51"
+    ]
+  },
+  {
+    "id": "custom-1778090477669",
+    "slug": "custom-1778090477669",
+    "name": "Футболка Max Verstappen",
+    "category": "Pilots",
+    "collection": "",
+    "collectionTags": [
+      "New Arrivals"
+    ],
+    "driverName": "Max Verstappen",
+    "driverSlug": "max-verstappen",
+    "teamName": "Red Bull Racing",
+    "teamSlug": "red-bull-racing",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "White",
+      "Blue"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778090477669-cover-14293e8cb7fe.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778090477669-cover-14293e8cb7fe.jpg",
+      "/catalog-products/custom-1778090477669-gallery-1-14293e8cb7fe.jpg"
+    ],
+    "description": "Футболка из коллекции Max Verstappen. Модель выполнена в эстетике фирменного магазина командной одежды: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой Formula 1.",
+    "shortDescription": "Футболка из коллекции Max Verstappen в стилистике фирменного магазина спортивной одежды.",
+    "popularity": 75,
+    "createdAt": "2026-05-06T18:01:17.669Z",
+    "number": 1,
+    "hexPalette": [
+      "#162540",
+      "#D8382E",
+      "#F0C03D"
     ]
   }
 ]

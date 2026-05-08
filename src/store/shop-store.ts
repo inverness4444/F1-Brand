@@ -79,7 +79,15 @@ export const useShopStore = create<ShopState>((set) => ({
   clearAll: () => set({ ...defaultState, mobileFiltersOpen: false }),
   setMobileFiltersOpen: (value) => set({ mobileFiltersOpen: value }),
   initializeFromParams: (params) => {
-    const normalizedParams = filterParamSchema.parse(params);
+    const normalizedParams = filterParamSchema.parse(params) as {
+      category?: CatalogCategory | "All";
+      team?: string;
+      driver?: string;
+      legend?: string;
+      type?: ProductType;
+      collection?: FeaturedCollection;
+      q?: string;
+    };
 
     set({
       ...defaultState,

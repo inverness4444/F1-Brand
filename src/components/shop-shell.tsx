@@ -3,10 +3,9 @@ import Link from "next/link";
 import { useEffect, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 
-import { collectionOptions } from "@/lib/catalog-ui";
 import { filterProducts, sortProducts } from "@/lib/filter-products";
 import { priceBounds } from "@/lib/data/products";
-import type { CatalogCategory, FeaturedCollection, Product, ProductSize, ProductType } from "@/lib/types";
+import type { CatalogCategory, CatalogCollection, Product, ProductSize, ProductType } from "@/lib/types";
 import { useCatalogProducts } from "@/hooks/use-catalog-products";
 import { EmptyCatalogState } from "@/components/empty-catalog-state";
 import { FilterSidebar } from "@/components/filter-sidebar";
@@ -14,7 +13,14 @@ import { MobileFilterDrawer } from "@/components/mobile-filters-drawer";
 import { ProductGrid } from "@/components/product-grid";
 import { SortDropdown } from "@/components/sort-dropdown";
 import { buttonClassName } from "@/components/ui/button";
-import { colorOptions, productTypeOptions, sizeOptions } from "@/lib/data/roster";
+import {
+  colorOptions,
+  drivers as rosterDrivers,
+  legends as rosterLegends,
+  productTypeOptions,
+  sizeOptions,
+  teams as rosterTeams,
+} from "@/lib/data/roster";
 import { useShopStore } from "@/store/shop-store";
 
 type FilterSize = Exclude<ProductSize, "One Size">;
@@ -25,12 +31,11 @@ const categoryFilterOptions: Array<{ label: string; value: CatalogCategory | "Al
   { label: "Пилоты", value: "Pilots" },
   { label: "Команды", value: "Teams" },
   { label: "Легенды", value: "Legends" },
-  { label: "База", value: "Essentials" },
+  { label: "Аксессуары", value: "Accessories" },
   { label: "Подарки", value: "Gifts" },
 ];
 const categoryValues = categoryFilterOptions.map((option) => option.value);
 const typeValues: ProductType[] = [...productTypeOptions];
-const collectionValues: FeaturedCollection[] = [...collectionOptions];
 const accessoryTypeValues = new Set<ProductType>([
   "Scarf",
   "Lego",
@@ -40,6 +45,9 @@ const accessoryTypeValues = new Set<ProductType>([
   "Poster",
   "Gift Certificate",
 ]);
+const accessoryTypeOptions = typeValues.filter((type) => accessoryTypeValues.has(type));
+const merchandiseTypeOptions: ProductType[] = ["T-shirt", "Hoodie", "Longsleeve", "Jacket", "Polo", "Pants"];
+const defaultPriceRange: [number, number] = [priceBounds.min, priceBounds.max];
 const sectionFilterConfig: Record<
   ShopSection,
   {
@@ -87,28 +95,18 @@ function matchesShopSection(product: Product, section: ShopSection) {
   }
 
   if (section === "teams") {
-    return product.category === "Teams" || product.collectionTags.includes("Teamwear");
+    return product.category === "Teams";
   }
 
   if (section === "pilots") {
-    return product.category === "Pilots" || product.collectionTags.includes("Driver Collection");
+    return product.category === "Pilots";
   }
 
   if (section === "legends") {
-    return product.category === "Legends" || product.collectionTags.includes("Legends") || Boolean(product.legendName);
+    return product.category === "Legends";
   }
 
-  return accessoryTypeValues.has(product.type) || product.category === "Gifts";
-}
-
-function uniqueSorted(values: Array<string | null | undefined>) {
-  return [...new Set(values.filter((value): value is string => Boolean(value)))]
-    .sort((left, right) => left.localeCompare(right, "ru"));
-}
-
-function orderedValues<T>(order: readonly T[], values: T[]) {
-  const present = new Set(values);
-  return order.filter((value) => present.has(value));
+  return product.category === "Accessories" || product.category === "Gifts";
 }
 
 function scopeValues<T>(values: T[], availableValues: T[]) {
@@ -116,13 +114,40 @@ function scopeValues<T>(values: T[], availableValues: T[]) {
   return values.filter((value) => available.has(value));
 }
 
+function getSectionTypeOptions(section: ShopSection) {
+  if (section === "accessories") {
+    return accessoryTypeOptions;
+  }
+
+  if (section === "all") {
+    return typeValues;
+  }
+
+  return merchandiseTypeOptions;
+}
+
+function getSectionCollectionOptions(_section: ShopSection, collections: CatalogCollection[], products: Product[]) {
+  const collectionNames = new Set(collections.map((collection) => collection.name));
+  const attachedCollectionNames = new Set(
+    products
+      .flatMap((product) => product.collectionTags)
+      .filter((collection) => collectionNames.has(collection)),
+  );
+
+  return collections
+    .map((collection) => collection.name)
+    .filter((collection) => attachedCollectionNames.has(collection))
+    .filter(Boolean)
+    .sort((left, right) => left.localeCompare(right, "ru"));
+}
+
 function getPriceBounds(products: Product[]): [number, number] {
   if (products.length === 0) {
-    return [priceBounds.min, priceBounds.max];
+    return defaultPriceRange;
   }
 
   const prices = products.map((product) => product.price);
-  return [Math.min(...prices), Math.max(...prices)];
+  return [Math.min(priceBounds.min, ...prices), Math.max(priceBounds.max, ...prices)];
 }
 
 function clampPriceRange(range: [number, number], bounds: [number, number]): [number, number] {
@@ -131,9 +156,13 @@ function clampPriceRange(range: [number, number], bounds: [number, number]): [nu
   return [min, max];
 }
 
+function priceRangeIsDefault(range: [number, number]) {
+  return range[0] === defaultPriceRange[0] && range[1] === defaultPriceRange[1];
+}
+
 export function ShopShell({ section = "all" }: { section?: ShopSection }) {
   const searchParams = useSearchParams();
-  const { hasHydrated, products } = useCatalogProducts();
+  const { collections: catalogCollections, hasHydrated, products } = useCatalogProducts();
   const {
     category,
     priceRange,
@@ -141,9 +170,9 @@ export function ShopShell({ section = "all" }: { section?: ShopSection }) {
     teams,
     drivers,
     legends,
+    collections: selectedCollections,
     types,
     sizes,
-    collections,
     search,
     sort,
     mobileFiltersOpen,
@@ -154,8 +183,8 @@ export function ShopShell({ section = "all" }: { section?: ShopSection }) {
     toggleTeam,
     toggleDriver,
     toggleLegend,
-    toggleType,
     toggleCollection,
+    toggleType,
     toggleSize,
     setSort,
     clearAll,
@@ -171,11 +200,9 @@ export function ShopShell({ section = "all" }: { section?: ShopSection }) {
       team: searchParams.get("team") ?? undefined,
       driver: searchParams.get("driver") ?? undefined,
       legend: searchParams.get("legend") ?? undefined,
+      collection: searchParams.get("collection") ?? undefined,
       type: typeValues.includes(searchParams.get("type") as ProductType)
         ? (searchParams.get("type") as ProductType)
-        : undefined,
-      collection: collectionValues.includes(searchParams.get("collection") as FeaturedCollection)
-        ? (searchParams.get("collection") as FeaturedCollection)
         : undefined,
       q: searchParams.get("q") ?? undefined,
     });
@@ -187,36 +214,30 @@ export function ShopShell({ section = "all" }: { section?: ShopSection }) {
   );
 
   const filterOptions = useMemo(() => {
-    const availableCategoryValues = new Set(sectionProducts.map((product) => product.category));
-    const availableCollectionValues = sectionProducts.flatMap((product) => product.collectionTags);
-    const availableTypeValues = sectionProducts.map((product) => product.type);
-    const availableColorValues = sectionProducts.flatMap((product) => product.colors);
-    const availableSizeValues = sectionProducts.flatMap((product) => product.sizes);
-
     return {
-      categories: categoryFilterOptions.filter(
-        (option) => option.value === "All" || availableCategoryValues.has(option.value),
-      ),
-      collections: orderedValues(collectionValues, availableCollectionValues),
-      colors: orderedValues(colorOptions, availableColorValues),
-      teams: uniqueSorted(sectionProducts.map((product) => product.teamName)),
-      drivers: uniqueSorted(sectionProducts.map((product) => product.driverName)),
-      legends: uniqueSorted(sectionProducts.map((product) => product.legendName)),
-      types: orderedValues(typeValues, availableTypeValues),
-      sizes: orderedValues(sizeOptions, availableSizeValues) as FilterSize[],
+      categories: categoryFilterOptions,
+      colors: [...colorOptions],
+      teams: rosterTeams.map((team) => team.name),
+      drivers: rosterDrivers.map((driver) => driver.name),
+      legends: rosterLegends.map((legend) => legend.name),
+      collections: getSectionCollectionOptions(section, catalogCollections, sectionProducts),
+      types: getSectionTypeOptions(section),
+      sizes: [...sizeOptions] as FilterSize[],
       priceBounds: getPriceBounds(sectionProducts),
     };
-  }, [sectionProducts]);
+  }, [catalogCollections, section, sectionProducts]);
 
   const scopedCategory = section === "all" ? category : "All";
   const scopedColors = scopeValues(colors, filterOptions.colors);
   const scopedTeams = scopeValues(teams, filterOptions.teams);
   const scopedDrivers = scopeValues(drivers, filterOptions.drivers);
   const scopedLegends = scopeValues(legends, filterOptions.legends);
+  const scopedCollections = scopeValues(selectedCollections, filterOptions.collections);
   const scopedTypes = scopeValues(types, filterOptions.types);
   const scopedSizes = scopeValues(sizes, filterOptions.sizes);
-  const scopedCollections = scopeValues(collections, filterOptions.collections);
-  const scopedPriceRange = clampPriceRange(priceRange, filterOptions.priceBounds);
+  const scopedPriceRange = priceRangeIsDefault(priceRange)
+    ? filterOptions.priceBounds
+    : clampPriceRange(priceRange, filterOptions.priceBounds);
 
   const filteredProducts = useMemo(
     () =>
@@ -244,34 +265,36 @@ export function ShopShell({ section = "all" }: { section?: ShopSection }) {
       scopedTeams,
       scopedDrivers,
       scopedLegends,
+      scopedCollections,
       scopedTypes,
       scopedSizes,
-      scopedCollections,
       search,
       sort,
     ],
   );
 
+  const priceFilterIsActive = !priceRangeIsDefault(priceRange);
   const activeFilterCount =
     scopedColors.length +
     scopedTeams.length +
     scopedDrivers.length +
     scopedLegends.length +
+    scopedCollections.length +
     scopedTypes.length +
     scopedSizes.length +
-    scopedCollections.length +
+    (priceFilterIsActive ? 1 : 0) +
     (section === "all" && scopedCategory !== "All" ? 1 : 0);
   const normalizedSearch = search.trim();
   const hasFiltersOrSearch = activeFilterCount > 0 || normalizedSearch.length > 0;
   const sectionIsEmpty = hasHydrated && sectionProducts.length === 0 && !hasFiltersOrSearch;
-  const showPriceFilter = sectionProducts.length > 0 && filterOptions.priceBounds[0] < filterOptions.priceBounds[1];
+  const showPriceFilter = true;
   const hasFilterControls =
     (config.showCategoryFilter && filterOptions.categories.length > 0) ||
-    filterOptions.collections.length > 0 ||
     filterOptions.types.length > 0 ||
     (config.showTeamFilter && filterOptions.teams.length > 0) ||
     (config.showDriverFilter && filterOptions.drivers.length > 0) ||
     (config.showLegendFilter && filterOptions.legends.length > 0) ||
+    filterOptions.collections.length > 0 ||
     filterOptions.sizes.length > 0 ||
     filterOptions.colors.length > 0 ||
     showPriceFilter;
@@ -291,27 +314,27 @@ export function ShopShell({ section = "all" }: { section?: ShopSection }) {
             priceRange={scopedPriceRange}
             colors={scopedColors}
             availableCategories={filterOptions.categories}
-            availableCollections={filterOptions.collections}
             availableColors={filterOptions.colors}
             availableTypes={filterOptions.types}
             availableSizes={filterOptions.sizes}
             availableTeams={filterOptions.teams}
             availableDrivers={filterOptions.drivers}
             availableLegends={filterOptions.legends}
+            availableCollections={filterOptions.collections}
             teams={scopedTeams}
             drivers={scopedDrivers}
             legends={scopedLegends}
+            collections={scopedCollections}
             types={scopedTypes}
             sizes={scopedSizes}
-            collections={scopedCollections}
             setCategory={setCategory}
             setPriceRange={setPriceRange}
             toggleColor={toggleColor}
             toggleTeam={toggleTeam}
             toggleDriver={toggleDriver}
             toggleLegend={toggleLegend}
-            toggleType={toggleType}
             toggleCollection={toggleCollection}
+            toggleType={toggleType}
             toggleSize={toggleSize}
             clearAll={clearAll}
             showCategoryFilter={config.showCategoryFilter}
@@ -366,19 +389,19 @@ export function ShopShell({ section = "all" }: { section?: ShopSection }) {
                 priceRange={scopedPriceRange}
                 colors={scopedColors}
                 availableCategories={filterOptions.categories}
-                availableCollections={filterOptions.collections}
                 availableColors={filterOptions.colors}
                 availableTypes={filterOptions.types}
                 availableSizes={filterOptions.sizes}
                 availableTeams={filterOptions.teams}
                 availableDrivers={filterOptions.drivers}
                 availableLegends={filterOptions.legends}
+                availableCollections={filterOptions.collections}
                 teams={scopedTeams}
                 drivers={scopedDrivers}
                 legends={scopedLegends}
+                collections={scopedCollections}
                 types={scopedTypes}
                 sizes={scopedSizes}
-                collections={scopedCollections}
                 setOpen={setMobileFiltersOpen}
                 setCategory={setCategory}
                 setPriceRange={setPriceRange}
@@ -386,8 +409,8 @@ export function ShopShell({ section = "all" }: { section?: ShopSection }) {
                 toggleTeam={toggleTeam}
                 toggleDriver={toggleDriver}
                 toggleLegend={toggleLegend}
-                toggleType={toggleType}
                 toggleCollection={toggleCollection}
+                toggleType={toggleType}
                 toggleSize={toggleSize}
                 clearAll={clearAll}
                 showCategoryFilter={config.showCategoryFilter}

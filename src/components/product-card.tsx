@@ -34,7 +34,11 @@ export function ProductCard({
   };
 
   if (variant === "catalog") {
-    const imageFitClassName = isGiftCertificate ? "object-contain object-center" : "object-cover object-center";
+    const shouldRaiseCatalogImage = product.id === "custom-1778090477669";
+    const imageFitClassName = isGiftCertificate
+      ? "object-contain object-center"
+      : "object-cover object-center";
+    const catalogImageStyle = shouldRaiseCatalogImage ? { objectPosition: "center 82%" } : undefined;
     const imagePlacementClassName = isGiftCertificate ? "translate-y-10 scale-[1.05]" : "scale-[1.01]";
     const primaryHoverClassName = hasAlternateImage
       ? isGiftCertificate
@@ -56,6 +60,7 @@ export function ProductCard({
                 src={product.image}
                 alt={product.name}
                 onError={handleImageError}
+                style={catalogImageStyle}
                 className={`${imageBaseClassName} ${imageFitClassName} ${imagePlacementClassName} ${primaryHoverClassName}`}
               />
               {hasAlternateImage ? (
@@ -63,6 +68,7 @@ export function ProductCard({
                   src={hoverImage}
                   alt=""
                   onError={handleImageError}
+                  style={catalogImageStyle}
                   className={`${imageBaseClassName} ${imageFitClassName} ${imagePlacementClassName} opacity-0 ${secondaryHoverClassName}`}
                 />
               ) : null}
@@ -77,9 +83,7 @@ export function ProductCard({
               {getProductDisplayName(product)}
             </p>
             {isGiftCertificate ? (
-              <p className="line-clamp-1 text-[0.86rem] text-[#6a6a66]">
-                Активируется в аккаунте
-              </p>
+              <span aria-hidden="true" className="block h-[1.2rem]" />
             ) : product.shortDescription ? (
               <p className="line-clamp-1 text-[0.86rem] text-[#6a6a66]">{product.shortDescription}</p>
             ) : null}
@@ -90,24 +94,26 @@ export function ProductCard({
     );
   }
 
-  const imageFitClassName = isGiftCertificate ? "object-cover object-bottom" : "object-contain";
-  const imagePlacementClassName = isGiftCertificate ? "translate-y-32 scale-[1.42]" : "translate-y-3 scale-[1.06]";
+  const shouldRaiseShowcaseImage = product.id === "custom-1778090477669";
+  const imageFitClassName = isGiftCertificate ? "object-cover object-bottom" : "object-cover object-center";
+  const showcaseImageStyle = shouldRaiseShowcaseImage ? { objectPosition: "center 35%" } : undefined;
+  const imagePlacementClassName = isGiftCertificate ? "translate-y-32 scale-[1.42]" : "scale-[1.01]";
   const primaryHoverClassName = hasAlternateImage
     ? isGiftCertificate
       ? "group-hover:translate-y-32 group-hover:scale-[1.45] group-hover:opacity-0"
-      : "group-hover:translate-y-4 group-hover:scale-[1.08] group-hover:opacity-0"
+      : "group-hover:scale-[1.04] group-hover:opacity-0"
     : isGiftCertificate
       ? "group-hover:translate-y-32 group-hover:scale-[1.45]"
-      : "group-hover:translate-y-4 group-hover:scale-[1.08]";
+      : "group-hover:scale-[1.04]";
   const secondaryHoverClassName = isGiftCertificate
     ? "group-hover:translate-y-32 group-hover:scale-[1.45] group-hover:opacity-100"
-    : "group-hover:translate-y-4 group-hover:scale-[1.08] group-hover:opacity-100";
+    : "group-hover:scale-[1.04] group-hover:opacity-100";
 
   return (
     <motion.article layout className="group flex h-full min-w-0 flex-col">
       <Link href={productHref} className="flex h-full min-w-0 flex-col">
         <div className="relative overflow-hidden rounded-[1.2rem] bg-white">
-          <div className="relative aspect-[4/5] overflow-hidden bg-white">
+          <div className="relative aspect-square overflow-hidden bg-white">
             <div className="absolute left-4 top-4 z-10 flex max-w-[calc(100%-2rem)] flex-wrap gap-2">
               <ProductBadgeTag badge={product.badge} />
               {isGiftCertificate ? (
@@ -120,6 +126,7 @@ export function ProductCard({
               src={product.image}
               alt={product.name}
               onError={handleImageError}
+              style={showcaseImageStyle}
               className={`${imageBaseClassName} ${imageFitClassName} ${imagePlacementClassName} ${primaryHoverClassName}`}
             />
             {hasAlternateImage ? (
@@ -127,23 +134,19 @@ export function ProductCard({
                 src={hoverImage}
                 alt=""
                 onError={handleImageError}
+                style={showcaseImageStyle}
                 className={`${imageBaseClassName} ${imageFitClassName} ${imagePlacementClassName} opacity-0 ${secondaryHoverClassName}`}
               />
             ) : null}
           </div>
         </div>
 
-        <div className="relative z-10 -mt-8 bg-white pt-0 sm:-mt-10">
+        <div className="relative z-10 mt-3 flex min-h-[6.2rem] flex-col bg-white pt-0">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <span className="line-clamp-2 break-words text-[0.95rem] font-semibold leading-[1.42] tracking-[-0.025em] text-[#111111] sm:text-[1.02rem]">
+              <span className="line-clamp-2 min-h-[2.85rem] break-words text-[0.95rem] font-semibold leading-[1.42] tracking-[-0.025em] text-[#111111] sm:text-[1.02rem]">
                 {getProductDisplayName(product)}
               </span>
-              {isGiftCertificate ? (
-                <p className="mt-1 text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-[#7b2220]">
-                  Активируется в аккаунте
-                </p>
-              ) : null}
               <p className="mt-1 text-[0.95rem] font-medium text-[#111111] sm:text-[1rem]">{formatPrice(product.price)}</p>
             </div>
             <div className="mt-0.5 flex shrink-0 items-center gap-1 text-[0.84rem] font-medium text-[#111111] sm:text-[0.96rem]">

@@ -52,10 +52,17 @@ export function ProductGallery({ product }: { product: Product }) {
     });
   }, [activeIndex]);
 
-  const thumbnailImageClassName = isGiftCertificate ? "object-contain p-1.5" : "object-contain p-1";
+  const thumbnailImageClassName = isGiftCertificate ? "object-contain" : "object-cover";
+  const thumbnailImageStyle = {
+    display: "block",
+    height: "100%",
+    width: "100%",
+    objectFit: isGiftCertificate ? "contain" : "cover",
+    objectPosition: "center",
+  } as const;
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[84px_minmax(0,1fr)] lg:gap-4 xl:grid-cols-[90px_minmax(0,1fr)] xl:gap-5">
+    <div className="grid gap-4 lg:grid-cols-[104px_minmax(0,1fr)] lg:gap-4 xl:grid-cols-[112px_minmax(0,1fr)] xl:gap-5">
       <div className="order-2 flex gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden lg:hidden">
         {gallery.map((image, index) => (
           <button
@@ -63,17 +70,18 @@ export function ProductGallery({ product }: { product: Product }) {
             type="button"
             onClick={() => setActiveIndex(index)}
             className={cn(
-              "shrink-0 overflow-hidden rounded-[1.05rem] border bg-white p-1 text-left transition focus-visible:outline-none",
+              "shrink-0 overflow-hidden rounded-[0.9rem] border bg-white text-left transition focus-visible:outline-none",
               activeIndex === index
                 ? "border-[#111111] shadow-[0_10px_24px_rgba(17,17,17,0.08)]"
                 : "border-[var(--line)]",
             )}
           >
-            <div className="h-20 w-[4.2rem] overflow-hidden rounded-[0.85rem] bg-[#f6f2ea] sm:h-24 sm:w-[4.8rem]">
+            <div className="h-24 w-[4.8rem] overflow-hidden rounded-[0.78rem] bg-transparent sm:h-28 sm:w-[5.6rem]">
               <img
                 src={image}
                 alt={product.name}
                 onError={handleImageError}
+                style={thumbnailImageStyle}
                 className={cn("h-full w-full", thumbnailImageClassName)}
               />
             </div>
@@ -81,7 +89,7 @@ export function ProductGallery({ product }: { product: Product }) {
         ))}
       </div>
 
-      <div className="order-1 hidden lg:flex lg:flex-col lg:items-center lg:gap-2.5">
+      <div className="order-1 hidden lg:flex lg:flex-col lg:items-center lg:gap-3">
         <button
           type="button"
           onClick={() => setActiveImage(activeIndex - 1)}
@@ -92,7 +100,7 @@ export function ProductGallery({ product }: { product: Product }) {
           <ChevronUp className="size-5" />
         </button>
 
-        <div className="flex max-h-[660px] w-full flex-col gap-2.5 overflow-y-auto px-0.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+        <div className="flex max-h-[720px] w-full flex-col gap-3 overflow-y-auto px-0.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           {gallery.map((image, index) => (
             <button
               key={`${image}-${index}`}
@@ -102,17 +110,18 @@ export function ProductGallery({ product }: { product: Product }) {
               type="button"
               onClick={() => setActiveImage(index)}
               className={cn(
-                "group w-full overflow-hidden rounded-[1.05rem] border bg-white p-1 text-left transition focus-visible:outline-none",
+                "group w-full overflow-hidden rounded-[0.9rem] border bg-white text-left transition focus-visible:outline-none",
                 activeIndex === index
-                  ? "border-[#111111] shadow-[0_14px_30px_rgba(17,17,17,0.1)]"
-                  : "border-[#e7dfd3] hover:border-[#c9c0b4]",
+                  ? "border-[#111111]"
+                  : "border-[#e6e1da] hover:border-[#c9c0b4]",
               )}
             >
-              <div className="h-[96px] w-full overflow-hidden rounded-[0.85rem] bg-[#f6f2ea] xl:h-[104px]">
+              <div className="h-[144px] w-full overflow-hidden rounded-[0.78rem] bg-transparent xl:h-[158px]">
                 <img
                   src={image}
                   alt={product.name}
                   onError={handleImageError}
+                  style={thumbnailImageStyle}
                   className={cn("h-full w-full transition duration-300", thumbnailImageClassName)}
                 />
               </div>
