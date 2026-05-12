@@ -7,3 +7,4 @@ out/
 dist/
 build/
 coverage/
+tsconfig.typecheck.tsbuildinfo
