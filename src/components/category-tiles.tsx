@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 
-import { useCatalogProducts } from "@/hooks/use-catalog-products";
 import { EmptyCatalogState } from "@/components/empty-catalog-state";
+import { ProductImage } from "@/components/product-image";
+import { imageByType } from "@/lib/data/products";
+import { useCatalogProducts } from "@/hooks/use-catalog-products";
 
 const tiles = [
   {
@@ -73,9 +75,12 @@ export function CategoryTiles() {
             >
               <div className="relative flex aspect-[4/4.8] items-end justify-center overflow-hidden bg-[linear-gradient(180deg,#f8f5ef_0%,#efeadf_100%)] p-0">
                 {imageSrc ? (
-                  <img
+                  <ProductImage
                     src={imageSrc}
+                    fallbackSrc={product ? imageByType[product.type] : undefined}
                     alt={product?.name ?? tile.title}
+                    fill
+                    sizes="(min-width: 768px) 33vw, 100vw"
                     className={imageClassName}
                   />
                 ) : null}

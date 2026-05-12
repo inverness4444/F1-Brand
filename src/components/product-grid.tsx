@@ -13,12 +13,14 @@ export function ProductGrid({
   className,
   variant = "catalog",
   layout = "grid",
+  priorityFirstImage,
 }: {
   products: Product[];
   empty?: ReactNode;
   className?: string;
   variant?: "catalog" | "showcase";
   layout?: "grid" | "carousel";
+  priorityFirstImage?: boolean;
 }) {
   const railRef = useRef<HTMLDivElement>(null);
   const carouselStep = useCallback(() => {
@@ -67,6 +69,10 @@ export function ProductGrid({
       return;
     }
 
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+
     const intervalId = window.setInterval(() => {
       const node = railRef.current;
 
@@ -110,6 +116,8 @@ export function ProductGrid({
     return <>{empty}</>;
   }
 
+  const shouldPrioritizeFirstImage = priorityFirstImage ?? layout === "grid";
+
   if (layout === "carousel") {
     const controlsEnabled = products.length > 1;
 
@@ -140,13 +148,13 @@ export function ProductGrid({
           ref={railRef}
           className="flex gap-4 overflow-x-auto scroll-smooth pb-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
         >
-          {products.map((product) => (
+          {products.map((product, index) => (
             <div
               key={product.id}
               data-carousel-card
               className="w-[min(84vw,320px)] shrink-0 sm:w-[320px] xl:w-[340px]"
             >
-              <ProductCard product={product} variant={variant} />
+              <ProductCard product={product} priority={shouldPrioritizeFirstImage && index === 0} variant={variant} />
             </div>
           ))}
         </div>
@@ -156,8 +164,8 @@ export function ProductGrid({
 
   return (
     <div className={cn(layoutClassName, className)}>
-      {products.map((product) => (
-        <ProductCard key={product.id} product={product} variant={variant} />
+      {products.map((product, index) => (
+        <ProductCard key={product.id} product={product} priority={shouldPrioritizeFirstImage && index === 0} variant={variant} />
       ))}
     </div>
   );

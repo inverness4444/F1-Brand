@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import { NewsletterSignupForm } from "@/components/newsletter-signup-form";
 
 export function NewsletterSection() {
@@ -23,9 +25,13 @@ export function NewsletterSection() {
         </div>
 
         <div className="relative aspect-[500/282] w-full self-center overflow-hidden rounded-[0.85rem]">
-          <img
+          <Image
             src="/newsletter-hamilton.gif"
             alt="Льюис Хэмилтон у камеры"
+            fill
+            unoptimized
+            loading="lazy"
+            sizes="(min-width: 1024px) 46vw, 100vw"
             className="absolute inset-0 h-full w-full object-cover object-center"
           />
         </div>

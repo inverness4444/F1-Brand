@@ -1,7 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useMemo } from "react";
-import { useSearchParams } from "next/navigation";
+import { useDeferredValue, useEffect, useMemo } from "react";
 
 import { filterProducts, sortProducts } from "@/lib/filter-products";
 import { priceBounds } from "@/lib/data/products";
@@ -25,6 +24,7 @@ import { useShopStore } from "@/store/shop-store";
 
 type FilterSize = Exclude<ProductSize, "One Size">;
 type ShopSection = "all" | "teams" | "pilots" | "legends" | "accessories";
+type InitialShopParams = Record<string, string | string[] | undefined>;
 
 const categoryFilterOptions: Array<{ label: string; value: CatalogCategory | "All" }> = [
   { label: "Все товары", value: "All" },
@@ -40,7 +40,9 @@ const accessoryTypeValues = new Set<ProductType>([
   "Scarf",
   "Lego",
   "Cap",
-  "Accessory",
+  "Wallet",
+  "Cardholder",
+  "Keychain",
   "Calendar",
   "Poster",
   "Gift Certificate",
@@ -160,8 +162,18 @@ function priceRangeIsDefault(range: [number, number]) {
   return range[0] === defaultPriceRange[0] && range[1] === defaultPriceRange[1];
 }
 
-export function ShopShell({ section = "all" }: { section?: ShopSection }) {
-  const searchParams = useSearchParams();
+function getInitialParam(params: InitialShopParams, key: string) {
+  const value = params[key];
+  return Array.isArray(value) ? value[0] : value;
+}
+
+export function ShopShell({
+  section = "all",
+  initialParams = {},
+}: {
+  section?: ShopSection;
+  initialParams?: InitialShopParams;
+}) {
   const { collections: catalogCollections, hasHydrated, products } = useCatalogProducts();
   const {
     category,
@@ -193,20 +205,28 @@ export function ShopShell({ section = "all" }: { section?: ShopSection }) {
   const config = sectionFilterConfig[section];
 
   useEffect(() => {
+    const categoryParam = getInitialParam(initialParams, "category");
+    const teamParam = getInitialParam(initialParams, "team");
+    const driverParam = getInitialParam(initialParams, "driver");
+    const legendParam = getInitialParam(initialParams, "legend");
+    const collectionParam = getInitialParam(initialParams, "collection");
+    const typeParam = getInitialParam(initialParams, "type");
+    const queryParam = getInitialParam(initialParams, "q");
+
     initializeFromParams({
-      category: section === "all" && categoryValues.includes(searchParams.get("category") as CatalogCategory | "All")
-        ? (searchParams.get("category") as CatalogCategory | "All")
+      category: section === "all" && categoryValues.includes(categoryParam as CatalogCategory | "All")
+        ? (categoryParam as CatalogCategory | "All")
         : undefined,
-      team: searchParams.get("team") ?? undefined,
-      driver: searchParams.get("driver") ?? undefined,
-      legend: searchParams.get("legend") ?? undefined,
-      collection: searchParams.get("collection") ?? undefined,
-      type: typeValues.includes(searchParams.get("type") as ProductType)
-        ? (searchParams.get("type") as ProductType)
+      team: teamParam ?? undefined,
+      driver: driverParam ?? undefined,
+      legend: legendParam ?? undefined,
+      collection: collectionParam ?? undefined,
+      type: typeValues.includes(typeParam as ProductType)
+        ? (typeParam as ProductType)
         : undefined,
-      q: searchParams.get("q") ?? undefined,
+      q: queryParam ?? undefined,
     });
-  }, [initializeFromParams, searchParams, section]);
+  }, [initialParams, initializeFromParams, section]);
 
   const sectionProducts = useMemo(
     () => products.filter((product) => matchesShopSection(product, section)),
@@ -228,23 +248,32 @@ export function ShopShell({ section = "all" }: { section?: ShopSection }) {
   }, [catalogCollections, section, sectionProducts]);
 
   const scopedCategory = section === "all" ? category : "All";
-  const scopedColors = scopeValues(colors, filterOptions.colors);
-  const scopedTeams = scopeValues(teams, filterOptions.teams);
-  const scopedDrivers = scopeValues(drivers, filterOptions.drivers);
-  const scopedLegends = scopeValues(legends, filterOptions.legends);
-  const scopedCollections = scopeValues(selectedCollections, filterOptions.collections);
-  const scopedTypes = scopeValues(types, filterOptions.types);
-  const scopedSizes = scopeValues(sizes, filterOptions.sizes);
-  const scopedPriceRange = priceRangeIsDefault(priceRange)
-    ? filterOptions.priceBounds
-    : clampPriceRange(priceRange, filterOptions.priceBounds);
+  const scopedColors = useMemo(() => scopeValues(colors, filterOptions.colors), [colors, filterOptions.colors]);
+  const scopedTeams = useMemo(() => scopeValues(teams, filterOptions.teams), [filterOptions.teams, teams]);
+  const scopedDrivers = useMemo(() => scopeValues(drivers, filterOptions.drivers), [drivers, filterOptions.drivers]);
+  const scopedLegends = useMemo(() => scopeValues(legends, filterOptions.legends), [filterOptions.legends, legends]);
+  const scopedCollections = useMemo(
+    () => scopeValues(selectedCollections, filterOptions.collections),
+    [filterOptions.collections, selectedCollections],
+  );
+  const scopedTypes = useMemo(() => scopeValues(types, filterOptions.types), [filterOptions.types, types]);
+  const scopedSizes = useMemo(() => scopeValues(sizes, filterOptions.sizes), [filterOptions.sizes, sizes]);
+  const scopedPriceRange = useMemo(
+    () =>
+      priceRangeIsDefault(priceRange)
+        ? filterOptions.priceBounds
+        : clampPriceRange(priceRange, filterOptions.priceBounds),
+    [filterOptions.priceBounds, priceRange],
+  );
+  const deferredPriceRange = useDeferredValue(scopedPriceRange);
+  const deferredSearch = useDeferredValue(search);
 
   const filteredProducts = useMemo(
     () =>
       sortProducts(
         filterProducts(sectionProducts, {
           category: scopedCategory,
-          priceRange: scopedPriceRange,
+          priceRange: deferredPriceRange,
           colors: scopedColors,
           teams: scopedTeams,
           drivers: scopedDrivers,
@@ -252,7 +281,7 @@ export function ShopShell({ section = "all" }: { section?: ShopSection }) {
           types: scopedTypes,
           sizes: scopedSizes,
           collections: scopedCollections,
-          search,
+          search: deferredSearch,
           sort,
         }),
         sort,
@@ -260,7 +289,7 @@ export function ShopShell({ section = "all" }: { section?: ShopSection }) {
     [
       sectionProducts,
       scopedCategory,
-      scopedPriceRange,
+      deferredPriceRange,
       scopedColors,
       scopedTeams,
       scopedDrivers,
@@ -268,7 +297,7 @@ export function ShopShell({ section = "all" }: { section?: ShopSection }) {
       scopedCollections,
       scopedTypes,
       scopedSizes,
-      search,
+      deferredSearch,
       sort,
     ],
   );

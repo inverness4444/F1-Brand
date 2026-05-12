@@ -6,14 +6,18 @@ function buildContentSecurityPolicy() {
   return [
     "default-src 'self'",
     `script-src 'self' 'unsafe-inline'${isDevelopment ? " 'unsafe-eval'" : ""}`,
+    "script-src-attr 'none'",
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob: https:",
     `connect-src 'self'${isDevelopment ? " ws: wss:" : ""}`,
     "font-src 'self' data:",
+    "worker-src 'self' blob:",
+    "manifest-src 'self'",
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self'",
     "frame-ancestors 'none'",
+    ...(isDevelopment ? [] : ["upgrade-insecure-requests"]),
   ].join("; ");
 }
 
@@ -21,8 +25,15 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  experimental: {
+    middlewareClientMaxBodySize: "64mb",
+  },
   images: {
-    unoptimized: true,
+    formats: ["image/avif", "image/webp"],
+    deviceSizes: [360, 640, 768, 1024, 1280, 1536, 1920],
+    imageSizes: [48, 64, 96, 128, 256, 384],
+    qualities: [75, 82],
+    minimumCacheTTL: 2_592_000,
   },
   poweredByHeader: false,
   async headers() {

@@ -13,12 +13,14 @@ const headingFont = Archivo({
   subsets: ["latin"],
   variable: "--font-heading",
   weight: ["500", "600", "700"],
+  display: "swap",
 });
 
 const bodyFont = Manrope({
   subsets: ["latin", "cyrillic"],
   variable: "--font-body",
-  weight: ["400", "500", "600", "700", "800"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {

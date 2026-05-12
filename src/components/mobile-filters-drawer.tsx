@@ -1,6 +1,5 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
 
 import { useBodyScrollLock } from "@/hooks/use-body-scroll-lock";
@@ -56,24 +55,16 @@ export function MobileFilterDrawer(props: DrawerProps) {
       <Button variant="secondary" className="w-full lg:hidden sm:w-auto" onClick={() => props.setOpen(true)}>
         Фильтры
       </Button>
-      <AnimatePresence>
-        {props.open ? (
-          <>
-            <motion.button
+      {props.open ? (
+        <>
+            <button
               type="button"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
               onClick={() => props.setOpen(false)}
-              className="fixed inset-0 z-50 bg-black/30 lg:hidden"
+              className="animate-overlay-in fixed inset-0 z-50 bg-black/30 lg:hidden"
               aria-label="Закрыть фильтры"
             />
-            <motion.aside
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ type: "spring", damping: 28, stiffness: 260 }}
-              className="fixed right-0 top-0 z-[60] h-[100dvh] w-full max-w-[min(calc(100vw-1rem),24rem)] overflow-y-auto overscroll-contain bg-[#fbfaf6] p-4 lg:hidden"
+            <aside
+              className="animate-drawer-in fixed right-0 top-0 z-[60] h-[100dvh] w-full max-w-[min(calc(100vw-1rem),24rem)] overflow-y-auto overscroll-contain bg-[#fbfaf6] p-4 lg:hidden"
             >
               <div className="mb-4 flex items-center justify-between">
                 <h3 className="font-[var(--font-heading)] text-2xl font-semibold tracking-[-0.05em] text-[#111111]">
@@ -89,10 +80,9 @@ export function MobileFilterDrawer(props: DrawerProps) {
                 </button>
               </div>
               <FilterSidebar {...props} mobile />
-            </motion.aside>
-          </>
-        ) : null}
-      </AnimatePresence>
+            </aside>
+        </>
+      ) : null}
     </>
   );
 }

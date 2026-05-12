@@ -11,6 +11,7 @@ import {
   sizeLabelRu,
 } from "@/lib/storefront-text";
 import { formatPrice, getProductHref } from "@/lib/utils";
+import { ProductImage } from "@/components/product-image";
 import { Button } from "@/components/ui/button";
 
 const statusClassMap: Record<Order["status"], string> = {
@@ -65,9 +66,9 @@ export function OrderDetails({
             >
               <Link
                 href={getProductHref({ id: item.productId, slug: item.slug })}
-                className="flex h-28 w-full shrink-0 items-center justify-center rounded-[18px] bg-slate-50 p-2 sm:w-28"
+                className="relative flex h-28 w-full shrink-0 items-center justify-center rounded-[18px] bg-slate-50 p-2 sm:w-28"
               >
-                <img src={item.image} alt={item.name} className="h-full w-full object-contain" />
+                <ProductImage src={item.image} alt={item.name} width={112} height={112} className="h-full w-full object-contain" />
               </Link>
               <div className="flex min-w-0 flex-1 flex-col justify-between gap-3">
                 <div>

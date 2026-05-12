@@ -8,8 +8,9 @@ import { buttonClassName } from "@/components/ui/button";
 
 export function ProductDetailShell({ slug, productId }: { slug: string; productId?: string }) {
   const { hasHydrated, products } = useCatalogProducts();
+  const product = products.find((item) => item.id === productId) ?? products.find((item) => item.slug === slug);
 
-  if (!hasHydrated) {
+  if (!product && !hasHydrated) {
     return (
       <section className="container-shell py-12">
         <div className="rounded-[1.8rem] border border-[var(--line)] bg-white p-8">
@@ -24,8 +25,6 @@ export function ProductDetailShell({ slug, productId }: { slug: string; productI
       </section>
     );
   }
-
-  const product = products.find((item) => item.id === productId) ?? products.find((item) => item.slug === slug);
 
   if (!product) {
     return (

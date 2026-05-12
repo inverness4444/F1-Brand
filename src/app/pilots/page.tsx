@@ -1,5 +1,9 @@
 import { ShopShell } from "@/components/shop-shell";
 
-export default function PilotsPage() {
-  return <ShopShell section="pilots" />;
+type PilotsPageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function PilotsPage({ searchParams }: PilotsPageProps) {
+  return <ShopShell section="pilots" initialParams={await searchParams} />;
 }

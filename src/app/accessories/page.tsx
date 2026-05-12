@@ -1,5 +1,9 @@
 import { ShopShell } from "@/components/shop-shell";
 
-export default function AccessoriesPage() {
-  return <ShopShell section="accessories" />;
+type AccessoriesPageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function AccessoriesPage({ searchParams }: AccessoriesPageProps) {
+  return <ShopShell section="accessories" initialParams={await searchParams} />;
 }

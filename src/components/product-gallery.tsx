@@ -1,8 +1,9 @@
 "use client";
 
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { useEffect, useMemo, useRef, useState, type SyntheticEvent } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
+import { ProductImage } from "@/components/product-image";
 import type { Product } from "@/lib/types";
 import { imageByType } from "@/lib/data/products";
 import { cn } from "@/lib/utils";
@@ -18,12 +19,6 @@ export function ProductGallery({ product }: { product: Product }) {
   const viewedCount = Math.max(4, Math.round(product.popularity / 10));
   const isGiftCertificate = product.productType === "gift_certificate";
   const fallbackImage = imageByType[product.type];
-  const handleImageError = (event: SyntheticEvent<HTMLImageElement>) => {
-    const image = event.currentTarget;
-    if (image.dataset.fallbackApplied === "true") return;
-    image.dataset.fallbackApplied = "true";
-    image.src = fallbackImage;
-  };
 
   const setActiveImage = (nextIndex: number) => {
     if (gallery.length === 0) {
@@ -76,11 +71,13 @@ export function ProductGallery({ product }: { product: Product }) {
                 : "border-[var(--line)]",
             )}
           >
-            <div className="h-24 w-[4.8rem] overflow-hidden rounded-[0.78rem] bg-transparent sm:h-28 sm:w-[5.6rem]">
-              <img
+            <div className="relative h-24 w-[4.8rem] overflow-hidden rounded-[0.78rem] bg-transparent sm:h-28 sm:w-[5.6rem]">
+              <ProductImage
                 src={image}
+                fallbackSrc={fallbackImage}
                 alt={product.name}
-                onError={handleImageError}
+                fill
+                sizes="90px"
                 style={thumbnailImageStyle}
                 className={cn("h-full w-full", thumbnailImageClassName)}
               />
@@ -116,11 +113,13 @@ export function ProductGallery({ product }: { product: Product }) {
                   : "border-[#e6e1da] hover:border-[#c9c0b4]",
               )}
             >
-              <div className="h-[144px] w-full overflow-hidden rounded-[0.78rem] bg-transparent xl:h-[158px]">
-                <img
+              <div className="relative h-[144px] w-full overflow-hidden rounded-[0.78rem] bg-transparent xl:h-[158px]">
+                <ProductImage
                   src={image}
+                  fallbackSrc={fallbackImage}
                   alt={product.name}
-                  onError={handleImageError}
+                  fill
+                  sizes="112px"
                   style={thumbnailImageStyle}
                   className={cn("h-full w-full transition duration-300", thumbnailImageClassName)}
                 />
@@ -146,11 +145,17 @@ export function ProductGallery({ product }: { product: Product }) {
             Popular {viewedCount} viewed in last 12 hrs
           </div>
 
-          <div className="flex min-h-[320px] items-center justify-center sm:min-h-[560px] xl:min-h-[660px]">
-            <img
+          <div
+            className="relative flex min-h-[320px] items-center justify-center sm:min-h-[560px] xl:min-h-[660px]"
+            style={{ minHeight: 320 }}
+          >
+            <ProductImage
               src={activeImage}
+              fallbackSrc={fallbackImage}
               alt={product.name}
-              onError={handleImageError}
+              fill
+              priority
+              sizes="(min-width: 1280px) calc(100vw - 620px), 100vw"
               className="max-h-[72vh] w-full object-contain sm:max-h-full"
             />
           </div>

@@ -36,9 +36,10 @@ import { sanitizeSearchQuery } from "@/lib/security-utils";
 import { cn, formatPrice, getProductHref, slugify } from "@/lib/utils";
 import { useCatalogProducts } from "@/hooks/use-catalog-products";
 import { createProductDraft, useCatalogStore } from "@/store/catalog-store";
+import { ProductImage } from "@/components/product-image";
 import { Button, buttonClassName } from "@/components/ui/button";
 
-const badgeOptions: ProductBadge[] = ["New", "Hit", "Limited", "Preorder", "OutOfStock", "Sale"];
+const badgeOptions: ProductBadge[] = ["New", "Hit", "Limited", "Preorder", "OutOfStock", "Sale", "Original"];
 const categoryOptions: CatalogCategory[] = ["Pilots", "Teams", "Legends", "Accessories", "Gifts"];
 const legacySystemCollectionNames = new Set([
   "New Arrivals",
@@ -53,6 +54,9 @@ const accessoryTypeValues = new Set<ProductType>([
   "Lego",
   "Cap",
   "Accessory",
+  "Wallet",
+  "Cardholder",
+  "Keychain",
   "Calendar",
   "Poster",
 ]);
@@ -79,6 +83,7 @@ const badgeMap: Record<ProductBadge, string> = {
   Preorder: "Предзаказ",
   OutOfStock: "Нет в наличии",
   Sale: "Распродажа",
+  Original: "Оригинал",
 };
 
 function getCustomCollectionTags(product: Pick<Product, "collection" | "collectionTags">) {
@@ -794,57 +799,6 @@ export function CatalogEditor() {
   return (
     <div className="pb-12">
       <section className="container-shell pt-8">
-        <div className="surface-card rounded-[32px] px-6 py-8 sm:px-8">
-          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-            <div className="max-w-3xl">
-              <p className="section-kicker">Редактор каталога</p>
-              <h1 className="mt-3 font-[var(--font-heading)] text-3xl font-bold text-slate-900 sm:text-4xl">
-                Добавляйте и редактируйте товары без правки кода
-              </h1>
-              <p className="mt-4 text-sm leading-7 text-slate-600">
-                Все изменения сохраняются локально в браузере через IndexedDB. Можно вручную редактировать название,
-                цену, описание, фото, slug, цвета, размеры и привязку к пилоту, команде или легенде.
-              </p>
-              <div className="mt-5 flex flex-wrap gap-3">
-                <Link href="/shop" className={buttonClassName({ variant: "secondary" })}>
-                  Открыть магазин
-                </Link>
-                <Button onClick={handleNewProduct}>
-                  <Plus className="size-4" />
-                  Новый товар
-                </Button>
-              </div>
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-              <Button variant="secondary" onClick={handleExport}>
-                <Download className="size-4" />
-                Экспорт JSON
-              </Button>
-              <Button variant="secondary" onClick={() => importInputRef.current?.click()}>
-                <Upload className="size-4" />
-                Импорт JSON
-              </Button>
-              <Button variant="secondary" onClick={handleReset}>
-                <RotateCcw className="size-4" />
-                Сбросить каталог
-              </Button>
-              <Button onClick={handleSave} disabled={!draft}>
-                <Save className="size-4" />
-                Сохранить
-              </Button>
-            </div>
-          </div>
-
-          <input ref={importInputRef} type="file" accept="application/json" className="hidden" onChange={handleImport} />
-
-          {message ? (
-            <p className="mt-5 rounded-2xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">{message}</p>
-          ) : null}
-        </div>
-      </section>
-
-      <section className="container-shell mt-8">
         <div className="surface-card rounded-[32px] p-5 sm:p-6">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl">
@@ -973,8 +927,15 @@ export function CatalogEditor() {
                             >
                               ✓
                             </span>
-                            <span className="flex size-16 shrink-0 items-center justify-center rounded-2xl bg-slate-50 p-2">
-                              <img src={product.image} alt={product.name} className="h-full w-full object-contain" />
+                            <span className="relative flex size-16 shrink-0 items-center justify-center rounded-2xl bg-slate-50 p-2">
+                              <ProductImage
+                                src={product.image}
+                                fallbackSrc={imageByType[product.type]}
+                                alt={product.name}
+                                width={64}
+                                height={64}
+                                className="h-full w-full object-contain"
+                              />
                             </span>
                             <span className="min-w-0">
                               <span className="line-clamp-2 text-sm font-semibold text-slate-900">
@@ -1009,7 +970,7 @@ export function CatalogEditor() {
       </section>
 
       <section className="container-shell mt-8 grid gap-6 xl:grid-cols-[360px_minmax(0,1fr)]">
-        <aside className="surface-card rounded-[32px] p-4">
+        <aside className="surface-card self-start rounded-[32px] p-4 xl:sticky xl:top-28">
           <div className="relative">
             <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
             <input
@@ -1025,7 +986,7 @@ export function CatalogEditor() {
             <span>Найдено: {filteredProducts.length}</span>
           </div>
 
-          <div className="mt-4 space-y-3">
+          <div className="mt-4 max-h-[calc(100dvh-18rem)] space-y-3 overflow-y-auto overscroll-contain pr-2 [scrollbar-gutter:stable]">
             {filteredProducts.length > 0 ? (
               filteredProducts.map((product) => {
                 const active = draft?.id === product.id;
@@ -1045,8 +1006,15 @@ export function CatalogEditor() {
                     )}
                   >
                     <div className="flex items-start gap-3">
-                      <div className="flex h-18 w-18 shrink-0 items-center justify-center rounded-2xl bg-slate-50 p-2">
-                        <img src={product.image} alt={product.name} className="h-full w-full object-contain" />
+                      <div className="relative flex h-18 w-18 shrink-0 items-center justify-center rounded-2xl bg-slate-50 p-2">
+                        <ProductImage
+                          src={product.image}
+                          fallbackSrc={imageByType[product.type]}
+                          alt={product.name}
+                          width={72}
+                          height={72}
+                          className="h-full w-full object-contain"
+                        />
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-start justify-between gap-3">
@@ -1077,8 +1045,58 @@ export function CatalogEditor() {
           </div>
         </aside>
 
-        <div className="grid gap-6 2xl:grid-cols-[minmax(0,1fr)_320px]">
-          <div className="surface-card rounded-[32px] p-6">
+        <div className="grid gap-6">
+          <div className="surface-card rounded-[32px] p-5 sm:p-6">
+            <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+              <div className="max-w-3xl">
+                <p className="section-kicker">Редактор каталога</p>
+                <h1 className="mt-2 font-[var(--font-heading)] text-2xl font-bold text-slate-900 sm:text-3xl">
+                  Редактирование карточки товара
+                </h1>
+                <p className="mt-3 text-sm leading-7 text-slate-600">
+                  Управляйте названием, ценой, описанием, фото, slug, цветами, размерами и привязкой к пилоту,
+                  команде или легенде.
+                </p>
+                <div className="mt-4 flex flex-wrap gap-3">
+                  <Link href="/shop" className={buttonClassName({ variant: "secondary" })}>
+                    Открыть магазин
+                  </Link>
+                  <Button onClick={handleNewProduct}>
+                    <Plus className="size-4" />
+                    Новый товар
+                  </Button>
+                </div>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                <Button variant="secondary" onClick={handleExport}>
+                  <Download className="size-4" />
+                  Экспорт JSON
+                </Button>
+                <Button variant="secondary" onClick={() => importInputRef.current?.click()}>
+                  <Upload className="size-4" />
+                  Импорт JSON
+                </Button>
+                <Button variant="secondary" onClick={handleReset}>
+                  <RotateCcw className="size-4" />
+                  Сбросить каталог
+                </Button>
+                <Button onClick={handleSave} disabled={!draft}>
+                  <Save className="size-4" />
+                  Сохранить
+                </Button>
+              </div>
+            </div>
+
+            <input ref={importInputRef} type="file" accept="application/json" className="hidden" onChange={handleImport} />
+
+            {message ? (
+              <p className="mt-5 rounded-2xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">{message}</p>
+            ) : null}
+          </div>
+
+          <div className="grid gap-6 2xl:grid-cols-[minmax(0,1fr)_320px]">
+            <div className="surface-card rounded-[32px] p-6">
             {draft ? (
               <div className="space-y-6">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -1424,13 +1442,20 @@ export function CatalogEditor() {
                 </Button>
               </div>
             )}
-          </div>
+            </div>
 
-          <aside className="surface-card rounded-[32px] p-5">
+            <aside className="surface-card rounded-[32px] p-5">
             <p className="section-kicker">Превью</p>
             <div className="mt-4 overflow-hidden rounded-3xl border border-slate-200 bg-white">
-              <div className="flex aspect-[4/4.2] items-center justify-center bg-slate-50 p-6">
-                <img src={draft?.image || imageByType["T-shirt"]} alt={previewTitle} className="h-[72%] w-[72%] object-contain" />
+              <div className="relative flex aspect-[4/4.2] items-center justify-center bg-slate-50 p-6">
+                <ProductImage
+                  src={draft?.image || imageByType["T-shirt"]}
+                  fallbackSrc={draft ? imageByType[draft.type] : imageByType["T-shirt"]}
+                  alt={previewTitle}
+                  width={420}
+                  height={420}
+                  className="h-[72%] w-[72%] object-contain"
+                />
               </div>
               <div className="p-4">
                 <div className="mb-3 flex items-start justify-between gap-3">
@@ -1472,7 +1497,8 @@ export function CatalogEditor() {
                 </Link>
               </div>
             ) : null}
-          </aside>
+            </aside>
+          </div>
         </div>
       </section>
     </div>

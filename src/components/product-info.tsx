@@ -34,7 +34,7 @@ function sizeGuideRows(product: Product) {
 }
 
 export function ProductInfo({ product }: { product: Product }) {
-  const { addItem } = useCartStore();
+  const addItem = useCartStore((state) => state.addItem);
   const [selectedSize, setSelectedSize] = useState<ProductSize>(product.sizes[0]);
   const guide = useMemo(() => sizeGuideRows(product), [product]);
   const reviewCount = Math.max(4, Math.round(product.popularity / 18));

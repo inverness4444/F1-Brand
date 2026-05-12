@@ -1,5 +1,3 @@
-"use client";
-
 import type { ProductBadge } from "@/lib/types";
 import { badgeLabels } from "@/lib/catalog-ui";
 import { cn } from "@/lib/utils";
@@ -11,6 +9,7 @@ const badgeToneClassNames: Record<ProductBadge, string> = {
   Preorder: "border-[#ead9b3] bg-[#fff8e7] text-[#8a5a12]",
   OutOfStock: "border-[#dcdcd7] bg-[#f4f4f1] text-[#6d6d68]",
   Sale: "border-[#cfe7d7] bg-[#eef8f1] text-[#14683d]",
+  Original: "border-[#c9d7ef] bg-[#eef4ff] text-[#17406f]",
 };
 
 export function ProductBadgeTag({

@@ -8,6 +8,8 @@ import {
   imageByType,
   sizesByType,
 } from "@/lib/data/products";
+import initialCatalogCollectionsData from "../../data/catalog-collections.json";
+import initialCatalogProductsData from "../../data/catalog-products.json";
 import recoveredCatalogProductsData from "@/lib/data/recovered-products.json";
 import type {
   CatalogCollection,
@@ -41,7 +43,7 @@ const legacySystemCollectionNames = new Set([
   "Essentials",
   "Sale",
 ]);
-const validBadges: ProductBadge[] = ["New", "Hit", "Limited", "Preorder", "OutOfStock", "Sale"];
+const validBadges: ProductBadge[] = ["New", "Hit", "Limited", "Preorder", "OutOfStock", "Sale", "Original"];
 const validTypes: ProductType[] = [
   "T-shirt",
   "Hoodie",
@@ -53,6 +55,9 @@ const validTypes: ProductType[] = [
   "Lego",
   "Cap",
   "Accessory",
+  "Wallet",
+  "Cardholder",
+  "Keychain",
   "Calendar",
   "Poster",
   "Gift Certificate",
@@ -405,6 +410,21 @@ type CatalogState = {
 
 const normalizedRecoveredProducts = normalizeProductCollection(recoveredCatalogProductsData as Product[]);
 const normalizedRecoveredCollections = syncCollectionsWithProducts([], normalizedRecoveredProducts);
+const initialCatalogProductsPayload = catalogProductsPayloadSchema.safeParse({
+  products: initialCatalogProductsData,
+});
+const initialCatalogCollectionsPayload = catalogPayloadSchema.safeParse({
+  products: [],
+  collections: initialCatalogCollectionsData,
+});
+const normalizedInitialProducts =
+  initialCatalogProductsPayload.success && initialCatalogProductsPayload.data.products.length > 0
+    ? normalizeProductCollection(initialCatalogProductsPayload.data.products)
+    : normalizedRecoveredProducts;
+const normalizedInitialCollections = syncCollectionsWithProducts(
+  initialCatalogCollectionsPayload.success ? initialCatalogCollectionsPayload.data.collections : [],
+  normalizedInitialProducts,
+);
 let initializeCatalogPromise: Promise<void> | null = null;
 let saveCatalogQueue: Promise<void> = Promise.resolve();
 
@@ -455,8 +475,8 @@ function enqueueCatalogSave(products: Product[], collections: CatalogCollection[
 }
 
 export const useCatalogStore = create<CatalogState>()((set, get) => ({
-  products: normalizedRecoveredProducts,
-  collections: normalizedRecoveredCollections,
+  products: normalizedInitialProducts,
+  collections: normalizedInitialCollections,
   hasHydrated: false,
   initializeCatalog: async () => {
     if (get().hasHydrated) {

@@ -1,5 +1,9 @@
 import { ShopShell } from "@/components/shop-shell";
 
-export default function LegendsPage() {
-  return <ShopShell section="legends" />;
+type LegendsPageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function LegendsPage({ searchParams }: LegendsPageProps) {
+  return <ShopShell section="legends" initialParams={await searchParams} />;
 }

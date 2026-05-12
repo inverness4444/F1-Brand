@@ -56,7 +56,10 @@ const productTypeAliases: Record<ProductType, string[]> = {
   Scarf: ["шарф", "шарфы"],
   Lego: ["лего"],
   Cap: ["кепка", "кепки"],
+  Keychain: ["брелок", "брелки", "keychain"],
   Accessory: ["аксессуар", "аксессуары"],
+  Wallet: ["кошелек", "кошелёк", "кошельки", "wallet"],
+  Cardholder: ["картхолдер", "картхолдеры", "cardholder"],
   Calendar: ["календарь", "календари"],
   Poster: ["постер", "постеры"],
   "Gift Certificate": ["подарочный сертификат", "сертификат", "gift card"],
@@ -158,8 +161,16 @@ function getEntityAliasesByName(name: string | null, list: Array<{ name: string;
   return match ? getEntityTerms(match.name, match.slug) : uniqueNormalized([name]);
 }
 
+const productSearchTermsCache = new WeakMap<Product, string[]>();
+
 export function getProductSearchTerms(product: Product) {
-  return uniqueNormalized([
+  const cachedTerms = productSearchTermsCache.get(product);
+
+  if (cachedTerms) {
+    return cachedTerms;
+  }
+
+  const terms = uniqueNormalized([
     product.name,
     product.shortDescription,
     product.description,
@@ -174,4 +185,7 @@ export function getProductSearchTerms(product: Product) {
     ...getEntityAliasesByName(product.legendName, legends),
     ...getProductTypeTerms(product.type),
   ]);
+
+  productSearchTermsCache.set(product, terms);
+  return terms;
 }

@@ -1,6 +1,5 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
 import { CircleAlert, CircleCheck, Info, X } from "lucide-react";
 import { useEffect } from "react";
 
@@ -44,17 +43,13 @@ export function ToastViewport() {
   return (
     <div className="pointer-events-none fixed inset-x-0 top-4 z-[90] flex justify-center px-4">
       <div className="flex w-full max-w-md flex-col gap-3">
-        <AnimatePresence>
-          {items.map((item) => {
+        {items.map((item) => {
             const { icon: Icon, className } = toneMap[item.tone];
 
             return (
-              <motion.div
+              <div
                 key={item.id}
-                initial={{ opacity: 0, y: -14, scale: 0.98 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -10, scale: 0.98 }}
-                className={`pointer-events-auto flex items-center gap-3 rounded-2xl border px-4 py-3 shadow-lg ${className}`}
+                className={`animate-toast-in pointer-events-auto flex items-center gap-3 rounded-2xl border px-4 py-3 shadow-lg ${className}`}
               >
                 <Icon className="size-5 shrink-0" />
                 <p className="min-w-0 flex-1 text-sm font-medium">{item.message}</p>
@@ -65,10 +60,9 @@ export function ToastViewport() {
                 >
                   <X className="size-4" />
                 </button>
-              </motion.div>
+              </div>
             );
-          })}
-        </AnimatePresence>
+        })}
       </div>
     </div>
   );

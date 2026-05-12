@@ -3,10 +3,12 @@
 import { Heart, ShoppingCart } from "lucide-react";
 import Link from "next/link";
 
+import { ProductImage } from "@/components/product-image";
+import { Button } from "@/components/ui/button";
+import { imageByType } from "@/lib/data/products";
 import type { Product } from "@/lib/types";
 import { getProductDisplayName } from "@/lib/storefront-text";
 import { formatPrice, getProductHref } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 
 export function FavoritesGrid({
   products,
@@ -40,9 +42,16 @@ export function FavoritesGrid({
         <article key={product.id} className="card-panel flex h-full flex-col p-4">
           <Link
             href={getProductHref(product)}
-            className="flex aspect-square items-center justify-center rounded-[18px] bg-slate-50 p-4"
+            className="relative flex aspect-square items-center justify-center rounded-[18px] bg-slate-50 p-4"
           >
-            <img src={product.image} alt={product.name} className="h-full w-full object-contain" />
+            <ProductImage
+              src={product.image}
+              fallbackSrc={imageByType[product.type]}
+              alt={product.name}
+              width={420}
+              height={420}
+              className="h-full w-full object-contain"
+            />
           </Link>
 
           <div className="flex flex-1 flex-col pt-4">

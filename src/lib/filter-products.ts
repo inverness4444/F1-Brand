@@ -16,6 +16,8 @@ function featuredBadgeWeight(product: Product) {
       return 30;
     case "Preorder":
       return 25;
+    case "Original":
+      return 22;
     case "OutOfStock":
       return 0;
     case "New":
@@ -23,6 +25,60 @@ function featuredBadgeWeight(product: Product) {
     default:
       return 10;
   }
+}
+
+const stableShuffleWeightCache = new WeakMap<Product, number>();
+
+function stableShuffleWeight(product: Product) {
+  const cachedWeight = stableShuffleWeightCache.get(product);
+
+  if (typeof cachedWeight === "number") {
+    return cachedWeight;
+  }
+
+  const source = `${product.id}:${product.slug}:${product.name}`;
+  let hash = 2166136261;
+
+  for (let index = 0; index < source.length; index += 1) {
+    hash ^= source.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+
+  const weight = hash >>> 0;
+  stableShuffleWeightCache.set(product, weight);
+  return weight;
+}
+
+const searchableProductTermsCache = new WeakMap<Product, string[]>();
+
+function getSearchableProductTerms(product: Product) {
+  const cachedTerms = searchableProductTermsCache.get(product);
+
+  if (cachedTerms) {
+    return cachedTerms;
+  }
+
+  const terms = [
+    product.name,
+    getProductDisplayName(product),
+    product.shortDescription,
+    getProductShortDescription(product),
+    product.description,
+    getProductDescription(product),
+    product.driverName,
+    product.teamName,
+    product.legendName,
+    product.collection,
+    getCollectionLabel(product.collection),
+    product.type,
+    productTypeLabelRu[product.type],
+    ...getProductSearchTerms(product),
+  ]
+    .filter(Boolean)
+    .map((value) => normalizeSearchText(String(value)));
+
+  searchableProductTermsCache.set(product, terms);
+  return terms;
 }
 
 export function filterProducts(products: Product[], filters: ShopFilters) {
@@ -51,24 +107,7 @@ export function filterProducts(products: Product[], filters: ShopFilters) {
     const matchesSearch =
       query.length === 0
         ? true
-        : [
-            product.name,
-            getProductDisplayName(product),
-            product.shortDescription,
-            getProductShortDescription(product),
-            product.description,
-            getProductDescription(product),
-            product.driverName,
-            product.teamName,
-            product.legendName,
-            product.collection,
-            getCollectionLabel(product.collection),
-            product.type,
-            productTypeLabelRu[product.type],
-            ...getProductSearchTerms(product),
-          ]
-            .filter(Boolean)
-            .some((value) => normalizeSearchText(String(value)).includes(query));
+        : getSearchableProductTerms(product).some((value) => value.includes(query));
 
     return (
       matchesCategory &&
@@ -98,7 +137,10 @@ export function sortProducts(products: Product[], sort: ShopFilters["sort"]) {
         return b.popularity - a.popularity;
       case "Featured":
       default:
-        return featuredBadgeWeight(b) + b.popularity - (featuredBadgeWeight(a) + a.popularity);
+        return (
+          featuredBadgeWeight(b) + b.popularity - (featuredBadgeWeight(a) + a.popularity) ||
+          stableShuffleWeight(a) - stableShuffleWeight(b)
+        );
     }
   });
 }

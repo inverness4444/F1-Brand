@@ -3,7 +3,7 @@
 import type { PropsWithChildren } from "react";
 
 import { AuthProvider } from "@/components/auth-provider";
-import { CartDrawer } from "@/components/cart-drawer";
+import { CartDrawerMount } from "@/components/cart-drawer-mount";
 import { ToastViewport } from "@/components/toast-viewport";
 
 export function Providers({ children }: PropsWithChildren) {
@@ -11,7 +11,7 @@ export function Providers({ children }: PropsWithChildren) {
     <>
       <AuthProvider />
       {children}
-      <CartDrawer />
+      <CartDrawerMount />
       <ToastViewport />
     </>
   );

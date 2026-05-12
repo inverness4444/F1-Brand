@@ -1,5 +1,9 @@
 import { ShopShell } from "@/components/shop-shell";
 
-export default function ShopPage() {
-  return <ShopShell />;
+type ShopPageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function ShopPage({ searchParams }: ShopPageProps) {
+  return <ShopShell initialParams={await searchParams} />;
 }

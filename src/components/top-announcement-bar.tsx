@@ -17,7 +17,7 @@ export function TopAnnouncementBar() {
 
   return (
     <div className="bg-black text-white">
-      <div className="container-shell flex min-h-9 items-center justify-center">
+      <div className="container-shell flex h-9 items-center justify-center overflow-hidden">
         <div className="hidden flex-wrap items-center justify-center gap-5 text-[0.68rem] font-semibold uppercase tracking-[0.18em] md:flex">
           {topBarItems.map((item) => (
             <span key={item} className="inline-flex items-center gap-5">
@@ -26,7 +26,7 @@ export function TopAnnouncementBar() {
             </span>
           ))}
         </div>
-        <p className="text-center text-[0.68rem] font-semibold uppercase tracking-[0.18em] md:hidden">
+        <p className="w-full truncate whitespace-nowrap text-center text-[0.68rem] font-semibold uppercase tracking-[0.18em] md:hidden">
           {topBarItems[activeIndex]}
         </p>
       </div>

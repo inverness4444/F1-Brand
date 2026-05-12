@@ -1,21 +1,26 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { Star } from "lucide-react";
 import Link from "next/link";
-import type { SyntheticEvent } from "react";
+import { memo, type CSSProperties } from "react";
 
+import { ProductImage } from "@/components/product-image";
+import { ProductBadgeTag } from "@/components/product-badge";
 import type { Product } from "@/lib/types";
 import { imageByType } from "@/lib/data/products";
 import { formatPrice, getProductHref } from "@/lib/utils";
 import { getProductDisplayName } from "@/lib/storefront-text";
-import { ProductBadgeTag } from "@/components/product-badge";
 
-export function ProductCard({
+const catalogImageSizes = "(min-width: 1280px) 30vw, (min-width: 640px) 48vw, 100vw";
+const showcaseImageSizes = "(min-width: 1280px) 340px, (min-width: 640px) 320px, 84vw";
+
+function ProductCardComponent({
   product,
+  priority = false,
   variant = "catalog",
 }: {
   product: Product;
+  priority?: boolean;
   variant?: "catalog" | "showcase";
 }) {
   const productHref = getProductHref(product);
@@ -26,19 +31,15 @@ export function ProductCard({
   const isGiftCertificate = product.productType === "gift_certificate";
   const imageBaseClassName =
     "absolute inset-0 h-full w-full transition duration-500 transform-gpu [will-change:transform]";
-  const handleImageError = (event: SyntheticEvent<HTMLImageElement>) => {
-    const image = event.currentTarget;
-    if (image.dataset.fallbackApplied === "true") return;
-    image.dataset.fallbackApplied = "true";
-    image.src = fallbackImage;
-  };
 
   if (variant === "catalog") {
     const shouldRaiseCatalogImage = product.id === "custom-1778090477669";
     const imageFitClassName = isGiftCertificate
       ? "object-contain object-center"
       : "object-cover object-center";
-    const catalogImageStyle = shouldRaiseCatalogImage ? { objectPosition: "center 82%" } : undefined;
+    const catalogImageStyle: CSSProperties | undefined = shouldRaiseCatalogImage
+      ? { objectPosition: "center 82%" }
+      : undefined;
     const imagePlacementClassName = isGiftCertificate ? "translate-y-10 scale-[1.05]" : "scale-[1.01]";
     const primaryHoverClassName = hasAlternateImage
       ? isGiftCertificate
@@ -52,22 +53,27 @@ export function ProductCard({
       : "group-hover:scale-[1.03] group-hover:opacity-100";
 
     return (
-      <motion.article layout className="group flex h-full min-w-0 flex-col">
+      <article className="group flex h-full min-w-0 flex-col">
         <Link href={productHref} className="flex h-full min-w-0 flex-col gap-2">
           <div className="relative overflow-hidden rounded-[0.95rem] bg-white">
-            <div className="relative aspect-square overflow-hidden rounded-[0.95rem] bg-white">
-              <img
+            <div className="relative aspect-square overflow-hidden rounded-[0.95rem] bg-white" style={{ aspectRatio: "1 / 1" }}>
+              <ProductImage
                 src={product.image}
+                fallbackSrc={fallbackImage}
                 alt={product.name}
-                onError={handleImageError}
+                fill
+                priority={priority}
+                sizes={catalogImageSizes}
                 style={catalogImageStyle}
                 className={`${imageBaseClassName} ${imageFitClassName} ${imagePlacementClassName} ${primaryHoverClassName}`}
               />
               {hasAlternateImage ? (
-                <img
+                <ProductImage
                   src={hoverImage}
+                  fallbackSrc={fallbackImage}
                   alt=""
-                  onError={handleImageError}
+                  fill
+                  sizes={catalogImageSizes}
                   style={catalogImageStyle}
                   className={`${imageBaseClassName} ${imageFitClassName} ${imagePlacementClassName} opacity-0 ${secondaryHoverClassName}`}
                 />
@@ -90,13 +96,15 @@ export function ProductCard({
             <p className="text-[0.96rem] font-medium text-[#111111]">{formatPrice(product.price)}</p>
           </div>
         </Link>
-      </motion.article>
+      </article>
     );
   }
 
   const shouldRaiseShowcaseImage = product.id === "custom-1778090477669";
   const imageFitClassName = isGiftCertificate ? "object-cover object-bottom" : "object-cover object-center";
-  const showcaseImageStyle = shouldRaiseShowcaseImage ? { objectPosition: "center 35%" } : undefined;
+  const showcaseImageStyle: CSSProperties | undefined = shouldRaiseShowcaseImage
+    ? { objectPosition: "center 35%" }
+    : undefined;
   const imagePlacementClassName = isGiftCertificate ? "translate-y-32 scale-[1.42]" : "scale-[1.01]";
   const primaryHoverClassName = hasAlternateImage
     ? isGiftCertificate
@@ -110,10 +118,10 @@ export function ProductCard({
     : "group-hover:scale-[1.04] group-hover:opacity-100";
 
   return (
-    <motion.article layout className="group flex h-full min-w-0 flex-col">
+    <article className="group flex h-full min-w-0 flex-col">
       <Link href={productHref} className="flex h-full min-w-0 flex-col">
         <div className="relative overflow-hidden rounded-[1.2rem] bg-white">
-          <div className="relative aspect-square overflow-hidden bg-white">
+          <div className="relative aspect-square overflow-hidden bg-white" style={{ aspectRatio: "1 / 1" }}>
             <div className="absolute left-4 top-4 z-10 flex max-w-[calc(100%-2rem)] flex-wrap gap-2">
               <ProductBadgeTag badge={product.badge} />
               {isGiftCertificate ? (
@@ -122,18 +130,23 @@ export function ProductCard({
                 </span>
               ) : null}
             </div>
-            <img
+            <ProductImage
               src={product.image}
+              fallbackSrc={fallbackImage}
               alt={product.name}
-              onError={handleImageError}
+              fill
+              priority={priority}
+              sizes={showcaseImageSizes}
               style={showcaseImageStyle}
               className={`${imageBaseClassName} ${imageFitClassName} ${imagePlacementClassName} ${primaryHoverClassName}`}
             />
             {hasAlternateImage ? (
-              <img
+              <ProductImage
                 src={hoverImage}
+                fallbackSrc={fallbackImage}
                 alt=""
-                onError={handleImageError}
+                fill
+                sizes={showcaseImageSizes}
                 style={showcaseImageStyle}
                 className={`${imageBaseClassName} ${imageFitClassName} ${imagePlacementClassName} opacity-0 ${secondaryHoverClassName}`}
               />
@@ -156,6 +169,10 @@ export function ProductCard({
           </div>
         </div>
       </Link>
-    </motion.article>
+    </article>
   );
 }
+
+export const ProductCard = memo(ProductCardComponent);
+
+ProductCard.displayName = "ProductCard";

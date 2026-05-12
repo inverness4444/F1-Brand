@@ -1,7 +1,7 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
 import { Heart, Menu, Search, ShoppingBag, User, X } from "lucide-react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
@@ -10,15 +10,18 @@ import { MegaMenu } from "@/components/mega-menu";
 import { BrandLogo } from "@/components/layout/brand-logo";
 import { SearchField } from "@/components/ui/search-field";
 import { useBodyScrollLock } from "@/hooks/use-body-scroll-lock";
-import { useCatalogProducts } from "@/hooks/use-catalog-products";
 import { useMounted } from "@/hooks/use-mounted";
 import { drivers, legends, teams } from "@/lib/data/roster";
 import { sanitizeSearchQuery } from "@/lib/security-utils";
-import { getProductDisplayName } from "@/lib/storefront-text";
-import { getProductSearchTerms, normalizeSearchText, resolveSmartSearchTarget } from "@/lib/search-utils";
-import { cn, formatPrice, getProductHref } from "@/lib/utils";
+import { resolveSmartSearchTarget } from "@/lib/search-utils";
+import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth-store";
 import { useCartStore } from "@/store/cart-store";
+
+const HeaderSearchPanel = dynamic(
+  () => import("@/components/header-search-panel").then((module) => module.HeaderSearchPanel),
+  { ssr: false },
+);
 
 const navItems = [
   { label: "НОВИНКИ", href: "/new" },
@@ -81,7 +84,9 @@ const accessoryLinks: MegaMenuLink[] = [
   { label: "Кепки", href: "/shop?type=Cap" },
   { label: "Шарфы", href: "/shop?type=Scarf" },
   { label: "Лего", href: "/shop?type=Lego" },
-  { label: "Аксессуары", href: "/shop?type=Accessory" },
+  { label: "Кошельки", href: "/shop?type=Wallet" },
+  { label: "Картхолдеры", href: "/shop?type=Cardholder" },
+  { label: "Брелки", href: "/shop?type=Keychain" },
   { label: "Постеры", href: "/shop?type=Poster" },
   { label: "Календари", href: "/shop?type=Calendar" },
   { label: "Подарочные сертификаты", href: "/gift-cards" },
@@ -99,7 +104,7 @@ const megaMenus = {
     columns: buildMenuColumns("Легенды", legendLinks, 3),
   },
   "АКСЕССУАРЫ": {
-    columns: buildMenuColumns("Аксессуары", accessoryLinks, 1),
+    columns: buildMenuColumns("Аксессуары", accessoryLinks, 3),
   },
 } as const;
 
@@ -122,39 +127,11 @@ const mobileGroups = [
   },
 ];
 
-const popularSearches = [
-  "lewis hamilton",
-  "ferrari",
-  "charles leclerc",
-  "mclaren",
-  "mercedes",
-  "hoodie",
-  "red bull racing",
-  "gift certificate",
-  "williams",
-  "caps",
-];
-
-function getSearchHref(query: string) {
-  const sanitizedQuery = sanitizeSearchQuery(query);
-  const smartTarget = resolveSmartSearchTarget(sanitizedQuery);
-
-  if (smartTarget) {
-    return smartTarget;
-  }
-
-  const params = new URLSearchParams();
-  params.set("q", sanitizedQuery);
-
-  return `/shop?${params.toString()}`;
-}
-
 export function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const mounted = useMounted();
   const desktopSearchRef = useRef<HTMLDivElement>(null);
-  const { products, bestsellers } = useCatalogProducts();
   const [query, setQuery] = useState("");
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -164,12 +141,13 @@ export function Header() {
   const [hoveredNavLabel, setHoveredNavLabel] = useState<string | null>(null);
   const [mobileGroup, setMobileGroup] = useState<string | null>(null);
   const currentUser = useAuthStore((state) => state.currentUser);
-  const { items, openCart } = useCartStore();
+  const cartItems = useCartStore((state) => state.items);
+  const openCart = useCartStore((state) => state.openCart);
   useBodyScrollLock(mobileOpen);
 
   const cartCount = useMemo(
-    () => items.reduce((sum, item) => sum + item.quantity, 0),
-    [items],
+    () => cartItems.reduce((sum, item) => sum + item.quantity, 0),
+    [cartItems],
   );
 
   useEffect(() => {
@@ -217,42 +195,6 @@ export function Header() {
     setMobileOpen(false);
     setMobileGroup(null);
   }, [pathname]);
-
-  const normalizedQuery = useMemo(() => normalizeSearchText(query), [query]);
-  const desktopSearchSuggestions = useMemo(() => {
-    const suggestions = popularSearches.map((label) => ({
-      label,
-      href: getSearchHref(label),
-    }));
-
-    if (!normalizedQuery) {
-      return suggestions;
-    }
-
-    const filteredSuggestions = suggestions.filter((item) =>
-      normalizeSearchText(item.label).includes(normalizedQuery),
-    );
-
-    return filteredSuggestions.length > 0 ? filteredSuggestions : suggestions;
-  }, [normalizedQuery]);
-
-  const desktopSearchProducts = useMemo(() => {
-    const sourceProducts = normalizedQuery
-      ? products
-          .filter((product) =>
-            getProductSearchTerms(product).some((term) => term.includes(normalizedQuery)),
-          )
-          .sort((left, right) => right.popularity - left.popularity)
-      : bestsellers;
-
-    const visibleProducts = sourceProducts.slice(0, 6);
-
-    if (visibleProducts.length > 0) {
-      return visibleProducts;
-    }
-
-    return bestsellers.slice(0, 6);
-  }, [bestsellers, normalizedQuery, products]);
 
   const isLightTopBar = pathname === "/" && !isScrolled;
   const isHeroOverlay =
@@ -396,67 +338,15 @@ export function Header() {
                 )}
               />
 
-              <AnimatePresence>
-                {desktopSearchOpen ? (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="absolute right-0 top-full z-50 mt-3 w-[46rem] overflow-hidden rounded-[1.45rem] border border-[var(--line)] bg-white shadow-[0_28px_80px_rgba(17,17,17,0.12)]"
-                  >
-                    <div className="grid min-h-[28rem] grid-cols-[15rem_minmax(0,1fr)]">
-                      <div className="border-r border-[var(--line)] bg-[#f5f4f0] px-5 py-5">
-                        <p className="text-[0.82rem] font-semibold text-[#111111]">
-                          {normalizedQuery ? "Suggested Searches" : "Popular Searches"}
-                        </p>
-                        <div className="mt-4 space-y-2">
-                          {desktopSearchSuggestions.slice(0, 10).map((item) => (
-                            <Link
-                              key={item.label}
-                              href={item.href}
-                              onClick={() => {
-                                setQuery(item.label);
-                                setDesktopSearchOpen(false);
-                              }}
-                              className="block text-[0.95rem] leading-7 text-[#2f302d] transition hover:text-[#111111]"
-                            >
-                              {item.label}
-                            </Link>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="px-5 py-5">
-                        <p className="text-[0.82rem] font-semibold text-[#111111]">
-                          {normalizedQuery ? "Matching Products" : "Trending Products"}
-                        </p>
-                        <div className="mt-4 grid gap-x-5 gap-y-4 sm:grid-cols-2">
-                          {desktopSearchProducts.map((product) => (
-                            <Link
-                              key={product.id}
-                              href={getProductHref(product)}
-                              onClick={() => setDesktopSearchOpen(false)}
-                              className="flex items-start gap-3 rounded-[1rem] p-2 transition hover:bg-[#f7f6f2]"
-                            >
-                              <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-[0.9rem] bg-[#f5f4f0] p-2">
-                                <img src={product.image} alt={product.name} className="h-full w-full object-contain" />
-                              </div>
-                              <div className="min-w-0">
-                                <p className="line-clamp-3 text-[0.95rem] font-semibold leading-6 text-[#111111]">
-                                  {getProductDisplayName(product)}
-                                </p>
-                                <p className="mt-1 text-[0.92rem] font-medium text-[#111111]">
-                                  {formatPrice(product.price)}
-                                </p>
-                              </div>
-                            </Link>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
-                ) : null}
-              </AnimatePresence>
+              {desktopSearchOpen ? (
+                <div className="animate-dropdown-in absolute right-0 top-full z-50 mt-3 w-[46rem] overflow-hidden rounded-[1.45rem] border border-[var(--line)] bg-white shadow-[0_28px_80px_rgba(17,17,17,0.12)]">
+                  <HeaderSearchPanel
+                    query={query}
+                    onClose={() => setDesktopSearchOpen(false)}
+                    onSuggestionSelect={setQuery}
+                  />
+                </div>
+              ) : null}
             </div>
             <Link
               href={currentUser ? "/account" : "/login"}
@@ -529,14 +419,8 @@ export function Header() {
           </div>
         </div>
 
-        <AnimatePresence>
-          {searchOpen ? (
-            <motion.div
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              className="border-t border-[var(--line)] bg-[#fbfaf6]"
-            >
+        {searchOpen ? (
+          <div className="animate-dropdown-in border-t border-[var(--line)] bg-[#fbfaf6]">
               <div className="container-shell py-4">
                 <SearchField
                   value={query}
@@ -546,41 +430,26 @@ export function Header() {
                   className="w-full"
                 />
               </div>
-            </motion.div>
-          ) : null}
-        </AnimatePresence>
+          </div>
+        ) : null}
 
-        <AnimatePresence>
-          {openMenu && !desktopSearchOpen ? (
-            <motion.div
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-            >
-              <MegaMenu columns={megaMenus[openMenu].columns} />
-            </motion.div>
-          ) : null}
-        </AnimatePresence>
+        {openMenu && !desktopSearchOpen ? (
+          <div className="animate-dropdown-in">
+            <MegaMenu columns={megaMenus[openMenu].columns} />
+          </div>
+        ) : null}
       </header>
 
-      <AnimatePresence>
-        {mobileOpen ? (
-          <>
-            <motion.button
+      {mobileOpen ? (
+        <>
+            <button
               type="button"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
               onClick={() => setMobileOpen(false)}
-              className="fixed inset-0 z-50 bg-black/35"
+              className="animate-overlay-in fixed inset-0 z-50 bg-black/35"
               aria-label="Закрыть меню"
             />
-            <motion.aside
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ type: "spring", damping: 28, stiffness: 260 }}
-              className="fixed right-0 top-0 z-[60] flex h-[100dvh] w-full max-w-[min(calc(100vw-1rem),24rem)] flex-col overflow-hidden bg-white p-4 shadow-2xl sm:p-5"
+            <aside
+              className="animate-drawer-in fixed right-0 top-0 z-[60] flex h-[100dvh] w-full max-w-[min(calc(100vw-1rem),24rem)] flex-col overflow-hidden bg-white p-4 shadow-2xl sm:p-5"
             >
               <div className="flex items-center justify-between">
                 <BrandLogo showTagline={false} className="min-w-0" />
@@ -666,10 +535,9 @@ export function Header() {
                   Избранное
                 </Link>
               </div>
-            </motion.aside>
-          </>
-        ) : null}
-      </AnimatePresence>
+            </aside>
+        </>
+      ) : null}
     </>
   );
 }

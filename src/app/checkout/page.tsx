@@ -18,7 +18,9 @@ import { useToastStore } from "@/store/toast-store";
 import { AddressForm } from "@/components/address-form";
 import { CheckoutAddressSelector } from "@/components/checkout-address-selector";
 import { CheckoutCustomerInfo } from "@/components/checkout-customer-info";
+import { ProductImage } from "@/components/product-image";
 import { Button } from "@/components/ui/button";
+import { imageByType } from "@/lib/data/products";
 import { colorLabelRu, getProductDisplayName, sizeLabelRu } from "@/lib/storefront-text";
 import { formatPrice, getProductHref } from "@/lib/utils";
 
@@ -416,9 +418,16 @@ export default function CheckoutPage() {
                 >
                   <Link
                     href={getProductHref(product)}
-                    className="flex h-20 w-20 shrink-0 items-center justify-center rounded-[18px] bg-slate-50 p-1.5"
+                    className="relative flex h-20 w-20 shrink-0 items-center justify-center rounded-[18px] bg-slate-50 p-1.5"
                   >
-                    <img src={product.image} alt={product.name} className="h-full w-full object-contain" />
+                    <ProductImage
+                      src={product.image}
+                      fallbackSrc={imageByType[product.type]}
+                      alt={product.name}
+                      width={80}
+                      height={80}
+                      className="h-full w-full object-contain"
+                    />
                   </Link>
                   <div className="min-w-0 flex-1">
                     <Link href={getProductHref(product)} className="line-clamp-2 text-sm font-semibold text-slate-900">
