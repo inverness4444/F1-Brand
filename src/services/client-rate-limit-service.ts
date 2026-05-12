@@ -5,7 +5,7 @@ import { z } from "zod";
 import { readStorage, storageKeys, writeStorage } from "@/lib/browser-storage";
 import { sanitizeIdentifier } from "@/lib/security-utils";
 
-type RateLimitAction = "login" | "register" | "forgot-password";
+type RateLimitAction = "login" | "register" | "forgot-password" | "contact";
 
 const rateLimitConfig: Record<RateLimitAction, { maxAttempts: number; windowMs: number; message: string }> = {
   login: {
@@ -22,6 +22,12 @@ const rateLimitConfig: Record<RateLimitAction, { maxAttempts: number; windowMs: 
     maxAttempts: 5,
     windowMs: 15 * 60 * 1000,
     message: "Слишком много запросов на восстановление. Попробуйте позже.",
+  },
+  // Client-side limiter is a UX guard for the local mock app. Production needs backend rate limiting.
+  contact: {
+    maxAttempts: 5,
+    windowMs: 10 * 60 * 1000,
+    message: "Слишком много сообщений. Попробуйте позже.",
   },
 };
 

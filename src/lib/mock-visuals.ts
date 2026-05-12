@@ -75,11 +75,33 @@ function garmentMarkup(type: ProductType, primary: string, secondary: string, te
         <path d="M250 149c-13 31-53 51-98 51h-42c8-16 37-51 140-51Z" fill="${secondary}" opacity="0.88" />
         <path d="M116 149h134" stroke="${tertiary}" stroke-width="8" stroke-linecap="round" opacity="0.25" />
       `;
+    case "Keychain":
+      return `
+        <circle cx="180" cy="91" r="34" fill="none" stroke="${primary}" stroke-width="15" />
+        <path d="M180 125v32" stroke="${primary}" stroke-width="14" stroke-linecap="round" />
+        <rect x="129" y="154" width="102" height="118" rx="24" fill="${primary}" />
+        <rect x="147" y="176" width="66" height="54" rx="14" fill="${secondary}" opacity="0.82" />
+        <path d="M153 245h54" stroke="${tertiary}" stroke-width="9" stroke-linecap="round" opacity="0.42" />
+      `;
     case "Accessory":
       return `
         <rect x="102" y="108" width="148" height="112" rx="20" fill="${primary}" />
         <path d="M129 108c5-22 24-37 47-37s42 15 47 37" stroke="${secondary}" stroke-width="14" stroke-linecap="round" fill="none" />
         <rect x="122" y="146" width="108" height="12" rx="6" fill="${tertiary}" opacity="0.28" />
+      `;
+    case "Wallet":
+      return `
+        <rect x="92" y="128" width="176" height="118" rx="18" fill="${primary}" />
+        <rect x="106" y="146" width="148" height="26" rx="8" fill="${secondary}" opacity="0.42" />
+        <rect x="196" y="185" width="48" height="34" rx="10" fill="${secondary}" opacity="0.85" />
+        <circle cx="215" cy="202" r="5" fill="${tertiary}" opacity="0.8" />
+      `;
+    case "Cardholder":
+      return `
+        <rect x="102" y="128" width="156" height="118" rx="16" fill="${primary}" />
+        <rect x="120" y="148" width="120" height="14" rx="7" fill="${secondary}" opacity="0.55" />
+        <rect x="120" y="178" width="120" height="14" rx="7" fill="${tertiary}" opacity="0.35" />
+        <rect x="120" y="208" width="72" height="14" rx="7" fill="${secondary}" opacity="0.38" />
       `;
     case "T-shirt":
     default:

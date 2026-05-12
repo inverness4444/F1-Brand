@@ -10,7 +10,10 @@ export const productTypeLabels: Record<ProductType, string> = {
   Scarf: "Шарфы",
   Lego: "Лего",
   Cap: "Кепки",
+  Keychain: "Брелки",
   Accessory: "Аксессуары",
+  Wallet: "Кошельки",
+  Cardholder: "Картхолдеры",
   Calendar: "Календари",
   Poster: "Постеры",
   "Gift Certificate": "Подарочные сертификаты",
@@ -23,6 +26,7 @@ export const badgeLabels: Record<ProductBadge, string> = {
   Preorder: "ПРЕДЗАКАЗ",
   OutOfStock: "НЕТ В НАЛИЧИИ",
   Sale: "РАСПРОДАЖА",
+  Original: "ОРИГИНАЛ",
 };
 
 export const colorSwatches: Record<ProductColor, string> = {

@@ -109,7 +109,10 @@ export function FilterSidebar({
 }) {
   const asideClassName = mobile
     ? "px-0 pb-8"
-    : "sticky top-28 hidden h-fit border-r border-[var(--line)] pr-7 lg:block xl:pr-8";
+    : "sticky top-28 hidden self-start border-r border-[var(--line)] pr-5 lg:block xl:pr-6";
+  const contentClassName = mobile
+    ? "space-y-5"
+    : "max-h-[calc(100dvh-8rem)] space-y-5 overflow-y-auto overscroll-contain pr-2 [scrollbar-gutter:stable]";
   const sectionClassName = "border-t border-[var(--line)] pt-5";
   const summaryClassName =
     "flex cursor-pointer list-none items-center justify-between text-[1.02rem] font-medium text-[#111111] [&::-webkit-details-marker]:hidden";
@@ -118,7 +121,7 @@ export function FilterSidebar({
 
   return (
     <aside className={asideClassName}>
-      <div className="space-y-5">
+      <div className={contentClassName}>
         {showCategoryFilter && availableCategories.length > 0 ? (
           <details open className={sectionClassName}>
             <summary className={summaryClassName}>
@@ -163,7 +166,7 @@ export function FilterSidebar({
             <span>Команда</span>
             <span className="text-[#7c7c7c]">▾</span>
           </summary>
-          <div className="mt-4 max-h-48 space-y-3 overflow-y-auto pr-2">
+          <div className="mt-4 space-y-3">
             {availableTeams.map((option) => (
               <CheckboxRow
                 key={option}
@@ -182,7 +185,7 @@ export function FilterSidebar({
             <span>Пилот</span>
             <span className="text-[#7c7c7c]">▾</span>
           </summary>
-          <div className="mt-4 max-h-48 space-y-3 overflow-y-auto pr-2">
+          <div className="mt-4 space-y-3">
             {availableDrivers.map((option) => (
               <CheckboxRow
                 key={option}
@@ -201,7 +204,7 @@ export function FilterSidebar({
             <span>Легенды</span>
             <span className="text-[#7c7c7c]">▾</span>
           </summary>
-          <div className="mt-4 max-h-48 space-y-3 overflow-y-auto pr-2">
+          <div className="mt-4 space-y-3">
             {availableLegends.map((option) => (
               <CheckboxRow
                 key={option}
@@ -220,7 +223,7 @@ export function FilterSidebar({
             <span>Коллекция</span>
             <span className="text-[#7c7c7c]">▾</span>
           </summary>
-          <div className="mt-4 max-h-48 space-y-3 overflow-y-auto pr-2">
+          <div className="mt-4 space-y-3">
             {availableCollections.map((option) => (
               <CheckboxRow
                 key={option}

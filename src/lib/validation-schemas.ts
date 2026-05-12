@@ -14,6 +14,7 @@ import {
   sanitizeIdentifier,
   sanitizeMultilineComment,
   sanitizePhone,
+  sanitizePromoCode,
   sanitizeSearchQuery,
   sanitizeText,
 } from "@/lib/security-utils";
@@ -53,12 +54,15 @@ const productTypeSchema = z.enum([
   "Scarf",
   "Lego",
   "Cap",
+  "Keychain",
   "Accessory",
+  "Wallet",
+  "Cardholder",
   "Calendar",
   "Poster",
   "Gift Certificate",
 ]);
-const productBadgeSchema = z.enum(["New", "Hit", "Limited", "Preorder", "OutOfStock", "Sale"]);
+const productBadgeSchema = z.enum(["New", "Hit", "Limited", "Preorder", "OutOfStock", "Sale", "Original"]);
 const commerceProductKindSchema = z.enum(["standard", "gift_certificate"]);
 const orderStatusSchema = z.enum([
   "Новый",
@@ -214,7 +218,7 @@ export const newsletterSchema = z.object({
 export const promoCodeSchema = z.object({
   code: z
     .string()
-    .transform((value) => sanitizeIdentifier(value, "").toUpperCase())
+    .transform(sanitizePromoCode)
     .refine((value) => value.length > 0, "Введите промокод.")
     .refine((value) => value.length <= SECURITY_LIMITS.promoCodeMaxLength, "Промокод слишком длинный."),
 });
@@ -223,9 +227,34 @@ export const giftCertificateCodeSchema = z.object({
   code: z
     .string()
     .transform(normalizeGiftCertificateCode)
-    .refine((value) => value.length > 0, "Введите промокод.")
+    .refine((value) => value.length > 0, "Введите код сертификата.")
     .refine((value) => validateGiftCertificateCode(value), "Код должен состоять ровно из 8 латинских букв."),
 });
+
+export const contactFormSchema = z.object({
+  name: requiredTextSchema(SECURITY_LIMITS.nameMaxLength, "Введите имя."),
+  email: z
+    .string()
+    .transform(sanitizeEmail)
+    .refine((value) => isValidEmail(value), "Введите корректный email."),
+  subject: requiredTextSchema(SECURITY_LIMITS.catalogMetadataMaxLength, "Укажите тему обращения."),
+  message: z
+    .string()
+    .transform((value) => sanitizeMultilineComment(value, SECURITY_LIMITS.catalogDescriptionMaxLength))
+    .refine((value) => value.length > 0, "Введите сообщение."),
+});
+
+export const registerFormSchema = registerPayloadSchema
+  .extend({
+    confirmPassword: z
+      .string()
+      .min(8, "Пароль должен содержать минимум 8 символов.")
+      .max(SECURITY_LIMITS.passwordMaxLength, "Пароль слишком длинный."),
+  })
+  .refine((value) => value.password === value.confirmPassword, {
+    path: ["confirmPassword"],
+    message: "Пароли должны совпадать.",
+  });
 
 export const searchQuerySchema = z.object({
   query: z.string().transform(sanitizeSearchQuery),

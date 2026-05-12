@@ -1,6 +1,7 @@
 import type { GiftCertificate, Order } from "@/lib/account-types";
 import { buildOrderNumber, createEntityId } from "@/lib/account-utils";
 import { emitStorageChange, readStorage, storageKeys, writeStorage } from "@/lib/browser-storage";
+import { sanitizeIdentifier } from "@/lib/security-utils";
 import { authService } from "@/services/auth-service";
 import { orderSchema, ordersSchema } from "@/lib/validation-schemas";
 
@@ -16,6 +17,11 @@ function writeOrders(orders: Order[]) {
 function writeLatestCheckoutOrder(orderId: string) {
   writeStorage(storageKeys.checkoutOrder, orderId);
   emitStorageChange("checkout");
+}
+
+function readLatestCheckoutOrderId() {
+  const orderId = readStorage<unknown>(storageKeys.checkoutOrder, null);
+  return typeof orderId === "string" ? sanitizeIdentifier(orderId, "") || null : null;
 }
 
 type OrderDraftInput = Omit<Order, "id" | "orderNumber" | "createdAt" | "updatedAt">;
@@ -97,13 +103,14 @@ export const orderService = {
   },
 
   getLatestCheckoutOrder() {
-    const orderId = readStorage<string | null>(storageKeys.checkoutOrder, null);
+    const orderId = readLatestCheckoutOrderId();
     return orderId ? this.getById(orderId) : null;
   },
 
   getCheckoutSuccessOrder(orderId: string | null, currentUserId: string | null) {
-    const lastCheckoutOrderId = readStorage<string | null>(storageKeys.checkoutOrder, null);
-    const resolvedOrderId = orderId ?? lastCheckoutOrderId;
+    const lastCheckoutOrderId = readLatestCheckoutOrderId();
+    const requestedOrderId = orderId ? sanitizeIdentifier(orderId, "") : null;
+    const resolvedOrderId = requestedOrderId || lastCheckoutOrderId;
 
     if (!resolvedOrderId) {
       return null;

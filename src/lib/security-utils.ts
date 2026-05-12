@@ -80,6 +80,21 @@ export function sanitizeSearchQuery(value: string) {
   return sanitizeText(value, { maxLength: SECURITY_LIMITS.searchMaxLength });
 }
 
+export function sanitizePromoCode(value: string) {
+  return sanitizeText(value, { maxLength: SECURITY_LIMITS.promoCodeMaxLength })
+    .toUpperCase()
+    .replace(/[^A-Z0-9_-]/g, "")
+    .slice(0, SECURITY_LIMITS.promoCodeMaxLength);
+}
+
+export function sanitizeGiftCertificateCode(value: string) {
+  return sanitizeText(value, { maxLength: 32 })
+    .toUpperCase()
+    .replace(/\s+/g, "")
+    .replace(/[^A-Z]/g, "")
+    .slice(0, 8);
+}
+
 export function sanitizeAddressField(
   value: string,
   maxLength: number = SECURITY_LIMITS.addressFieldMaxLength,

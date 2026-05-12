@@ -22,12 +22,15 @@ export type ProductType =
   | "Scarf"
   | "Lego"
   | "Cap"
+  | "Keychain"
   | "Accessory"
+  | "Wallet"
+  | "Cardholder"
   | "Calendar"
   | "Poster"
   | "Gift Certificate";
 
-export type ProductBadge = "New" | "Hit" | "Limited" | "Preorder" | "OutOfStock" | "Sale";
+export type ProductBadge = "New" | "Hit" | "Limited" | "Preorder" | "OutOfStock" | "Sale" | "Original";
 
 export type ProductColor =
   | "Black"

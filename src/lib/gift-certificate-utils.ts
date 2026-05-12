@@ -1,3 +1,5 @@
+import { sanitizeGiftCertificateCode } from "@/lib/security-utils";
+
 const GIFT_CERTIFICATE_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 export const GIFT_CERTIFICATE_CODE_LENGTH = 8;
@@ -22,15 +24,11 @@ function createRandomCode() {
 }
 
 export function normalizeGiftCertificateCode(value: string) {
-  return value
-    .toUpperCase()
-    .replace(/\s+/g, "")
-    .replace(/[^A-Z]/g, "")
-    .slice(0, GIFT_CERTIFICATE_CODE_LENGTH);
+  return sanitizeGiftCertificateCode(value);
 }
 
 export function validateGiftCertificateCode(value: string) {
-  return /^[A-Z]{8}$/.test(normalizeGiftCertificateCode(value));
+  return /^[A-Z]{8}$/.test(value);
 }
 
 export function generateGiftCertificateCode(existingCodes: Set<string> = new Set()) {

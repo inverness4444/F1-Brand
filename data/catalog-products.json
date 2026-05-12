@@ -1,26 +1,27 @@
 [
   {
-    "id": "custom-1778091405277",
-    "slug": "custom-1778091405277",
-    "name": "Charles Leclerc Black Out",
-    "category": "Pilots",
-    "collection": "Blackout",
+    "id": "custom-1778545372314",
+    "slug": "custom-1778545372314",
+    "name": "Ayrton Senna x Brazil Retro",
+    "category": "Legends",
+    "collection": "F1 x Football",
     "collectionTags": [
-      "Blackout",
+      "F1 x Football",
       "New Arrivals"
     ],
-    "driverName": "Charles Leclerc",
-    "driverSlug": "charles-leclerc",
-    "teamName": "Ferrari",
-    "teamSlug": "ferrari",
-    "legendName": null,
-    "legendSlug": null,
+    "driverName": null,
+    "driverSlug": null,
+    "teamName": null,
+    "teamSlug": null,
+    "legendName": "Ayrton Senna",
+    "legendSlug": "ayrton-senna",
     "gender": "Unisex",
-    "price": 3500,
+    "price": 5000,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
-      "Black"
+      "Yellow",
+      "Green"
     ],
     "sizes": [
       "XS",
@@ -32,30 +33,281 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
-    "image": "/catalog-products/custom-1778091405277-cover-07ac45bc1856.jpg",
+    "image": "/catalog-products/custom-1778545372314-cover-aff198a72457.jpg",
     "gallery": [
-      "/catalog-products/custom-1778091405277-cover-07ac45bc1856.jpg",
-      "/catalog-products/custom-1778091405277-gallery-1-07ac45bc1856.jpg"
+      "/catalog-products/custom-1778545372314-cover-aff198a72457.jpg",
+      "/catalog-products/custom-1778545372314-gallery-1-aff198a72457.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
     "popularity": 75,
-    "createdAt": "2026-05-06T18:16:45.277Z",
-    "number": 16,
+    "createdAt": "2026-05-12T00:22:52.314Z",
+    "number": 4,
     "hexPalette": [
-      "#D5332C",
-      "#111111",
-      "#F5CF51"
+      "#D8BD35",
+      "#1F6F53",
+      "#174DB1"
     ]
   },
   {
-    "id": "custom-1778091497744",
-    "slug": "custom-1778091497744",
-    "name": "Max Verstappen Black Out",
+    "id": "custom-1778545194505",
+    "slug": "custom-1778545194505",
+    "name": "Carlos Sainz x Spain",
     "category": "Pilots",
-    "collection": "Blackout",
+    "collection": "F1 x Football",
     "collectionTags": [
-      "Blackout",
+      "F1 x Football",
+      "New Arrivals"
+    ],
+    "driverName": "Carlos Sainz",
+    "driverSlug": "carlos-sainz",
+    "teamName": "Williams",
+    "teamSlug": "williams",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 5000,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Yellow",
+      "Red"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778545194505-cover-633bdabd4047.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778545194505-cover-633bdabd4047.jpg",
+      "/catalog-products/custom-1778545194505-gallery-1-633bdabd4047.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-12T00:19:54.505Z",
+    "number": 55,
+    "hexPalette": [
+      "#1F57D4",
+      "#F9F8F4",
+      "#17326E"
+    ]
+  },
+  {
+    "id": "custom-1778448223259",
+    "slug": "custom-1778448223259",
+    "name": "Fernando Alonso x Spain",
+    "category": "Pilots",
+    "collection": "F1 x Football",
+    "collectionTags": [
+      "F1 x Football",
+      "New Arrivals"
+    ],
+    "driverName": "Fernando Alonso",
+    "driverSlug": "fernando-alonso",
+    "teamName": "Aston Martin",
+    "teamSlug": "aston-martin",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 5000,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Yellow",
+      "Red"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778448223259-cover-20d62e021642.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778448223259-cover-20d62e021642.jpg",
+      "/catalog-products/custom-1778448223259-gallery-1-20d62e021642.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-10T21:23:43.259Z",
+    "number": 14,
+    "hexPalette": [
+      "#165C45",
+      "#111111",
+      "#ECE4D7"
+    ]
+  },
+  {
+    "id": "custom-1778239133633",
+    "slug": "custom-1778239133633",
+    "name": "George Russel 63",
+    "category": "Pilots",
+    "collection": "Silver",
+    "collectionTags": [
+      "Silver",
+      "New Arrivals"
+    ],
+    "driverName": "George Russell",
+    "driverSlug": "george-russell",
+    "teamName": "Mercedes",
+    "teamSlug": "mercedes",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "Silver"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778239133633-cover-ce13c8b5021e.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778239133633-cover-ce13c8b5021e.jpg",
+      "/catalog-products/custom-1778239133633-gallery-1-ce13c8b5021e.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-08T11:18:53.633Z",
+    "number": 63,
+    "hexPalette": [
+      "#111111",
+      "#CDD3D9",
+      "#27C5A7"
+    ]
+  },
+  {
+    "id": "custom-1778545260330",
+    "slug": "custom-1778545260330",
+    "name": "George Russell x England",
+    "category": "Pilots",
+    "collection": "F1 x Football",
+    "collectionTags": [
+      "F1 x Football",
+      "New Arrivals"
+    ],
+    "driverName": "George Russell",
+    "driverSlug": "george-russell",
+    "teamName": "Mercedes",
+    "teamSlug": "mercedes",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 5000,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "White",
+      "Navy"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778545260330-cover-b674f1637170.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778545260330-cover-b674f1637170.jpg",
+      "/catalog-products/custom-1778545260330-gallery-1-b674f1637170.jpg"
+    ],
+    "description": "Футболка из коллекции George Russell. Модель выполнена в эстетике фирменного магазина командной одежды: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой Formula 1.",
+    "shortDescription": "Футболка из коллекции George Russell в стилистике фирменного магазина спортивной одежды.",
+    "popularity": 75,
+    "createdAt": "2026-05-12T00:21:00.331Z",
+    "number": 63,
+    "hexPalette": [
+      "#111111",
+      "#CDD3D9",
+      "#27C5A7"
+    ]
+  },
+  {
+    "id": "custom-1778448079731",
+    "slug": "custom-1778448079731",
+    "name": "Kimi Antonelli x Italy",
+    "category": "Pilots",
+    "collection": "F1 x Football",
+    "collectionTags": [
+      "F1 x Football",
+      "New Arrivals"
+    ],
+    "driverName": "Kimi Antonelli",
+    "driverSlug": "kimi-antonelli",
+    "teamName": "Mercedes",
+    "teamSlug": "mercedes",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 5000,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Green",
+      "White",
+      "Red"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778448079731-cover-197ef1bd4705.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778448079731-cover-197ef1bd4705.jpg",
+      "/catalog-products/custom-1778448079731-gallery-1-197ef1bd4705.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-10T21:21:19.731Z",
+    "number": 12,
+    "hexPalette": [
+      "#111111",
+      "#CDD3D9",
+      "#27C5A7"
+    ]
+  },
+  {
+    "id": "custom-1778447822479",
+    "slug": "custom-1778447822479",
+    "name": "Max Verstappen x Netherlands",
+    "category": "Pilots",
+    "collection": "F1 x Football",
+    "collectionTags": [
+      "F1 x Football",
       "New Arrivals"
     ],
     "driverName": "Max Verstappen",
@@ -65,10 +317,11 @@
     "legendName": null,
     "legendSlug": null,
     "gender": "Unisex",
-    "price": 3500,
+    "price": 5000,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
+      "Orange",
       "Black"
     ],
     "sizes": [
@@ -81,20 +334,69 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
-    "image": "/catalog-products/custom-1778091497744-cover-fde368a7687b.jpg",
+    "image": "/catalog-products/custom-1778447822479-cover-56b51eb6792e.jpg",
     "gallery": [
-      "/catalog-products/custom-1778091497744-cover-fde368a7687b.jpg",
-      "/catalog-products/custom-1778091497744-gallery-1-fde368a7687b.jpg"
+      "/catalog-products/custom-1778447822479-cover-56b51eb6792e.jpg",
+      "/catalog-products/custom-1778447822479-gallery-1-56b51eb6792e.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
     "popularity": 75,
-    "createdAt": "2026-05-06T18:18:17.744Z",
+    "createdAt": "2026-05-10T21:17:02.479Z",
     "number": 1,
     "hexPalette": [
       "#162540",
       "#D8382E",
       "#F0C03D"
+    ]
+  },
+  {
+    "id": "custom-1778448307927",
+    "slug": "custom-1778448307927",
+    "name": "Sergio Pérez x Mexico",
+    "category": "Pilots",
+    "collection": "F1 x Football",
+    "collectionTags": [
+      "F1 x Football",
+      "New Arrivals"
+    ],
+    "driverName": "Sergio Pérez",
+    "driverSlug": "sergio-perez",
+    "teamName": "Cadillac",
+    "teamSlug": "cadillac",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 5000,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Green"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778448307927-cover-9132ab7bf97c.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778448307927-cover-9132ab7bf97c.jpg",
+      "/catalog-products/custom-1778448307927-gallery-1-9132ab7bf97c.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-10T21:25:07.929Z",
+    "number": 11,
+    "hexPalette": [
+      "#111111",
+      "#D8C7B3",
+      "#7B2220"
     ]
   },
   {
@@ -180,12 +482,1858 @@
     ]
   },
   {
-    "id": "custom-1777482490798",
-    "slug": "custom-1777482490798",
-    "name": "Футболка Lewis Hamilton 44",
-    "category": "Pilots",
+    "id": "custom-1778545446147",
+    "slug": "custom-1778545446147",
+    "name": "Подарочный сертификат",
+    "category": "Gifts",
     "collection": "",
     "collectionTags": [
+      "New Arrivals"
+    ],
+    "driverName": null,
+    "driverSlug": null,
+    "teamName": null,
+    "teamSlug": null,
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 10000,
+    "productType": "gift_certificate",
+    "requiresShipping": false,
+    "colors": [
+      "Black"
+    ],
+    "sizes": [
+      "One Size"
+    ],
+    "type": "Gift Certificate",
+    "badge": "New",
+    "image": "/catalog-products/custom-1778545446147-cover-53ef060acd70.png",
+    "gallery": [
+      "/catalog-products/custom-1778545446147-cover-53ef060acd70.png",
+      "/catalog-products/custom-1778545446147-gallery-1-53ef060acd70.png"
+    ],
+    "description": "Подарочный сертификат работает как цифровой товар: после покупки вы получите одноразовый код, который можно активировать в аккаунте и использовать баланс частями для оплаты любых товаров магазина.",
+    "shortDescription": "Цифровой подарочный сертификат: активируйте код в личном кабинете и оплачивайте любые товары балансом частями.",
+    "popularity": 75,
+    "createdAt": "2026-05-12T00:24:06.147Z",
+    "number": 4,
+    "hexPalette": [
+      "#EE6C2F",
+      "#111111",
+      "#F4E9DB"
+    ]
+  },
+  {
+    "id": "custom-1778372233913",
+    "slug": "custom-1778372233913",
+    "name": "Футболка Alain Prost",
+    "category": "Legends",
+    "collection": "Blackout",
+    "collectionTags": [
+      "Blackout",
+      "New Arrivals"
+    ],
+    "driverName": null,
+    "driverSlug": null,
+    "teamName": null,
+    "teamSlug": null,
+    "legendName": "Alain Prost",
+    "legendSlug": "alain-prost",
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "White",
+      "Black"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778372233913-cover-64775c2c88ec.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778372233913-cover-64775c2c88ec.jpg",
+      "/catalog-products/custom-1778372233913-gallery-1-64775c2c88ec.jpg",
+      "/catalog-products/custom-1778372233913-gallery-1-e9055492313c.jpg"
+    ],
+    "description": "Футболка из коллекции легенд Alain Prost. В основе спокойный, выверенный подход: архивное вдохновение Formula 1, аккуратная типографика и современная спортивная подача.",
+    "shortDescription": "Футболка из архивной коллекции Alain Prost в выверенном стиле.",
+    "popularity": 75,
+    "createdAt": "2026-05-10T00:17:13.913Z",
+    "number": 4,
+    "hexPalette": [
+      "#F9F8F4",
+      "#1B53C0",
+      "#CE3D35"
+    ]
+  },
+  {
+    "id": "custom-1778373262298",
+    "slug": "custom-1778373262298",
+    "name": "Футболка Alain Prost 4",
+    "category": "Legends",
+    "collection": "Silver",
+    "collectionTags": [
+      "Silver",
+      "New Arrivals"
+    ],
+    "driverName": null,
+    "driverSlug": null,
+    "teamName": null,
+    "teamSlug": null,
+    "legendName": "Alain Prost",
+    "legendSlug": "alain-prost",
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "Silver"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778373262298-cover-d5ead0722fa2.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778373262298-cover-d5ead0722fa2.jpg",
+      "/catalog-products/custom-1778373262298-gallery-1-d5ead0722fa2.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-10T00:34:22.298Z",
+    "number": 4,
+    "hexPalette": [
+      "#F9F8F4",
+      "#1B53C0",
+      "#CE3D35"
+    ]
+  },
+  {
+    "id": "custom-1778371214546",
+    "slug": "custom-1778371214546",
+    "name": "Футболка Alex Albon",
+    "category": "Pilots",
+    "collection": "Blackout",
+    "collectionTags": [
+      "Blackout",
+      "New Arrivals"
+    ],
+    "driverName": "Alex Albon",
+    "driverSlug": "alex-albon",
+    "teamName": "Williams",
+    "teamSlug": "williams",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "White",
+      "Black"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778371214546-cover-2bac10d4c050.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778371214546-cover-2bac10d4c050.jpg",
+      "/catalog-products/custom-1778371214546-gallery-1-2bac10d4c050.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-10T00:00:14.546Z",
+    "number": 23,
+    "hexPalette": [
+      "#1F57D4",
+      "#F9F8F4",
+      "#17326E"
+    ]
+  },
+  {
+    "id": "custom-1778238215834",
+    "slug": "custom-1778238215834",
+    "name": "Футболка Alex Albon 23",
+    "category": "Pilots",
+    "collection": "Silver",
+    "collectionTags": [
+      "Silver",
+      "New Arrivals"
+    ],
+    "driverName": "Alex Albon",
+    "driverSlug": "alex-albon",
+    "teamName": "Williams",
+    "teamSlug": "williams",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "Silver"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778238215834-cover-efd9ef5b0826.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778238215834-cover-efd9ef5b0826.jpg",
+      "/catalog-products/custom-1778238215834-gallery-1-efd9ef5b0826.jpg"
+    ],
+    "description": "Футболка из коллекции Alex Albon. Модель выполнена в эстетике фирменного магазина командной одежды: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой Formula 1.",
+    "shortDescription": "Футболка из коллекции Alex Albon в стилистике фирменного магазина спортивной одежды.",
+    "popularity": 75,
+    "createdAt": "2026-05-08T11:03:35.834Z",
+    "number": 23,
+    "hexPalette": [
+      "#1F57D4",
+      "#F9F8F4",
+      "#17326E"
+    ]
+  },
+  {
+    "id": "custom-1778374010229",
+    "slug": "custom-1778374010229",
+    "name": "Футболка Arvid Lindblad",
+    "category": "Pilots",
+    "collection": "Blackout",
+    "collectionTags": [
+      "Blackout",
+      "New Arrivals"
+    ],
+    "driverName": "Arvid Lindblad",
+    "driverSlug": "arvid-lindblad",
+    "teamName": "Racing Bulls",
+    "teamSlug": "racing-bulls",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "White",
+      "Black"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778374010229-cover-c8bb342d6464.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778374010229-cover-c8bb342d6464.jpg",
+      "/catalog-products/custom-1778374010229-gallery-1-c8bb342d6464.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-10T00:46:50.229Z",
+    "number": 17,
+    "hexPalette": [
+      "#2565D8",
+      "#F9F8F4",
+      "#D63A38"
+    ]
+  },
+  {
+    "id": "custom-1778238690383",
+    "slug": "custom-1778238690383",
+    "name": "Футболка Arvid Lindblad 41",
+    "category": "Pilots",
+    "collection": "Silver",
+    "collectionTags": [
+      "Silver",
+      "New Arrivals"
+    ],
+    "driverName": "Arvid Lindblad",
+    "driverSlug": "arvid-lindblad",
+    "teamName": "Racing Bulls",
+    "teamSlug": "racing-bulls",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "Silver"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778238690383-cover-a1503db0452a.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778238690383-cover-a1503db0452a.jpg",
+      "/catalog-products/custom-1778238690383-gallery-1-a1503db0452a.jpg"
+    ],
+    "description": "Футболка из коллекции Arvid Lindblad. Модель выполнена в эстетике фирменного магазина командной одежды: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой Formula 1.",
+    "shortDescription": "Футболка из коллекции Arvid Lindblad в стилистике фирменного магазина спортивной одежды.",
+    "popularity": 75,
+    "createdAt": "2026-05-08T11:11:30.383Z",
+    "number": 17,
+    "hexPalette": [
+      "#2565D8",
+      "#F9F8F4",
+      "#D63A38"
+    ]
+  },
+  {
+    "id": "custom-1778372141466",
+    "slug": "custom-1778372141466",
+    "name": "Футболка Ayrton Senna",
+    "category": "Legends",
+    "collection": "Blackout",
+    "collectionTags": [
+      "Blackout",
+      "New Arrivals"
+    ],
+    "driverName": null,
+    "driverSlug": null,
+    "teamName": null,
+    "teamSlug": null,
+    "legendName": "Ayrton Senna",
+    "legendSlug": "ayrton-senna",
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "White"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778372141466-cover-9b50083fc890.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778372141466-cover-9b50083fc890.jpg",
+      "/catalog-products/custom-1778372141466-gallery-1-9b50083fc890.jpg"
+    ],
+    "description": "Футболка из коллекции легенд Ayrton Senna. В основе спокойный, выверенный подход: архивное вдохновение Formula 1, аккуратная типографика и современная спортивная подача.",
+    "shortDescription": "Футболка из архивной коллекции Ayrton Senna в выверенном стиле.",
+    "popularity": 75,
+    "createdAt": "2026-05-10T00:15:41.466Z",
+    "number": 4,
+    "hexPalette": [
+      "#D8BD35",
+      "#1F6F53",
+      "#174DB1"
+    ]
+  },
+  {
+    "id": "custom-1778373074164",
+    "slug": "custom-1778373074164",
+    "name": "Футболка Ayrton Senna 12",
+    "category": "Legends",
+    "collection": "Silver",
+    "collectionTags": [
+      "Silver",
+      "New Arrivals"
+    ],
+    "driverName": null,
+    "driverSlug": null,
+    "teamName": null,
+    "teamSlug": null,
+    "legendName": "Ayrton Senna",
+    "legendSlug": "ayrton-senna",
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "Silver"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778373074164-cover-f7dc148e7e1a.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778373074164-cover-f7dc148e7e1a.jpg",
+      "/catalog-products/custom-1778373074164-gallery-1-f7dc148e7e1a.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-10T00:31:14.164Z",
+    "number": 4,
+    "hexPalette": [
+      "#D8BD35",
+      "#1F6F53",
+      "#174DB1"
+    ]
+  },
+  {
+    "id": "custom-1778443357995",
+    "slug": "custom-1778443357995",
+    "name": "Футболка Ayrton Senna x Brazil",
+    "category": "Legends",
+    "collection": "F1 x Football",
+    "collectionTags": [
+      "F1 x Football",
+      "New Arrivals"
+    ],
+    "driverName": null,
+    "driverSlug": null,
+    "teamName": null,
+    "teamSlug": null,
+    "legendName": "Ayrton Senna",
+    "legendSlug": "ayrton-senna",
+    "gender": "Unisex",
+    "price": 5000,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Green",
+      "Yellow"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778443357995-cover-18bc3ab38f81.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778443357995-cover-18bc3ab38f81.jpg",
+      "/catalog-products/custom-1778443357995-gallery-1-18bc3ab38f81.jpg"
+    ],
+    "description": "Футболка из коллекции легенд Ayrton Senna. В основе спокойный, выверенный подход: архивное вдохновение Formula 1, аккуратная типографика и современная спортивная подача.",
+    "shortDescription": "Футболка из архивной коллекции Ayrton Senna в выверенном стиле.",
+    "popularity": 75,
+    "createdAt": "2026-05-10T20:02:37.995Z",
+    "number": 11,
+    "hexPalette": [
+      "#D8BD35",
+      "#1F6F53",
+      "#174DB1"
+    ]
+  },
+  {
+    "id": "custom-1778371169612",
+    "slug": "custom-1778371169612",
+    "name": "Футболка Carlos Sainz",
+    "category": "Pilots",
+    "collection": "Blackout",
+    "collectionTags": [
+      "Blackout",
+      "New Arrivals"
+    ],
+    "driverName": "Carlos Sainz",
+    "driverSlug": "carlos-sainz",
+    "teamName": "Williams",
+    "teamSlug": "williams",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "White",
+      "Black"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778371169612-cover-164ee59ea6e2.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778371169612-cover-164ee59ea6e2.jpg",
+      "/catalog-products/custom-1778371169612-gallery-1-164ee59ea6e2.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-09T23:59:29.612Z",
+    "number": 55,
+    "hexPalette": [
+      "#1F57D4",
+      "#F9F8F4",
+      "#17326E"
+    ]
+  },
+  {
+    "id": "custom-1778237923034",
+    "slug": "custom-1778237923034",
+    "name": "Футболка Carlos Sainz 55",
+    "category": "Pilots",
+    "collection": "Silver",
+    "collectionTags": [
+      "Silver",
+      "New Arrivals"
+    ],
+    "driverName": "Carlos Sainz",
+    "driverSlug": "carlos-sainz",
+    "teamName": "Williams",
+    "teamSlug": "williams",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "Silver"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778237923034-cover-cb519b1e80f2.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778237923034-cover-cb519b1e80f2.jpg",
+      "/catalog-products/custom-1778237923034-gallery-1-cb519b1e80f2.jpg"
+    ],
+    "description": "Футболка из коллекции Carlos Sainz. Модель выполнена в эстетике фирменного магазина командной одежды: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой Formula 1.",
+    "shortDescription": "Футболка из коллекции Carlos Sainz в стилистике фирменного магазина спортивной одежды.",
+    "popularity": 75,
+    "createdAt": "2026-05-08T10:58:43.034Z",
+    "number": 55,
+    "hexPalette": [
+      "#1F57D4",
+      "#F9F8F4",
+      "#17326E"
+    ]
+  },
+  {
+    "id": "custom-1778091405277",
+    "slug": "custom-1778091405277",
+    "name": "Футболка Charles Leclerc",
+    "category": "Pilots",
+    "collection": "Blackout",
+    "collectionTags": [
+      "Blackout",
+      "New Arrivals"
+    ],
+    "driverName": "Charles Leclerc",
+    "driverSlug": "charles-leclerc",
+    "teamName": "Ferrari",
+    "teamSlug": "ferrari",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "White"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778091405277-cover-07ac45bc1856.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778091405277-cover-07ac45bc1856.jpg",
+      "/catalog-products/custom-1778091405277-gallery-1-07ac45bc1856.jpg"
+    ],
+    "description": "Футболка из коллекции Charles Leclerc. Модель выполнена в эстетике фирменного магазина командной одежды: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой Formula 1.",
+    "shortDescription": "Футболка из коллекции Charles Leclerc в стилистике фирменного магазина спортивной одежды.",
+    "popularity": 75,
+    "createdAt": "2026-05-06T18:16:45.277Z",
+    "number": 16,
+    "hexPalette": [
+      "#D5332C",
+      "#111111",
+      "#F5CF51"
+    ]
+  },
+  {
+    "id": "custom-1778239043849",
+    "slug": "custom-1778239043849",
+    "name": "Футболка Charles Leclerc 16",
+    "category": "Pilots",
+    "collection": "Silver",
+    "collectionTags": [
+      "Silver",
+      "New Arrivals"
+    ],
+    "driverName": "Charles Leclerc",
+    "driverSlug": "charles-leclerc",
+    "teamName": "Ferrari",
+    "teamSlug": "ferrari",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "Silver"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778239043849-cover-3c3a183617b4.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778239043849-cover-3c3a183617b4.jpg",
+      "/catalog-products/custom-1778239043849-gallery-1-3c3a183617b4.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-08T11:17:23.849Z",
+    "number": 16,
+    "hexPalette": [
+      "#D5332C",
+      "#111111",
+      "#F5CF51"
+    ]
+  },
+  {
+    "id": "custom-1778444202778",
+    "slug": "custom-1778444202778",
+    "name": "Футболка Charles Leclerc x Monaco",
+    "category": "Pilots",
+    "collection": "F1 x Football",
+    "collectionTags": [
+      "F1 x Football",
+      "New Arrivals"
+    ],
+    "driverName": "Charles Leclerc",
+    "driverSlug": "charles-leclerc",
+    "teamName": "Ferrari",
+    "teamSlug": "ferrari",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 5000,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Red",
+      "White"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778444202778-cover-386962145c5a.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778444202778-cover-386962145c5a.jpg",
+      "/catalog-products/custom-1778444202778-gallery-1-386962145c5a.jpg"
+    ],
+    "description": "Футболка из коллекции Charles Leclerc. Модель выполнена в эстетике фирменного магазина командной одежды: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой Formula 1.",
+    "shortDescription": "Футболка из коллекции Charles Leclerc в стилистике фирменного магазина спортивной одежды.",
+    "popularity": 75,
+    "createdAt": "2026-05-10T20:16:42.778Z",
+    "number": 16,
+    "hexPalette": [
+      "#D5332C",
+      "#111111",
+      "#F5CF51"
+    ]
+  },
+  {
+    "id": "custom-1778372032248",
+    "slug": "custom-1778372032248",
+    "name": "Футболка Daniel Ricciardo",
+    "category": "Legends",
+    "collection": "Blackout",
+    "collectionTags": [
+      "Blackout",
+      "New Arrivals"
+    ],
+    "driverName": null,
+    "driverSlug": null,
+    "teamName": null,
+    "teamSlug": null,
+    "legendName": "Daniel Ricciardo",
+    "legendSlug": "daniel-ricciardo",
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "White"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778372032248-cover-aa872edc61bd.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778372032248-cover-aa872edc61bd.jpg",
+      "/catalog-products/custom-1778372032248-gallery-1-aa872edc61bd.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-10T00:13:52.248Z",
+    "number": 4,
+    "hexPalette": [
+      "#EB6D2F",
+      "#111111",
+      "#F9F8F4"
+    ]
+  },
+  {
+    "id": "custom-1778364421924",
+    "slug": "custom-1778364421924",
+    "name": "Футболка Daniel Ricciardo 3",
+    "category": "Legends",
+    "collection": "Silver",
+    "collectionTags": [
+      "Silver",
+      "New Arrivals"
+    ],
+    "driverName": null,
+    "driverSlug": null,
+    "teamName": null,
+    "teamSlug": null,
+    "legendName": "Daniel Ricciardo",
+    "legendSlug": "daniel-ricciardo",
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "Silver"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778364421924-cover-b588044ac917.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778364421924-cover-b588044ac917.jpg",
+      "/catalog-products/custom-1778364421924-gallery-1-b588044ac917.jpg"
+    ],
+    "description": "Футболка из коллекции легенд Daniel Ricciardo. В основе спокойный, выверенный подход: архивное вдохновение Formula 1, аккуратная типографика и современная спортивная подача.",
+    "shortDescription": "Футболка из архивной коллекции Daniel Ricciardo в выверенном стиле.",
+    "popularity": 75,
+    "createdAt": "2026-05-09T22:07:01.924Z",
+    "hexPalette": [
+      "#EB6D2F",
+      "#111111",
+      "#F9F8F4"
+    ]
+  },
+  {
+    "id": "custom-1778371870814",
+    "slug": "custom-1778371870814",
+    "name": "Футболка Esteban Ocon",
+    "category": "Pilots",
+    "collection": "Blackout",
+    "collectionTags": [
+      "Blackout",
+      "New Arrivals"
+    ],
+    "driverName": "Esteban Ocon",
+    "driverSlug": "esteban-ocon",
+    "teamName": "Haas",
+    "teamSlug": "haas",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "White",
+      "Black"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778371870814-cover-ffeb0f6b775b.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778371870814-cover-ffeb0f6b775b.jpg",
+      "/catalog-products/custom-1778371870814-gallery-1-ffeb0f6b775b.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-10T00:11:10.814Z",
+    "number": 31,
+    "hexPalette": [
+      "#F7F6F2",
+      "#111111",
+      "#C7362F"
+    ]
+  },
+  {
+    "id": "custom-1778238917299",
+    "slug": "custom-1778238917299",
+    "name": "Футболка Esteban Ocon 31",
+    "category": "Pilots",
+    "collection": "Silver",
+    "collectionTags": [
+      "Silver",
+      "New Arrivals"
+    ],
+    "driverName": "Esteban Ocon",
+    "driverSlug": "esteban-ocon",
+    "teamName": "Haas",
+    "teamSlug": "haas",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "Silver"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778238917299-cover-52741ba74ee0.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778238917299-cover-52741ba74ee0.jpg",
+      "/catalog-products/custom-1778238917299-gallery-1-52741ba74ee0.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-08T11:15:17.299Z",
+    "number": 31,
+    "hexPalette": [
+      "#F7F6F2",
+      "#111111",
+      "#C7362F"
+    ]
+  },
+  {
+    "id": "custom-1778371727297",
+    "slug": "custom-1778371727297",
+    "name": "Футболка Fernando Alonso",
+    "category": "Pilots",
+    "collection": "Blackout",
+    "collectionTags": [
+      "Blackout",
+      "New Arrivals"
+    ],
+    "driverName": "Fernando Alonso",
+    "driverSlug": "fernando-alonso",
+    "teamName": "Aston Martin",
+    "teamSlug": "aston-martin",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "White"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778371727297-cover-7771cdf68d1a.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778371727297-cover-7771cdf68d1a.jpg",
+      "/catalog-products/custom-1778371727297-gallery-1-7771cdf68d1a.jpg"
+    ],
+    "description": "Футболка из коллекции Fernando Alonso. Модель выполнена в эстетике фирменного магазина командной одежды: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой Formula 1.",
+    "shortDescription": "Футболка из коллекции Fernando Alonso в стилистике фирменного магазина спортивной одежды.",
+    "popularity": 75,
+    "createdAt": "2026-05-10T00:08:47.297Z",
+    "number": 14,
+    "hexPalette": [
+      "#165C45",
+      "#111111",
+      "#ECE4D7"
+    ]
+  },
+  {
+    "id": "custom-1778238740416",
+    "slug": "custom-1778238740416",
+    "name": "Футболка Fernando Alonso 14",
+    "category": "Pilots",
+    "collection": "Silver",
+    "collectionTags": [
+      "Silver",
+      "New Arrivals"
+    ],
+    "driverName": "Fernando Alonso",
+    "driverSlug": "fernando-alonso",
+    "teamName": "Aston Martin",
+    "teamSlug": "aston-martin",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "Silver",
+      "White"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778238740416-cover-b64553931909.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778238740416-cover-b64553931909.jpg",
+      "/catalog-products/custom-1778238740416-gallery-1-b64553931909.jpg"
+    ],
+    "description": "Футболка из коллекции Fernando Alonso. Модель выполнена в эстетике фирменного магазина командной одежды: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой Formula 1.",
+    "shortDescription": "Футболка из коллекции Fernando Alonso в стилистике фирменного магазина спортивной одежды.",
+    "popularity": 75,
+    "createdAt": "2026-05-08T11:12:20.416Z",
+    "number": 14,
+    "hexPalette": [
+      "#165C45",
+      "#111111",
+      "#ECE4D7"
+    ]
+  },
+  {
+    "id": "custom-1778371528613",
+    "slug": "custom-1778371528613",
+    "name": "Футболка Franco Colapinto",
+    "category": "Pilots",
+    "collection": "Blackout",
+    "collectionTags": [
+      "Blackout",
+      "New Arrivals"
+    ],
+    "driverName": "Franco Colapinto",
+    "driverSlug": "franco-colapinto",
+    "teamName": "Alpine",
+    "teamSlug": "alpine",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 2990,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "White"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778371528613-cover-3d4f1df84bad.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778371528613-cover-3d4f1df84bad.jpg",
+      "/catalog-products/custom-1778371528613-gallery-1-3d4f1df84bad.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-10T00:05:28.614Z",
+    "number": 43,
+    "hexPalette": [
+      "#1759BF",
+      "#E36AA3",
+      "#111111"
+    ]
+  },
+  {
+    "id": "custom-1778238352887",
+    "slug": "custom-1778238352887",
+    "name": "Футболка Franco Colapinto 43",
+    "category": "Pilots",
+    "collection": "Silver",
+    "collectionTags": [
+      "Silver",
+      "New Arrivals"
+    ],
+    "driverName": "Franco Colapinto",
+    "driverSlug": "franco-colapinto",
+    "teamName": "Alpine",
+    "teamSlug": "alpine",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "Silver"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778238352887-cover-58856729bc0b.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778238352887-cover-58856729bc0b.jpg",
+      "/catalog-products/custom-1778238352887-gallery-1-58856729bc0b.jpg"
+    ],
+    "description": "Футболка из коллекции Franco Colapinto. Модель выполнена в эстетике фирменного магазина командной одежды: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой Formula 1.",
+    "shortDescription": "Футболка из коллекции Franco Colapinto в стилистике фирменного магазина спортивной одежды.",
+    "popularity": 75,
+    "createdAt": "2026-05-08T11:05:52.887Z",
+    "number": 43,
+    "hexPalette": [
+      "#1759BF",
+      "#E36AA3",
+      "#111111"
+    ]
+  },
+  {
+    "id": "custom-1778371340597",
+    "slug": "custom-1778371340597",
+    "name": "Футболка Gabriel Bortoleto",
+    "category": "Pilots",
+    "collection": "Blackout",
+    "collectionTags": [
+      "Blackout",
+      "New Arrivals"
+    ],
+    "driverName": "Gabriel Bortoleto",
+    "driverSlug": "gabriel-bortoleto",
+    "teamName": "Audi",
+    "teamSlug": "audi",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "White"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778371340597-cover-3576ad4506f7.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778371340597-cover-3576ad4506f7.jpg",
+      "/catalog-products/custom-1778371340597-gallery-1-3576ad4506f7.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-10T00:02:20.597Z",
+    "number": 5,
+    "hexPalette": [
+      "#111111",
+      "#D1D5DB",
+      "#D63A38"
+    ]
+  },
+  {
+    "id": "custom-1778239525731",
+    "slug": "custom-1778239525731",
+    "name": "Футболка Gabriel Bortoleto 5",
+    "category": "Pilots",
+    "collection": "Silver",
+    "collectionTags": [
+      "Silver",
+      "New Arrivals"
+    ],
+    "driverName": "Gabriel Bortoleto",
+    "driverSlug": "gabriel-bortoleto",
+    "teamName": "Audi",
+    "teamSlug": "audi",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "Silver"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778239525731-cover-e5f7a869e932.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778239525731-cover-e5f7a869e932.jpg",
+      "/catalog-products/custom-1778239525731-gallery-1-e5f7a869e932.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-08T11:25:25.731Z",
+    "number": 5,
+    "hexPalette": [
+      "#111111",
+      "#D1D5DB",
+      "#D63A38"
+    ]
+  },
+  {
+    "id": "custom-1778371124746",
+    "slug": "custom-1778371124746",
+    "name": "Футболка George Russel",
+    "category": "Pilots",
+    "collection": "Blackout",
+    "collectionTags": [
+      "Blackout",
+      "New Arrivals"
+    ],
+    "driverName": "George Russell",
+    "driverSlug": "george-russell",
+    "teamName": "Mercedes",
+    "teamSlug": "mercedes",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "Green",
+      "White"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778371124746-cover-4efa53bd10d6.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778371124746-cover-4efa53bd10d6.jpg",
+      "/catalog-products/custom-1778371124746-gallery-1-4efa53bd10d6.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-09T23:58:44.746Z",
+    "number": 63,
+    "hexPalette": [
+      "#111111",
+      "#CDD3D9",
+      "#27C5A7"
+    ]
+  },
+  {
+    "id": "custom-1778371258497",
+    "slug": "custom-1778371258497",
+    "name": "Футболка Isack Hadjar",
+    "category": "Pilots",
+    "collection": "Blackout",
+    "collectionTags": [
+      "Blackout",
+      "New Arrivals"
+    ],
+    "driverName": "Isack Hadjar",
+    "driverSlug": "isack-hadjar",
+    "teamName": "Red Bull Racing",
+    "teamSlug": "red-bull-racing",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "White"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778371258497-cover-78cb3c8634a1.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778371258497-cover-78cb3c8634a1.jpg",
+      "/catalog-products/custom-1778371258497-gallery-1-78cb3c8634a1.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-10T00:00:58.497Z",
+    "number": 6,
+    "hexPalette": [
+      "#162540",
+      "#D8382E",
+      "#F0C03D"
+    ]
+  },
+  {
+    "id": "custom-1778239232249",
+    "slug": "custom-1778239232249",
+    "name": "Футболка Isack Hadjar 6",
+    "category": "Pilots",
+    "collection": "Silver",
+    "collectionTags": [
+      "Silver",
+      "New Arrivals"
+    ],
+    "driverName": "Isack Hadjar",
+    "driverSlug": "isack-hadjar",
+    "teamName": "Red Bull Racing",
+    "teamSlug": "red-bull-racing",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "Silver"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778239232249-cover-b42fc407cd37.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778239232249-cover-b42fc407cd37.jpg",
+      "/catalog-products/custom-1778239232249-gallery-1-b42fc407cd37.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-08T11:20:32.249Z",
+    "number": 6,
+    "hexPalette": [
+      "#162540",
+      "#D8382E",
+      "#F0C03D"
+    ]
+  },
+  {
+    "id": "custom-1778371074746",
+    "slug": "custom-1778371074746",
+    "name": "Футболка Kimi Antonelli",
+    "category": "Pilots",
+    "collection": "Blackout",
+    "collectionTags": [
+      "Blackout",
+      "New Arrivals"
+    ],
+    "driverName": "Kimi Antonelli",
+    "driverSlug": "kimi-antonelli",
+    "teamName": "Mercedes",
+    "teamSlug": "mercedes",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "White"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778371074746-cover-ddce67d986fa.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778371074746-cover-ddce67d986fa.jpg",
+      "/catalog-products/custom-1778371074746-gallery-1-ddce67d986fa.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-09T23:57:54.746Z",
+    "number": 12,
+    "hexPalette": [
+      "#111111",
+      "#CDD3D9",
+      "#27C5A7"
+    ]
+  },
+  {
+    "id": "custom-1778239187583",
+    "slug": "custom-1778239187583",
+    "name": "Футболка Kimi Antonelli 12",
+    "category": "Pilots",
+    "collection": "Silver",
+    "collectionTags": [
+      "Silver",
+      "New Arrivals"
+    ],
+    "driverName": "Kimi Antonelli",
+    "driverSlug": "kimi-antonelli",
+    "teamName": "Mercedes",
+    "teamSlug": "mercedes",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "Silver"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778239187583-cover-ce6eac54f962.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778239187583-cover-ce6eac54f962.jpg",
+      "/catalog-products/custom-1778239187583-gallery-1-ce6eac54f962.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-08T11:19:47.583Z",
+    "number": 12,
+    "hexPalette": [
+      "#111111",
+      "#CDD3D9",
+      "#27C5A7"
+    ]
+  },
+  {
+    "id": "custom-1778372187829",
+    "slug": "custom-1778372187829",
+    "name": "Футболка Kimi Räikkönen",
+    "category": "Legends",
+    "collection": "Blackout",
+    "collectionTags": [
+      "Blackout",
+      "New Arrivals"
+    ],
+    "driverName": null,
+    "driverSlug": null,
+    "teamName": null,
+    "teamSlug": null,
+    "legendName": "Kimi Räikkönen",
+    "legendSlug": "kimi-raikkonen",
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "White"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778372187829-cover-2bf1bfe7c457.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778372187829-cover-2bf1bfe7c457.jpg",
+      "/catalog-products/custom-1778372187829-gallery-1-2bf1bfe7c457.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-10T00:16:27.829Z",
+    "number": 4,
+    "hexPalette": [
+      "#111111",
+      "#D63A38",
+      "#F9F8F4"
+    ]
+  },
+  {
+    "id": "custom-1778373002979",
+    "slug": "custom-1778373002979",
+    "name": "Футболка Kimi Räikkönen 7",
+    "category": "Legends",
+    "collection": "Silver",
+    "collectionTags": [
+      "Silver",
+      "New Arrivals"
+    ],
+    "driverName": null,
+    "driverSlug": null,
+    "teamName": null,
+    "teamSlug": null,
+    "legendName": "Kimi Räikkönen",
+    "legendSlug": "kimi-raikkonen",
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "Silver"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778373002979-cover-cd10cbe5678b.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778373002979-cover-cd10cbe5678b.jpg",
+      "/catalog-products/custom-1778373002979-gallery-1-cd10cbe5678b.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-10T00:30:02.979Z",
+    "number": 4,
+    "hexPalette": [
+      "#111111",
+      "#D63A38",
+      "#F9F8F4"
+    ]
+  },
+  {
+    "id": "custom-1778371781063",
+    "slug": "custom-1778371781063",
+    "name": "Футболка Lance Stroll",
+    "category": "Pilots",
+    "collection": "Blackout",
+    "collectionTags": [
+      "Blackout",
+      "New Arrivals"
+    ],
+    "driverName": "Lance Stroll",
+    "driverSlug": "lance-stroll",
+    "teamName": "Aston Martin",
+    "teamSlug": "aston-martin",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "White"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778371781063-cover-1fadcdd7913c.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778371781063-cover-1fadcdd7913c.jpg",
+      "/catalog-products/custom-1778371781063-gallery-1-1fadcdd7913c.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-10T00:09:41.063Z",
+    "number": 18,
+    "hexPalette": [
+      "#165C45",
+      "#111111",
+      "#ECE4D7"
+    ]
+  },
+  {
+    "id": "custom-1778238800249",
+    "slug": "custom-1778238800249",
+    "name": "Футболка Lance Stroll 18",
+    "category": "Pilots",
+    "collection": "Silver",
+    "collectionTags": [
+      "Silver",
+      "New Arrivals"
+    ],
+    "driverName": "Lance Stroll",
+    "driverSlug": "lance-stroll",
+    "teamName": "Aston Martin",
+    "teamSlug": "aston-martin",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "Silver"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778238800249-cover-c3f41c1337c2.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778238800249-cover-c3f41c1337c2.jpg",
+      "/catalog-products/custom-1778238800249-gallery-1-c3f41c1337c2.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-08T11:13:20.250Z",
+    "number": 18,
+    "hexPalette": [
+      "#165C45",
+      "#111111",
+      "#ECE4D7"
+    ]
+  },
+  {
+    "id": "custom-1778371027380",
+    "slug": "custom-1778371027380",
+    "name": "Футболка Lando Norris",
+    "category": "Pilots",
+    "collection": "Blackout",
+    "collectionTags": [
+      "Blackout",
+      "New Arrivals"
+    ],
+    "driverName": "Lando Norris",
+    "driverSlug": "lando-norris",
+    "teamName": "McLaren",
+    "teamSlug": "mclaren",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3499,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "White"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778371027380-cover-f6c8cd04fd50.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778371027380-cover-f6c8cd04fd50.jpg",
+      "/catalog-products/custom-1778371027380-gallery-1-f6c8cd04fd50.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-09T23:57:07.380Z",
+    "number": 4,
+    "hexPalette": [
+      "#EE6C2F",
+      "#111111",
+      "#F4E9DB"
+    ]
+  },
+  {
+    "id": "custom-1778239288115",
+    "slug": "custom-1778239288115",
+    "name": "Футболка Lando Norris 4",
+    "category": "Pilots",
+    "collection": "Silver",
+    "collectionTags": [
+      "Silver",
+      "New Arrivals"
+    ],
+    "driverName": "Lando Norris",
+    "driverSlug": "lando-norris",
+    "teamName": "McLaren",
+    "teamSlug": "mclaren",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "Silver"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778239288115-cover-a5964be08fcb.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778239288115-cover-a5964be08fcb.jpg",
+      "/catalog-products/custom-1778239288115-gallery-1-a5964be08fcb.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-08T11:21:28.115Z",
+    "number": 4,
+    "hexPalette": [
+      "#EE6C2F",
+      "#111111",
+      "#F4E9DB"
+    ]
+  },
+  {
+    "id": "custom-1778443157328",
+    "slug": "custom-1778443157328",
+    "name": "Футболка Lando Norris x England",
+    "category": "Pilots",
+    "collection": "F1 x Football",
+    "collectionTags": [
+      "F1 x Football",
+      "New Arrivals"
+    ],
+    "driverName": "Lando Norris",
+    "driverSlug": "lando-norris",
+    "teamName": "McLaren",
+    "teamSlug": "mclaren",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 5000,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "White",
+      "Navy"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778443157328-cover-0db10b8d969b.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778443157328-cover-0db10b8d969b.jpg",
+      "/catalog-products/custom-1778443157328-gallery-1-0db10b8d969b.jpg"
+    ],
+    "description": "Футболка из коллекции Lando Norris. Модель выполнена в эстетике фирменного магазина командной одежды: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой Formula 1.",
+    "shortDescription": "Футболка из коллекции Lando Norris в стилистике фирменного магазина спортивной одежды.",
+    "popularity": 75,
+    "createdAt": "2026-05-10T19:59:17.329Z",
+    "number": 4,
+    "hexPalette": [
+      "#EE6C2F",
+      "#111111",
+      "#F4E9DB"
+    ]
+  },
+  {
+    "id": "custom-1777416741928",
+    "slug": "custom-1777416741928",
+    "name": "Футболка Lewis Hamilton",
+    "category": "Pilots",
+    "collection": "Blackout",
+    "collectionTags": [
+      "Blackout",
       "New Arrivals"
     ],
     "driverName": "Lewis Hamilton",
@@ -199,7 +2347,57 @@
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
-      "Black"
+      "Black",
+      "White"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/recovered-products/custom-1777416741928-cover.jpg",
+    "gallery": [
+      "/recovered-products/custom-1777416741928-cover.jpg"
+    ],
+    "description": "Футболка из коллекции Lewis Hamilton. Модель выполнена в эстетике фирменного магазина командной одежды: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой Formula 1.",
+    "shortDescription": "Футболка из коллекции Lewis Hamilton в стилистике фирменного магазина спортивной одежды.",
+    "popularity": 75,
+    "createdAt": "2026-04-28T22:52:21.928Z",
+    "number": 44,
+    "hexPalette": [
+      "#D5332C",
+      "#111111",
+      "#F5CF51"
+    ]
+  },
+  {
+    "id": "custom-1777482490798",
+    "slug": "custom-1777482490798",
+    "name": "Футболка Lewis Hamilton 44",
+    "category": "Pilots",
+    "collection": "Silver",
+    "collectionTags": [
+      "Silver",
+      "New Arrivals"
+    ],
+    "driverName": "Lewis Hamilton",
+    "driverSlug": "lewis-hamilton",
+    "teamName": "Ferrari",
+    "teamSlug": "ferrari",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "Silver"
     ],
     "sizes": [
       "XS",
@@ -229,13 +2427,13 @@
     ]
   },
   {
-    "id": "custom-1777416741928",
-    "slug": "custom-1777416741928",
-    "name": "Футболка Lewis Hamilton Black Out",
+    "id": "custom-1778443251861",
+    "slug": "custom-1778443251861",
+    "name": "Футболка Lewis Hamilton x England",
     "category": "Pilots",
-    "collection": "Blackout",
+    "collection": "F1 x Football",
     "collectionTags": [
-      "Blackout",
+      "F1 x Football",
       "New Arrivals"
     ],
     "driverName": "Lewis Hamilton",
@@ -245,10 +2443,61 @@
     "legendName": null,
     "legendSlug": null,
     "gender": "Unisex",
+    "price": 5000,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "White",
+      "Navy"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778443251861-cover-411b20f3369b.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778443251861-cover-411b20f3369b.jpg",
+      "/catalog-products/custom-1778443251861-gallery-1-411b20f3369b.jpg"
+    ],
+    "description": "Футболка из коллекции Lewis Hamilton. Модель выполнена в эстетике фирменного магазина командной одежды: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой Formula 1.",
+    "shortDescription": "Футболка из коллекции Lewis Hamilton в стилистике фирменного магазина спортивной одежды.",
+    "popularity": 75,
+    "createdAt": "2026-05-10T20:00:51.861Z",
+    "number": 44,
+    "hexPalette": [
+      "#D5332C",
+      "#111111",
+      "#F5CF51"
+    ]
+  },
+  {
+    "id": "custom-1778373952202",
+    "slug": "custom-1778373952202",
+    "name": "Футболка Liam Lawson",
+    "category": "Pilots",
+    "collection": "Blackout",
+    "collectionTags": [
+      "Blackout",
+      "New Arrivals"
+    ],
+    "driverName": "Liam Lawson",
+    "driverSlug": "liam-lawson",
+    "teamName": "Racing Bulls",
+    "teamSlug": "racing-bulls",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
     "price": 3500,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
+      "White",
       "Black"
     ],
     "sizes": [
@@ -261,19 +2510,70 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
-    "image": "/recovered-products/custom-1777416741928-cover.jpg",
+    "image": "/catalog-products/custom-1778373952202-cover-ee113f3865c5.jpg",
     "gallery": [
-      "/recovered-products/custom-1777416741928-cover.jpg"
+      "/catalog-products/custom-1778373952202-cover-ee113f3865c5.jpg",
+      "/catalog-products/custom-1778373952202-gallery-1-ee113f3865c5.jpg"
     ],
-    "description": "Футболка из коллекции Lewis Hamilton. Модель выполнена в эстетике фирменного магазина командной одежды: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой Formula 1.",
-    "shortDescription": "Футболка из коллекции Lewis Hamilton в стилистике фирменного магазина спортивной одежды.",
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
     "popularity": 75,
-    "createdAt": "2026-04-28T22:52:21.928Z",
-    "number": 44,
+    "createdAt": "2026-05-10T00:45:52.202Z",
+    "number": 30,
     "hexPalette": [
-      "#D5332C",
-      "#111111",
-      "#F5CF51"
+      "#2565D8",
+      "#F9F8F4",
+      "#D63A38"
+    ]
+  },
+  {
+    "id": "custom-1778238259766",
+    "slug": "custom-1778238259766",
+    "name": "Футболка Liam Lawson 30",
+    "category": "Pilots",
+    "collection": "Silver",
+    "collectionTags": [
+      "Silver",
+      "New Arrivals"
+    ],
+    "driverName": "Liam Lawson",
+    "driverSlug": "liam-lawson",
+    "teamName": "Racing Bulls",
+    "teamSlug": "racing-bulls",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "Silver"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778238259766-cover-ff46d5a3a906.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778238259766-cover-ff46d5a3a906.jpg",
+      "/catalog-products/custom-1778238259766-gallery-1-ff46d5a3a906.jpg"
+    ],
+    "description": "Футболка из коллекции Liam Lawson. Модель выполнена в эстетике фирменного магазина командной одежды: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой Formula 1.",
+    "shortDescription": "Футболка из коллекции Liam Lawson в стилистике фирменного магазина спортивной одежды.",
+    "popularity": 75,
+    "createdAt": "2026-05-08T11:04:19.766Z",
+    "number": 30,
+    "hexPalette": [
+      "#2565D8",
+      "#F9F8F4",
+      "#D63A38"
     ]
   },
   {
@@ -323,6 +2623,956 @@
       "#162540",
       "#D8382E",
       "#F0C03D"
+    ]
+  },
+  {
+    "id": "custom-1778091497744",
+    "slug": "custom-1778091497744",
+    "name": "Футболка Max Verstappen",
+    "category": "Pilots",
+    "collection": "Blackout",
+    "collectionTags": [
+      "Blackout",
+      "New Arrivals"
+    ],
+    "driverName": "Max Verstappen",
+    "driverSlug": "max-verstappen",
+    "teamName": "Red Bull Racing",
+    "teamSlug": "red-bull-racing",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "White"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778091497744-cover-fde368a7687b.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778091497744-cover-fde368a7687b.jpg",
+      "/catalog-products/custom-1778091497744-gallery-1-fde368a7687b.jpg"
+    ],
+    "description": "Футболка из коллекции Max Verstappen. Модель выполнена в эстетике фирменного магазина командной одежды: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой Formula 1.",
+    "shortDescription": "Футболка из коллекции Max Verstappen в стилистике фирменного магазина спортивной одежды.",
+    "popularity": 75,
+    "createdAt": "2026-05-06T18:18:17.744Z",
+    "number": 1,
+    "hexPalette": [
+      "#162540",
+      "#D8382E",
+      "#F0C03D"
+    ]
+  },
+  {
+    "id": "custom-1778238973833",
+    "slug": "custom-1778238973833",
+    "name": "Футболка Max Verstappen 1",
+    "category": "Pilots",
+    "collection": "Silver",
+    "collectionTags": [
+      "Silver",
+      "New Arrivals"
+    ],
+    "driverName": "Max Verstappen",
+    "driverSlug": "max-verstappen",
+    "teamName": "Red Bull Racing",
+    "teamSlug": "red-bull-racing",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "Silver"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778238973833-cover-805af9ff7dfb.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778238973833-cover-805af9ff7dfb.jpg",
+      "/catalog-products/custom-1778238973833-gallery-1-805af9ff7dfb.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-08T11:16:13.833Z",
+    "number": 1,
+    "hexPalette": [
+      "#162540",
+      "#D8382E",
+      "#F0C03D"
+    ]
+  },
+  {
+    "id": "custom-1778371302613",
+    "slug": "custom-1778371302613",
+    "name": "Футболка Nico Hülkenberg",
+    "category": "Pilots",
+    "collection": "Blackout",
+    "collectionTags": [
+      "Blackout",
+      "New Arrivals"
+    ],
+    "driverName": "Nico Hülkenberg",
+    "driverSlug": "nico-hulkenberg",
+    "teamName": "Audi",
+    "teamSlug": "audi",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "White"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778371302613-cover-19e308867fab.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778371302613-cover-19e308867fab.jpg",
+      "/catalog-products/custom-1778371302613-gallery-1-19e308867fab.jpg"
+    ],
+    "description": "Футболка из коллекции Nico Hülkenberg. Модель выполнена в эстетике фирменного магазина командной одежды: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой Formula 1.",
+    "shortDescription": "Футболка из коллекции Nico Hülkenberg в стилистике фирменного магазина спортивной одежды.",
+    "popularity": 75,
+    "createdAt": "2026-05-10T00:01:42.613Z",
+    "number": 27,
+    "hexPalette": [
+      "#111111",
+      "#D1D5DB",
+      "#D63A38"
+    ]
+  },
+  {
+    "id": "custom-1778239373949",
+    "slug": "custom-1778239373949",
+    "name": "Футболка Nico Hülkenberg 27",
+    "category": "Pilots",
+    "collection": "Silver",
+    "collectionTags": [
+      "Silver",
+      "New Arrivals"
+    ],
+    "driverName": "Nico Hülkenberg",
+    "driverSlug": "nico-hulkenberg",
+    "teamName": "Audi",
+    "teamSlug": "audi",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "Silver"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "New",
+    "image": "/catalog-products/custom-1778239373949-cover-459612901f06.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778239373949-cover-459612901f06.jpg",
+      "/catalog-products/custom-1778239373949-gallery-1-459612901f06.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-08T11:22:53.949Z",
+    "number": 27,
+    "hexPalette": [
+      "#111111",
+      "#D1D5DB",
+      "#D63A38"
+    ]
+  },
+  {
+    "id": "custom-1778371979130",
+    "slug": "custom-1778371979130",
+    "name": "Футболка Niki Lauda",
+    "category": "Legends",
+    "collection": "Blackout",
+    "collectionTags": [
+      "Blackout",
+      "New Arrivals"
+    ],
+    "driverName": null,
+    "driverSlug": null,
+    "teamName": null,
+    "teamSlug": null,
+    "legendName": "Niki Lauda",
+    "legendSlug": "niki-lauda",
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "White",
+      "Black"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778371979130-cover-5d022fec0336.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778371979130-cover-5d022fec0336.jpg",
+      "/catalog-products/custom-1778371979130-gallery-1-5d022fec0336.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-10T00:12:59.130Z",
+    "number": 4,
+    "hexPalette": [
+      "#CE3D35",
+      "#F9F8F4",
+      "#111111"
+    ]
+  },
+  {
+    "id": "custom-1778372553913",
+    "slug": "custom-1778372553913",
+    "name": "Футболка Niki Lauda 1",
+    "category": "Legends",
+    "collection": "Silver",
+    "collectionTags": [
+      "Silver",
+      "New Arrivals"
+    ],
+    "driverName": null,
+    "driverSlug": null,
+    "teamName": null,
+    "teamSlug": null,
+    "legendName": "Niki Lauda",
+    "legendSlug": "niki-lauda",
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "Silver"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778372553913-cover-884b1982bf12.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778372553913-cover-884b1982bf12.jpg",
+      "/catalog-products/custom-1778372553913-gallery-1-884b1982bf12.jpg"
+    ],
+    "description": "Футболка из коллекции легенд Niki Lauda. В основе спокойный, выверенный подход: архивное вдохновение Formula 1, аккуратная типографика и современная спортивная подача.",
+    "shortDescription": "Футболка из архивной коллекции Niki Lauda в выверенном стиле.",
+    "popularity": 75,
+    "createdAt": "2026-05-10T00:22:33.913Z",
+    "number": 4,
+    "hexPalette": [
+      "#CE3D35",
+      "#F9F8F4",
+      "#111111"
+    ]
+  },
+  {
+    "id": "custom-1778371918097",
+    "slug": "custom-1778371918097",
+    "name": "Футболка Oliver Bearman",
+    "category": "Pilots",
+    "collection": "Blackout",
+    "collectionTags": [
+      "Blackout",
+      "New Arrivals"
+    ],
+    "driverName": "Oliver Bearman",
+    "driverSlug": "oliver-bearman",
+    "teamName": "Haas",
+    "teamSlug": "haas",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "White",
+      "Black"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778371918097-cover-651ef1d51f92.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778371918097-cover-651ef1d51f92.jpg",
+      "/catalog-products/custom-1778371918097-gallery-1-651ef1d51f92.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-10T00:11:58.097Z",
+    "number": 87,
+    "hexPalette": [
+      "#F7F6F2",
+      "#111111",
+      "#C7362F"
+    ]
+  },
+  {
+    "id": "custom-1778238863083",
+    "slug": "custom-1778238863083",
+    "name": "Футболка Oliver Bearman 87",
+    "category": "Pilots",
+    "collection": "Silver",
+    "collectionTags": [
+      "Silver",
+      "New Arrivals"
+    ],
+    "driverName": "Oliver Bearman",
+    "driverSlug": "oliver-bearman",
+    "teamName": "Haas",
+    "teamSlug": "haas",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "Silver"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778238863083-cover-39dedfde918c.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778238863083-cover-39dedfde918c.jpg",
+      "/catalog-products/custom-1778238863083-gallery-1-39dedfde918c.jpg"
+    ],
+    "description": "Футболка из коллекции Oliver Bearman. Модель выполнена в эстетике фирменного магазина командной одежды: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой Formula 1.",
+    "shortDescription": "Футболка из коллекции Oliver Bearman в стилистике фирменного магазина спортивной одежды.",
+    "popularity": 75,
+    "createdAt": "2026-05-08T11:14:23.083Z",
+    "number": 87,
+    "hexPalette": [
+      "#F7F6F2",
+      "#111111",
+      "#C7362F"
+    ]
+  },
+  {
+    "id": "custom-1778370973181",
+    "slug": "custom-1778370973181",
+    "name": "Футболка Oscar Piastri",
+    "category": "Pilots",
+    "collection": "Blackout",
+    "collectionTags": [
+      "Blackout",
+      "New Arrivals"
+    ],
+    "driverName": "Oscar Piastri",
+    "driverSlug": "oscar-piastri",
+    "teamName": "McLaren",
+    "teamSlug": "mclaren",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "White"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778370973181-cover-83ae38d71158.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778370973181-cover-83ae38d71158.jpg",
+      "/catalog-products/custom-1778370973181-gallery-1-83ae38d71158.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-09T23:56:13.181Z",
+    "number": 81,
+    "hexPalette": [
+      "#EE6C2F",
+      "#111111",
+      "#F4E9DB"
+    ]
+  },
+  {
+    "id": "custom-1778239327582",
+    "slug": "custom-1778239327582",
+    "name": "Футболка Oscar Piastri 81",
+    "category": "Pilots",
+    "collection": "Silver",
+    "collectionTags": [
+      "Silver",
+      "New Arrivals"
+    ],
+    "driverName": "Oscar Piastri",
+    "driverSlug": "oscar-piastri",
+    "teamName": "McLaren",
+    "teamSlug": "mclaren",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "Silver"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778239327582-cover-a5964be08fcb.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778239327582-cover-a5964be08fcb.jpg",
+      "/catalog-products/custom-1778239327582-gallery-1-a5964be08fcb.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-08T11:22:07.582Z",
+    "number": 81,
+    "hexPalette": [
+      "#EE6C2F",
+      "#111111",
+      "#F4E9DB"
+    ]
+  },
+  {
+    "id": "custom-1778371445364",
+    "slug": "custom-1778371445364",
+    "name": "Футболка Pierre Gasly",
+    "category": "Pilots",
+    "collection": "Blackout",
+    "collectionTags": [
+      "Blackout",
+      "New Arrivals"
+    ],
+    "driverName": "Pierre Gasly",
+    "driverSlug": "pierre-gasly",
+    "teamName": "Alpine",
+    "teamSlug": "alpine",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "White"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778371445364-cover-b641db709892.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778371445364-cover-b641db709892.jpg",
+      "/catalog-products/custom-1778371445364-gallery-1-b641db709892.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-10T00:04:05.364Z",
+    "number": 10,
+    "hexPalette": [
+      "#1759BF",
+      "#E36AA3",
+      "#111111"
+    ]
+  },
+  {
+    "id": "custom-1778238425184",
+    "slug": "custom-1778238425184",
+    "name": "Футболка Pierre Gasly 10",
+    "category": "Pilots",
+    "collection": "Silver",
+    "collectionTags": [
+      "Silver",
+      "New Arrivals"
+    ],
+    "driverName": "Pierre Gasly",
+    "driverSlug": "pierre-gasly",
+    "teamName": "Alpine",
+    "teamSlug": "alpine",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "Silver"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778238425184-cover-e518e006d0d2.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778238425184-cover-e518e006d0d2.jpg",
+      "/catalog-products/custom-1778238425184-gallery-1-e518e006d0d2.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-08T11:07:05.185Z",
+    "number": 10,
+    "hexPalette": [
+      "#1759BF",
+      "#E36AA3",
+      "#111111"
+    ]
+  },
+  {
+    "id": "custom-1778237860117",
+    "slug": "custom-1778237860117",
+    "name": "Футболка Sainz Smooth Operator",
+    "category": "Pilots",
+    "collection": "",
+    "collectionTags": [
+      "New Arrivals"
+    ],
+    "driverName": "Carlos Sainz",
+    "driverSlug": "carlos-sainz",
+    "teamName": "Williams",
+    "teamSlug": "williams",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 2990,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "Green",
+      "White"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778237860117-cover-3ebd0fa51888.png",
+    "gallery": [
+      "/catalog-products/custom-1778237860117-cover-3ebd0fa51888.png",
+      "/catalog-products/custom-1778237860117-gallery-1-3ebd0fa51888.png"
+    ],
+    "description": "Футболка из коллекции Carlos Sainz. Модель выполнена в эстетике фирменного магазина командной одежды: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой Formula 1.",
+    "shortDescription": "Футболка из коллекции Carlos Sainz в стилистике фирменного магазина спортивной одежды.",
+    "popularity": 75,
+    "createdAt": "2026-05-08T10:57:40.117Z",
+    "number": 55,
+    "hexPalette": [
+      "#1F57D4",
+      "#F9F8F4",
+      "#17326E"
+    ]
+  },
+  {
+    "id": "custom-1778372640866",
+    "slug": "custom-1778372640866",
+    "name": "Футболка Sebastian Vettel",
+    "category": "Legends",
+    "collection": "Blackout",
+    "collectionTags": [
+      "Blackout",
+      "New Arrivals"
+    ],
+    "driverName": null,
+    "driverSlug": null,
+    "teamName": null,
+    "teamSlug": null,
+    "legendName": "Sebastian Vettel",
+    "legendSlug": "sebastian-vettel",
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "White"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778372640866-cover-f577754cbc04.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778372640866-cover-f577754cbc04.jpg",
+      "/catalog-products/custom-1778372640866-gallery-1-f577754cbc04.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-10T00:24:00.866Z",
+    "number": 4,
+    "hexPalette": [
+      "#172340",
+      "#D63A38",
+      "#E1BF3B"
+    ]
+  },
+  {
+    "id": "custom-1778372916714",
+    "slug": "custom-1778372916714",
+    "name": "Футболка Sebastian Vettel 5",
+    "category": "Legends",
+    "collection": "Silver",
+    "collectionTags": [
+      "Silver",
+      "New Arrivals"
+    ],
+    "driverName": null,
+    "driverSlug": null,
+    "teamName": null,
+    "teamSlug": null,
+    "legendName": "Sebastian Vettel",
+    "legendSlug": "sebastian-vettel",
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "Silver"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778372916714-cover-b17c77dc574a.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778372916714-cover-b17c77dc574a.jpg",
+      "/catalog-products/custom-1778372916714-gallery-1-b17c77dc574a.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-10T00:28:36.714Z",
+    "number": 4,
+    "hexPalette": [
+      "#172340",
+      "#D63A38",
+      "#E1BF3B"
+    ]
+  },
+  {
+    "id": "custom-1778371591564",
+    "slug": "custom-1778371591564",
+    "name": "Футболка Sergio Pérez",
+    "category": "Pilots",
+    "collection": "Blackout",
+    "collectionTags": [
+      "Blackout",
+      "New Arrivals"
+    ],
+    "driverName": "Sergio Pérez",
+    "driverSlug": "sergio-perez",
+    "teamName": "Cadillac",
+    "teamSlug": "cadillac",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "White"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778371591564-cover-42b35c99d93b.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778371591564-cover-42b35c99d93b.jpg",
+      "/catalog-products/custom-1778371591564-gallery-1-42b35c99d93b.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-10T00:06:31.564Z",
+    "number": 11,
+    "hexPalette": [
+      "#111111",
+      "#D8C7B3",
+      "#7B2220"
+    ]
+  },
+  {
+    "id": "custom-1778238542886",
+    "slug": "custom-1778238542886",
+    "name": "Футболка Sergio Pérez 11",
+    "category": "Pilots",
+    "collection": "Silver",
+    "collectionTags": [
+      "Silver",
+      "New Arrivals"
+    ],
+    "driverName": "Sergio Pérez",
+    "driverSlug": "sergio-perez",
+    "teamName": "Cadillac",
+    "teamSlug": "cadillac",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "Silver"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778238542886-cover-45e7bedd33b2.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778238542886-cover-45e7bedd33b2.jpg",
+      "/catalog-products/custom-1778238542886-gallery-1-45e7bedd33b2.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-08T11:09:02.886Z",
+    "number": 11,
+    "hexPalette": [
+      "#111111",
+      "#D8C7B3",
+      "#7B2220"
+    ]
+  },
+  {
+    "id": "custom-1778371672365",
+    "slug": "custom-1778371672365",
+    "name": "Футболка Valtteri Bottas",
+    "category": "Pilots",
+    "collection": "Blackout",
+    "collectionTags": [
+      "Blackout",
+      "New Arrivals"
+    ],
+    "driverName": "Valtteri Bottas",
+    "driverSlug": "valtteri-bottas",
+    "teamName": "Cadillac",
+    "teamSlug": "cadillac",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "White"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778371672365-cover-4b252084f1e8.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778371672365-cover-4b252084f1e8.jpg",
+      "/catalog-products/custom-1778371672365-gallery-1-4b252084f1e8.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-10T00:07:52.365Z",
+    "number": 77,
+    "hexPalette": [
+      "#111111",
+      "#D8C7B3",
+      "#7B2220"
+    ]
+  },
+  {
+    "id": "custom-1778238619333",
+    "slug": "custom-1778238619333",
+    "name": "Футболка Valtteri Bottas 77",
+    "category": "Pilots",
+    "collection": "Silver",
+    "collectionTags": [
+      "Silver",
+      "New Arrivals"
+    ],
+    "driverName": "Valtteri Bottas",
+    "driverSlug": "valtteri-bottas",
+    "teamName": "Cadillac",
+    "teamSlug": "cadillac",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "Silver"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "image": "/catalog-products/custom-1778238619333-cover-2f9dc4fcd180.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778238619333-cover-2f9dc4fcd180.jpg",
+      "/catalog-products/custom-1778238619333-gallery-1-2f9dc4fcd180.jpg"
+    ],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-05-08T11:10:19.333Z",
+    "number": 77,
+    "hexPalette": [
+      "#111111",
+      "#D8C7B3",
+      "#7B2220"
     ]
   }
 ]

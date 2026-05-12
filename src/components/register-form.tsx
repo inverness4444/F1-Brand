@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { getErrorMessage, getZodFieldErrors } from "@/lib/form-error-utils";
-import { registerPayloadSchema } from "@/lib/validation-schemas";
+import { registerFormSchema } from "@/lib/validation-schemas";
 import { useMounted } from "@/hooks/use-mounted";
 import { useAuthStore } from "@/store/auth-store";
 import { useToastStore } from "@/store/toast-store";
@@ -63,14 +63,15 @@ export function RegisterForm() {
     event.preventDefault();
 
     try {
-      const payload = registerPayloadSchema.parse({ name, email, phone, password, acceptedLegal });
-
-      if (confirmPassword !== password) {
-        setErrors({
-          confirmPassword: "Пароли должны совпадать.",
-        });
-        return;
-      }
+      const { confirmPassword: _confirmPassword, ...payload } = registerFormSchema.parse({
+        name,
+        email,
+        phone,
+        password,
+        confirmPassword,
+        acceptedLegal,
+      });
+      void _confirmPassword;
 
       setErrors({});
       await register(payload);
@@ -78,7 +79,7 @@ export function RegisterForm() {
       router.replace("/account");
     } catch (error) {
       const fieldErrors = getZodFieldErrors<
-        "name" | "email" | "phone" | "password" | "acceptedLegal"
+        "name" | "email" | "phone" | "password" | "confirmPassword" | "acceptedLegal"
       >(error);
 
       if (Object.keys(fieldErrors).length > 0) {

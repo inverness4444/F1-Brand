@@ -23,7 +23,7 @@ import {
   storedUsersSchema,
 } from "@/lib/validation-schemas";
 import { emitStorageChange, readStorage, removeStorage, storageKeys, writeStorage } from "@/lib/browser-storage";
-import { resolveUserRole } from "@/lib/security-utils";
+import { resolveUserRole, sanitizeIdentifier } from "@/lib/security-utils";
 import { clientRateLimitService } from "@/services/client-rate-limit-service";
 
 function stripPassword(user: StoredUser): AuthUser {
@@ -99,7 +99,8 @@ function upgradePasswordIfNeeded(user: StoredUser, password: string) {
 }
 
 function getCurrentSessionId() {
-  return readStorage<string | null>(storageKeys.currentSessionId, null);
+  const sessionId = readStorage<unknown>(storageKeys.currentSessionId, null);
+  return typeof sessionId === "string" ? sanitizeIdentifier(sessionId, "") || null : null;
 }
 
 function createSession(userId: string, rememberMe: boolean) {
