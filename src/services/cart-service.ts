@@ -1,7 +1,7 @@
 import type { CartSelection, OrderItem } from "@/lib/account-types";
 import { readStorage, storageKeys } from "@/lib/browser-storage";
 import { getProductDisplayName } from "@/lib/storefront-text";
-import { SECURITY_LIMITS } from "@/lib/security-utils";
+import { buildCsrfHeaders, SECURITY_LIMITS } from "@/lib/security-utils";
 import { cartSelectionSchema, persistedCartStateSchema } from "@/lib/validation-schemas";
 import type { Product } from "@/lib/types";
 
@@ -26,6 +26,42 @@ export function readPersistedCart() {
     persistedCartStateSchema.nullable(),
   );
   return snapshot?.state?.items ?? [];
+}
+
+export async function fetchServerCart() {
+  const response = await fetch("/api/account/cart", {
+    cache: "no-store",
+    credentials: "include",
+  });
+
+  if (response.status === 401) {
+    return [];
+  }
+
+  const payload = (await response.json().catch(() => null)) as { items?: unknown; error?: string } | null;
+
+  if (!response.ok) {
+    throw new Error(payload?.error ?? "Не удалось загрузить корзину.");
+  }
+
+  return cartSelectionSchema.array().parse(payload?.items ?? []);
+}
+
+export async function saveServerCart(items: CartSelection[]) {
+  const response = await fetch("/api/account/cart", {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      ...buildCsrfHeaders(),
+    },
+    credentials: "include",
+    body: JSON.stringify({ items }),
+  });
+
+  if (!response.ok) {
+    const payload = (await response.json().catch(() => null)) as { error?: string } | null;
+    throw new Error(payload?.error ?? "Не удалось сохранить корзину.");
+  }
 }
 
 export function validateCartSelections(

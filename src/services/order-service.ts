@@ -1,131 +1,87 @@
 import type { GiftCertificate, Order } from "@/lib/account-types";
-import { buildOrderNumber, createEntityId } from "@/lib/account-utils";
-import { emitStorageChange, readStorage, storageKeys, writeStorage } from "@/lib/browser-storage";
-import { sanitizeIdentifier } from "@/lib/security-utils";
-import { authService } from "@/services/auth-service";
 import { orderSchema, ordersSchema } from "@/lib/validation-schemas";
 
-function readOrders() {
-  return readStorage<Order[]>(storageKeys.orders, [], ordersSchema);
+async function parseOrders(response: Response) {
+  const payload = (await response.json().catch(() => null)) as
+    | { orders?: unknown; error?: string }
+    | null;
+
+  if (!response.ok) {
+    throw new Error(payload?.error ?? "Не удалось загрузить заказы.");
+  }
+
+  return ordersSchema.parse(payload?.orders ?? []);
 }
 
-function writeOrders(orders: Order[]) {
-  writeStorage(storageKeys.orders, orders, ordersSchema);
-  emitStorageChange("orders");
-}
+async function parseOrder(response: Response) {
+  const payload = (await response.json().catch(() => null)) as
+    | { order?: unknown; error?: string }
+    | null;
 
-function writeLatestCheckoutOrder(orderId: string) {
-  writeStorage(storageKeys.checkoutOrder, orderId);
-  emitStorageChange("checkout");
-}
+  if (!response.ok) {
+    throw new Error(payload?.error ?? "Не удалось загрузить заказ.");
+  }
 
-function readLatestCheckoutOrderId() {
-  const orderId = readStorage<unknown>(storageKeys.checkoutOrder, null);
-  return typeof orderId === "string" ? sanitizeIdentifier(orderId, "") || null : null;
+  return payload?.order ? orderSchema.parse(payload.order) : null;
 }
-
-type OrderDraftInput = Omit<Order, "id" | "orderNumber" | "createdAt" | "updatedAt">;
 
 export const orderService = {
-  listByUser(userId: string) {
-    try {
-      authService.assertAuthorizedUserId(userId);
-    } catch {
+  async listByUser(_userId: string) {
+    void _userId;
+    const response = await fetch("/api/account/orders", {
+      cache: "no-store",
+      credentials: "include",
+    });
+
+    if (response.status === 401) {
       return [];
     }
 
-    return readOrders()
-      .filter((order) => order.userId === userId)
-      .sort((left, right) => new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime());
+    return parseOrders(response);
   },
 
-  getById(orderId: string) {
-    return readOrders().find((order) => order.id === orderId) ?? null;
+  async getById(orderId: string) {
+    const response = await fetch(`/api/account/orders/${encodeURIComponent(orderId)}?checkout=1`, {
+      cache: "no-store",
+      credentials: "include",
+    });
+
+    if (response.status === 404) {
+      return null;
+    }
+
+    return parseOrder(response);
   },
 
-  getByIdForUser(userId: string, orderId: string) {
-    return this.listByUser(userId).find((order) => order.id === orderId) ?? null;
+  async getByIdForUser(_userId: string, orderId: string) {
+    void _userId;
+    return this.getById(orderId);
   },
 
-  buildDraft(input: OrderDraftInput) {
-    const now = new Date().toISOString();
-
+  buildDraft(input: Omit<Order, "id" | "orderNumber" | "createdAt" | "updatedAt">) {
     return orderSchema.parse({
       ...input,
-      id: createEntityId("order"),
-      orderNumber: buildOrderNumber(),
-      createdAt: now,
-      updatedAt: now,
-    } satisfies Order);
+      id: "",
+      orderNumber: "",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    });
   },
 
   save(order: Order) {
-    const normalizedOrder = orderSchema.parse(order);
-    writeOrders([normalizedOrder, ...readOrders()]);
-    writeLatestCheckoutOrder(normalizedOrder.id);
-    return normalizedOrder;
+    return orderSchema.parse(order);
   },
 
-  update(orderId: string, updater: (order: Order) => Order) {
-    const existingOrder = this.getById(orderId);
-
-    if (!existingOrder) {
-      return null;
-    }
-
-    const nextOrder = orderSchema.parse({
-      ...updater(existingOrder),
-      id: existingOrder.id,
-      orderNumber: existingOrder.orderNumber,
-      createdAt: existingOrder.createdAt,
-      updatedAt: new Date().toISOString(),
-    } satisfies Order);
-
-    writeOrders(readOrders().map((order) => (order.id === orderId ? nextOrder : order)));
-    return nextOrder;
+  updateGiftCertificateSnapshot(_certificate: GiftCertificate) {
+    void _certificate;
+    return null;
   },
 
-  updateGiftCertificateSnapshot(certificate: GiftCertificate) {
-    return this.update(certificate.orderId, (order) => ({
-      ...order,
-      giftCertificatesIssued: order.giftCertificatesIssued.map((entry) =>
-        entry.id === certificate.id
-          ? {
-              ...entry,
-              status: certificate.status,
-              activatedByUserId: certificate.activatedByUserId,
-              activatedAt: certificate.activatedAt,
-              expiresAt: certificate.expiresAt,
-            }
-          : entry,
-      ),
-    }));
+  async getLatestCheckoutOrder() {
+    return null;
   },
 
-  getLatestCheckoutOrder() {
-    const orderId = readLatestCheckoutOrderId();
+  async getCheckoutSuccessOrder(orderId: string | null) {
     return orderId ? this.getById(orderId) : null;
-  },
-
-  getCheckoutSuccessOrder(orderId: string | null, currentUserId: string | null) {
-    const lastCheckoutOrderId = readLatestCheckoutOrderId();
-    const requestedOrderId = orderId ? sanitizeIdentifier(orderId, "") : null;
-    const resolvedOrderId = requestedOrderId || lastCheckoutOrderId;
-
-    if (!resolvedOrderId) {
-      return null;
-    }
-
-    const order = this.getById(resolvedOrderId);
-
-    if (!order) {
-      return null;
-    }
-
-    if (currentUserId) {
-      return order.userId === currentUserId ? order : null;
-    }
-
-    return order.userId === null && resolvedOrderId === lastCheckoutOrderId ? order : null;
   },
 };

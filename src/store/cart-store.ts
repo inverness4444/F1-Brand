@@ -24,6 +24,7 @@ type CartState = {
     size: CartSelection["size"],
     quantity: number,
   ) => void;
+  setItems: (items: CartSelection[]) => void;
   clearCart: () => void;
   setHasHydrated: (hasHydrated: boolean) => void;
 };
@@ -90,6 +91,13 @@ export const useCartStore = create<CartState>()(
             )
             .filter((item) => item.quantity > 0),
         })),
+      setItems: (items) =>
+        set({
+          items: items
+            .map((item) => cartSelectionSchema.safeParse(item))
+            .filter((result): result is { success: true; data: CartSelection } => result.success)
+            .map((result) => result.data),
+        }),
       clearCart: () => set({ items: [] }),
       setHasHydrated: (hasHydrated) => set({ hasHydrated }),
     }),

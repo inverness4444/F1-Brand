@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 
 import { InfoCTA, InfoPageLayout, InfoSectionGrid } from "@/components/info-pages";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Договор оферты | Apex Store",
-  description: "Условия покупки товаров на сайте Apex Store.",
-};
+export const metadata: Metadata = createPageMetadata({
+  title: "Договор оферты",
+  path: "/offer",
+  description:
+    "Условия покупки товаров на сайте Apex Store: оформление заказа, цена, оплата, доставка, возврат и подарочные сертификаты.",
+});
 
 const offerSections = [
   {
@@ -42,6 +45,7 @@ export default function OfferPage() {
   return (
     <InfoPageLayout
       title="Договор оферты"
+      path="/offer"
       description="Настоящий договор оферты определяет условия покупки товаров на сайте интернет-магазина."
     >
       <InfoSectionGrid sections={offerSections} />

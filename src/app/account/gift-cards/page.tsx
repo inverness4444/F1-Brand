@@ -35,9 +35,15 @@ export default function AccountGiftCardsPage() {
     }
 
     const refresh = () => {
-      setBalance(balanceService.getByUserId(currentUser.id));
-      setTransactions(balanceTransactionService.listByUser(currentUser.id));
-      setActivatedCertificates(giftCertificateService.listByActivatedUser(currentUser.id));
+      void Promise.all([
+        balanceService.getByUserId(currentUser.id),
+        balanceTransactionService.listByUser(currentUser.id),
+        giftCertificateService.listByActivatedUser(currentUser.id),
+      ]).then(([nextBalance, nextTransactions, nextCertificates]) => {
+        setBalance(nextBalance);
+        setTransactions(nextTransactions);
+        setActivatedCertificates(nextCertificates);
+      });
     };
 
     refresh();
@@ -82,8 +88,8 @@ export default function AccountGiftCardsPage() {
       const result = await giftCertificateService.activate(currentUser.id, normalizedCode);
       setCode("");
       setBalance(result.balance);
-      setTransactions(balanceTransactionService.listByUser(currentUser.id));
-      setActivatedCertificates(giftCertificateService.listByActivatedUser(currentUser.id));
+      setTransactions(await balanceTransactionService.listByUser(currentUser.id));
+      setActivatedCertificates(await giftCertificateService.listByActivatedUser(currentUser.id));
       pushToast(`Сертификат активирован. На баланс начислено ${formatPrice(result.certificate.amount)}.`);
     } catch (activationError) {
       setError(activationError instanceof Error ? activationError.message : "Не удалось активировать сертификат.");

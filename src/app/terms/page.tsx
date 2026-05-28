@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 
 import { InfoCTA, InfoPageLayout, InfoSectionGrid } from "@/components/info-pages";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Пользовательское соглашение | Apex Store",
-  description: "Условия использования сайта, личного кабинета, каталога и корзины Apex Store.",
-};
+export const metadata: Metadata = createPageMetadata({
+  title: "Пользовательское соглашение",
+  path: "/terms",
+  description:
+    "Условия использования сайта Apex Store, личного кабинета, каталога, корзины, заказов и товарных страниц.",
+});
 
 const termsSections = [
   {
@@ -38,6 +41,7 @@ export default function TermsPage() {
   return (
     <InfoPageLayout
       title="Пользовательское соглашение"
+      path="/terms"
       description="Настоящее соглашение регулирует использование сайта, личного кабинета, каталога, корзины и других функций магазина."
     >
       <InfoSectionGrid sections={termsSections} />

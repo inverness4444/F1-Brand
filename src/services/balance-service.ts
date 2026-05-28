@@ -1,48 +1,44 @@
 import type { BalanceTransactionType, UserBalance } from "@/lib/account-types";
-import { emitStorageChange, readStorage, storageKeys, writeStorage } from "@/lib/browser-storage";
-import { userBalancesSchema } from "@/lib/validation-schemas";
-import { authService } from "@/services/auth-service";
-import { balanceTransactionService } from "@/services/balance-transaction-service";
+import { buildCsrfHeaders } from "@/lib/security-utils";
+import { userBalanceSchema } from "@/lib/validation-schemas";
 
-function readBalances() {
-  return readStorage<UserBalance[]>(storageKeys.userBalances, [], userBalancesSchema);
-}
+async function getBalancePayload() {
+  const response = await fetch("/api/account/balance", {
+    cache: "no-store",
+    credentials: "include",
+  });
+  const payload = (await response.json().catch(() => null)) as
+    | { balance?: unknown; error?: string }
+    | null;
 
-function writeBalances(balances: UserBalance[], emit = true) {
-  writeStorage(storageKeys.userBalances, balances, userBalancesSchema);
-
-  if (emit) {
-    emitStorageChange("balances");
+  if (!response.ok) {
+    throw new Error(payload?.error ?? "Не удалось загрузить баланс.");
   }
-}
 
-function getBalanceSnapshot(userId: string) {
-  return readBalances().find((balance) => balance.userId === userId) ?? null;
+  return userBalanceSchema.parse(payload?.balance);
 }
 
 export const balanceService = {
-  getByUserId(userId: string) {
-    authService.assertAuthorizedUserId(userId);
-    return this.getByUserIdUnsafe(userId);
+  async getByUserId(_userId: string): Promise<UserBalance> {
+    void _userId;
+    return getBalancePayload();
   },
 
-  getByUserIdUnsafe(userId: string) {
-    const existingBalance = getBalanceSnapshot(userId);
-    return (
-      existingBalance ?? {
+  async getByUserIdUnsafe(userId: string): Promise<UserBalance> {
+    try {
+      return await getBalancePayload();
+    } catch {
+      return {
         userId,
         amount: 0,
         updatedAt: new Date(0).toISOString(),
-      }
-    );
+      };
+    }
   },
 
-  applyTransaction({
+  async applyTransaction({
     userId,
-    type,
     amount,
-    certificateCode = null,
-    orderId = null,
   }: {
     userId: string;
     type: BalanceTransactionType;
@@ -50,54 +46,33 @@ export const balanceService = {
     certificateCode?: string | null;
     orderId?: string | null;
   }) {
-    authService.assertAuthorizedUserId(userId);
-
-    const now = new Date().toISOString();
-    const balances = readBalances();
-    const currentBalance = balances.find((balance) => balance.userId === userId) ?? {
-      userId,
-      amount: 0,
-      updatedAt: now,
+    const current = await this.getByUserIdUnsafe(userId);
+    return {
+      balance: current,
+      transaction: null,
+      balanceBefore: current.amount,
+      balanceAfter: current.amount + amount,
     };
-    const balanceBefore = currentBalance.amount;
-    const balanceAfter = balanceBefore + Math.trunc(amount);
+  },
 
-    if (balanceAfter < 0) {
-      throw new Error("Недостаточно средств на балансе.");
+  async activateGiftCard(code: string) {
+    const response = await fetch("/api/account/balance", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...buildCsrfHeaders(),
+      },
+      credentials: "include",
+      body: JSON.stringify({ code }),
+    });
+    const payload = (await response.json().catch(() => null)) as
+      | { balance?: unknown; certificate?: unknown; error?: string }
+      | null;
+
+    if (!response.ok) {
+      throw new Error(payload?.error ?? "Не удалось активировать сертификат.");
     }
 
-    const nextBalance: UserBalance = {
-      userId,
-      amount: balanceAfter,
-      updatedAt: now,
-    };
-
-    const nextBalances = balances.some((balance) => balance.userId === userId)
-      ? balances.map((balance) => (balance.userId === userId ? nextBalance : balance))
-      : [nextBalance, ...balances];
-
-    writeBalances(nextBalances, false);
-
-    const transaction = balanceTransactionService.create(
-      {
-        userId,
-        type,
-        amount: Math.trunc(amount),
-        balanceBefore,
-        balanceAfter,
-        certificateCode,
-        orderId,
-      },
-      { emit: false },
-    );
-
-    emitStorageChange("balances");
-
-    return {
-      balance: nextBalance,
-      transaction,
-      balanceBefore,
-      balanceAfter,
-    };
+    return payload ?? {};
   },
 };

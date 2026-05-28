@@ -3,11 +3,14 @@ import Link from "next/link";
 
 import { ContactForm } from "@/components/contact-form";
 import { InfoCTA, InfoPageLayout, InfoSectionCard } from "@/components/info-pages";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Контакты | Apex Store",
-  description: "Контакты поддержки покупателей, сотрудничества и обратной связи Apex Store.",
-};
+export const metadata: Metadata = createPageMetadata({
+  title: "Контакты",
+  path: "/contacts",
+  description:
+    "Контакты поддержки покупателей Apex Store, вопросы по заказам, доставке, возврату, размерам, сотрудничеству и обратной связи.",
+});
 
 const socialLinks = [
   { label: "Telegram", href: "#" },
@@ -19,6 +22,7 @@ export default function ContactsPage() {
   return (
     <InfoPageLayout
       title="Контакты"
+      path="/contacts"
       description="Если у вас есть вопросы по заказу, доставке, возврату, размерам или наличию товара - напишите нам удобным способом."
     >
       <div className="grid gap-4 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">

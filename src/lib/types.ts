@@ -78,6 +78,16 @@ export type Product = {
   createdAt: string;
   number?: number;
   hexPalette: string[];
+  variants?: ProductVariant[];
+};
+
+export type ProductVariant = {
+  id: string;
+  sku: string;
+  size: ProductSize;
+  color: ProductColor;
+  stock: number;
+  priceOverride: number | null;
 };
 
 export type Team = {

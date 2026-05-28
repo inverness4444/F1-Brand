@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 
 import { InfoCTA, InfoPageLayout, InfoSectionGrid } from "@/components/info-pages";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Возврат | Apex Store",
-  description: "Условия возврата и обмена товаров Apex Store.",
-};
+export const metadata: Metadata = createPageMetadata({
+  title: "Возврат",
+  path: "/returns",
+  description:
+    "Условия возврата и обмена товаров Apex Store: сроки, сохранение товарного вида, брак, неправильный товар и оформление возврата.",
+});
 
 const returnSections = [
   {
@@ -34,6 +37,7 @@ export default function ReturnsPage() {
   return (
     <InfoPageLayout
       title="Возврат"
+      path="/returns"
       description="Вы можете оформить возврат или обмен товара, если он не подошёл по размеру, цвету или модели."
     >
       <InfoSectionGrid sections={returnSections} />

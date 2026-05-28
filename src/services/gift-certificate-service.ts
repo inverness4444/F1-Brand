@@ -1,96 +1,52 @@
 import type { GiftCertificate, IssuedGiftCertificate, OrderItem } from "@/lib/account-types";
-import { createEntityId } from "@/lib/account-utils";
-import { emitStorageChange, readStorage, storageKeys, writeStorage } from "@/lib/browser-storage";
 import {
   generateGiftCertificateCode,
   normalizeGiftCertificateCode,
   validateGiftCertificateCode,
 } from "@/lib/gift-certificate-utils";
-import { giftCertificatesSchema } from "@/lib/validation-schemas";
-import { authService } from "@/services/auth-service";
+import { giftCertificateSchema, giftCertificatesSchema, userBalanceSchema } from "@/lib/validation-schemas";
 import { balanceService } from "@/services/balance-service";
-import { orderService } from "@/services/order-service";
-import { runSerializedMutation } from "@/services/storage-service";
 
-function readCertificates() {
-  return readStorage<GiftCertificate[]>(storageKeys.giftCertificates, [], giftCertificatesSchema);
-}
-
-function writeCertificates(certificates: GiftCertificate[], emit = true) {
-  writeStorage(storageKeys.giftCertificates, certificates, giftCertificatesSchema);
-
-  if (emit) {
-    emitStorageChange("giftCertificates");
-  }
-}
-
-function refreshExpiredCertificates(certificates: GiftCertificate[]) {
-  const now = Date.now();
-  let hasChanges = false;
-
-  const nextCertificates = certificates.map((certificate) => {
-    if (
-      certificate.status === "purchased" &&
-      certificate.expiresAt &&
-      new Date(certificate.expiresAt).getTime() <= now
-    ) {
-      hasChanges = true;
-      return {
-        ...certificate,
-        status: "expired" as const,
-      };
-    }
-
-    return certificate;
+async function fetchBalancePayload() {
+  const response = await fetch("/api/account/balance", {
+    cache: "no-store",
+    credentials: "include",
   });
+  const payload = (await response.json().catch(() => null)) as
+    | { activatedCertificates?: unknown; error?: string }
+    | null;
 
-  return {
-    certificates: nextCertificates,
-    hasChanges,
-  };
-}
-
-function getResolvedCertificates() {
-  const { certificates, hasChanges } = refreshExpiredCertificates(readCertificates());
-
-  if (hasChanges) {
-    writeCertificates(certificates, false);
+  if (!response.ok) {
+    throw new Error(payload?.error ?? "Не удалось загрузить сертификаты.");
   }
 
-  return certificates;
+  return payload ?? {};
 }
 
 export const giftCertificateService = {
-  listAll() {
-    return getResolvedCertificates().sort(
-      (left, right) => new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime(),
-    );
+  async listAll() {
+    const payload = await fetchBalancePayload();
+    return giftCertificatesSchema.parse(payload.activatedCertificates ?? []);
   },
 
-  listByActivatedUser(userId: string) {
-    authService.assertAuthorizedUserId(userId);
-    return this.listAll()
-      .filter((certificate) => certificate.activatedByUserId === userId)
-      .sort((left, right) => new Date(right.activatedAt ?? right.createdAt).getTime() - new Date(left.activatedAt ?? left.createdAt).getTime());
+  async listByActivatedUser(_userId: string) {
+    void _userId;
+    return this.listAll();
   },
 
-  listByPurchasedUser(userId: string) {
-    authService.assertAuthorizedUserId(userId);
-    return this.listAll().filter((certificate) => certificate.purchasedByUserId === userId);
+  async listByPurchasedUser(_userId: string) {
+    void _userId;
+    return [];
   },
 
-  listByOrder(orderId: string) {
-    return this.listAll().filter((certificate) => certificate.orderId === orderId);
+  async listByOrder(_orderId: string) {
+    void _orderId;
+    return [];
   },
 
-  getByCode(rawCode: string) {
-    const normalizedCode = normalizeGiftCertificateCode(rawCode);
-
-    if (!validateGiftCertificateCode(normalizedCode)) {
-      return null;
-    }
-
-    return this.listAll().find((certificate) => certificate.code === normalizedCode) ?? null;
+  getByCode(_rawCode: string) {
+    void _rawCode;
+    return null;
   },
 
   toIssuedGiftCertificate(certificate: GiftCertificate): IssuedGiftCertificate {
@@ -117,7 +73,7 @@ export const giftCertificateService = {
     purchasedByUserId: string | null;
     items: OrderItem[];
   }) {
-    const existingCodes = new Set(this.listAll().map((certificate) => certificate.code));
+    const existingCodes = new Set<string>();
     const now = new Date().toISOString();
 
     return items.flatMap((item) => {
@@ -130,7 +86,7 @@ export const giftCertificateService = {
         existingCodes.add(code);
 
         return {
-          id: createEntityId("gift_certificate"),
+          id: code.toLowerCase(),
           amount: item.unitPrice,
           code,
           status: "purchased" as const,
@@ -145,91 +101,24 @@ export const giftCertificateService = {
     });
   },
 
-  saveAll(certificates: GiftCertificate[], options: { emit?: boolean } = {}) {
-    if (certificates.length === 0) {
-      return [];
-    }
-
-    const nextCertificates = [...certificates, ...this.listAll()];
-    writeCertificates(nextCertificates, options.emit ?? true);
+  saveAll(certificates: GiftCertificate[]) {
     return certificates;
   },
 
-  async activate(userId: string, rawCode: string) {
-    authService.assertAuthorizedUserId(userId);
-
+  async activate(_userId: string, rawCode: string) {
+    void _userId;
     const normalizedCode = normalizeGiftCertificateCode(rawCode);
 
     if (!validateGiftCertificateCode(normalizedCode)) {
       throw new Error("Код должен состоять ровно из 8 латинских букв.");
     }
 
-    return runSerializedMutation("commerce-finance", async () => {
-      const certificates = getResolvedCertificates();
-      const certificateIndex = certificates.findIndex((certificate) => certificate.code === normalizedCode);
+    const payload = await balanceService.activateGiftCard(normalizedCode);
 
-      if (certificateIndex === -1) {
-        throw new Error("Сертификат не найден");
-      }
-
-      const currentCertificate = certificates[certificateIndex];
-
-      if (currentCertificate.status === "activated") {
-        throw new Error("Этот сертификат уже был активирован");
-      }
-
-      if (currentCertificate.status === "cancelled") {
-        throw new Error("Сертификат отменён");
-      }
-
-      if (currentCertificate.status === "expired") {
-        throw new Error("Срок действия сертификата истёк");
-      }
-
-      if (
-        currentCertificate.expiresAt &&
-        new Date(currentCertificate.expiresAt).getTime() <= Date.now()
-      ) {
-        const expiredCertificate: GiftCertificate = {
-          ...currentCertificate,
-          status: "expired",
-        };
-        const nextCertificates = certificates.map((certificate, index) =>
-          index === certificateIndex ? expiredCertificate : certificate,
-        );
-        writeCertificates(nextCertificates, true);
-        orderService.updateGiftCertificateSnapshot(expiredCertificate);
-        throw new Error("Срок действия сертификата истёк");
-      }
-
-      const activatedCertificate: GiftCertificate = {
-        ...currentCertificate,
-        status: "activated",
-        activatedByUserId: userId,
-        activatedAt: new Date().toISOString(),
-      };
-
-      writeCertificates(
-        certificates.map((certificate, index) => (index === certificateIndex ? activatedCertificate : certificate)),
-        false,
-      );
-
-      const balanceResult = balanceService.applyTransaction({
-        userId,
-        type: "gift_certificate_activation",
-        amount: activatedCertificate.amount,
-        certificateCode: activatedCertificate.code,
-        orderId: activatedCertificate.orderId,
-      });
-
-      emitStorageChange("giftCertificates");
-      orderService.updateGiftCertificateSnapshot(activatedCertificate);
-
-      return {
-        certificate: activatedCertificate,
-        balance: balanceResult.balance,
-        transaction: balanceResult.transaction,
-      };
-    });
+    return {
+      certificate: giftCertificateSchema.parse(payload?.certificate),
+      balance: userBalanceSchema.parse(payload?.balance),
+      transaction: null,
+    };
   },
 };

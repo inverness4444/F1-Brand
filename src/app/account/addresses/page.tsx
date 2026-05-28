@@ -24,7 +24,16 @@ export default function AccountAddressesPage() {
       return;
     }
 
-    setAddresses(addressService.listByUser(currentUser.id));
+    let ignore = false;
+    void addressService.listByUser(currentUser.id).then((nextAddresses) => {
+      if (!ignore) {
+        setAddresses(nextAddresses);
+      }
+    });
+
+    return () => {
+      ignore = true;
+    };
   }, [currentUser]);
 
   if (!currentUser) {
@@ -53,8 +62,8 @@ export default function AccountAddressesPage() {
           submitLabel="Добавить адрес"
           onCancel={() => setIsAdding(false)}
           onSubmit={async (input, isDefault) => {
-            addressService.create(currentUser.id, input, isDefault);
-            setAddresses(addressService.listByUser(currentUser.id));
+            await addressService.create(currentUser.id, input, isDefault);
+            setAddresses(await addressService.listByUser(currentUser.id));
             setIsAdding(false);
             pushToast("Адрес добавлен");
           }}
@@ -67,8 +76,8 @@ export default function AccountAddressesPage() {
           submitLabel="Сохранить адрес"
           onCancel={() => setEditingAddress(null)}
           onSubmit={async (input, isDefault) => {
-            addressService.update(currentUser.id, editingAddress.id, input, isDefault);
-            setAddresses(addressService.listByUser(currentUser.id));
+            await addressService.update(currentUser.id, editingAddress.id, input, isDefault);
+            setAddresses(await addressService.listByUser(currentUser.id));
             setEditingAddress(null);
             pushToast("Изменения сохранены");
           }}
@@ -85,13 +94,13 @@ export default function AccountAddressesPage() {
                 setEditingAddress(address);
                 setIsAdding(false);
               }}
-              onDelete={() => {
-                addressService.remove(currentUser.id, address.id);
-                setAddresses(addressService.listByUser(currentUser.id));
+              onDelete={async () => {
+                await addressService.remove(currentUser.id, address.id);
+                setAddresses(await addressService.listByUser(currentUser.id));
               }}
-              onSetDefault={() => {
-                addressService.setDefault(currentUser.id, address.id);
-                setAddresses(addressService.listByUser(currentUser.id));
+              onSetDefault={async () => {
+                await addressService.setDefault(currentUser.id, address.id);
+                setAddresses(await addressService.listByUser(currentUser.id));
                 pushToast("Изменения сохранены");
               }}
             />

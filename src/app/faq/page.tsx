@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
 
 import { FAQAccordion, InfoCTA, InfoPageLayout } from "@/components/info-pages";
+import { StructuredData } from "@/components/structured-data";
+import { createPageMetadata, faqJsonLd } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Вопросы и ответы | Apex Store",
-  description: "Ответы на частые вопросы о заказах, доставке, возврате, оплате и сертификатах.",
-};
+export const metadata: Metadata = createPageMetadata({
+  title: "Вопросы и ответы",
+  path: "/faq",
+  description:
+    "Ответы Apex Store на частые вопросы о заказах, доставке, возврате, оплате, подарочных сертификатах и новых коллекциях.",
+});
 
 const faqItems = [
   {
@@ -69,8 +73,10 @@ export default function FAQPage() {
   return (
     <InfoPageLayout
       title="Вопросы и ответы"
+      path="/faq"
       description="Собрали ответы на частые вопросы о заказах, доставке, возврате, размерах, оплате и подарочных сертификатах."
     >
+      <StructuredData data={faqJsonLd(faqItems)} />
       <FAQAccordion items={faqItems} />
       <InfoCTA
         title="Остались вопросы?"

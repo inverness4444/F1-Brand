@@ -45,8 +45,8 @@ export function ProfileForm({ user }: { user: AuthUser }) {
         favoriteTeam: favoriteTeam || null,
       });
       setErrors({});
-      userService.updateProfile(user.id, payload);
-      refresh();
+      await userService.updateProfile(user.id, payload);
+      await refresh();
       pushToast("Изменения сохранены");
     } catch (error) {
       const fieldErrors = getZodFieldErrors<"name" | "email" | "phone">(error);

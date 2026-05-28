@@ -1,32 +1,44 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useState } from "react";
 
 import { EmptyCatalogState } from "@/components/empty-catalog-state";
 import { ProductGrid } from "@/components/product-grid";
 import { useCatalogProducts } from "@/hooks/use-catalog-products";
+import type { Product } from "@/lib/types";
 
-const HOME_NEW_ARRIVALS_LIMIT = 12;
+function shuffleProducts(products: Product[]) {
+  const shuffledProducts = [...products];
+
+  for (let index = shuffledProducts.length - 1; index > 0; index -= 1) {
+    const randomIndex = Math.floor(Math.random() * (index + 1));
+    [shuffledProducts[index], shuffledProducts[randomIndex]] = [shuffledProducts[randomIndex], shuffledProducts[index]];
+  }
+
+  return shuffledProducts;
+}
 
 export function HomeProductsSection() {
-  const { hasHydrated, newArrivals } = useCatalogProducts();
-  const visibleNewArrivals = useMemo(
-    () => newArrivals.slice(0, HOME_NEW_ARRIVALS_LIMIT),
-    [newArrivals],
-  );
+  const { hasHydrated, products } = useCatalogProducts();
+  const [shuffledProducts, setShuffledProducts] = useState<Product[]>([]);
+  const showcaseProducts = shuffledProducts.length > 0 ? shuffledProducts : products;
+
+  useEffect(() => {
+    setShuffledProducts(shuffleProducts(products));
+  }, [products]);
 
   return (
     <section className="container-shell mt-16">
       <div className="mb-6">
-        <p className="section-kicker">Новинки</p>
+        <p className="section-kicker">Вся коллекция</p>
         <h2 className="mt-3 font-[var(--font-heading)] text-[clamp(2rem,7vw,2.25rem)] font-semibold tracking-[-0.06em] text-[#111111] sm:text-4xl">
-          Новые модели сезона 2026
+          Все товары сезона 2026
         </h2>
       </div>
       <ProductGrid
         variant="showcase"
         layout="carousel"
-        products={visibleNewArrivals}
+        products={showcaseProducts}
         empty={
           hasHydrated ? (
             <EmptyCatalogState compact />

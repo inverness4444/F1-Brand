@@ -2,9 +2,10 @@
 
 import { create } from "zustand";
 
+import { sortOptions } from "@/lib/catalog-ui";
 import { priceBounds } from "@/lib/data/products";
+import { colorOptions, productTypeOptions, sizeOptions } from "@/lib/data/roster";
 import { sanitizeSearchQuery } from "@/lib/security-utils";
-import { filterParamSchema } from "@/lib/validation-schemas";
 import type {
   CatalogCategory,
   FeaturedCollection,
@@ -16,6 +17,21 @@ import type {
 } from "@/lib/types";
 
 type FilterSize = Exclude<ProductSize, "One Size">;
+type FilterParamValue = string | string[] | undefined;
+type FilterParams = {
+  category?: FilterParamValue;
+  team?: FilterParamValue;
+  driver?: FilterParamValue;
+  legend?: FilterParamValue;
+  color?: FilterParamValue;
+  type?: FilterParamValue;
+  size?: FilterParamValue;
+  collection?: FilterParamValue;
+  q?: FilterParamValue;
+  sort?: FilterParamValue;
+  minPrice?: FilterParamValue;
+  maxPrice?: FilterParamValue;
+};
 
 type ShopState = ShopFilters & {
   mobileFiltersOpen: boolean;
@@ -32,15 +48,7 @@ type ShopState = ShopFilters & {
   setSort: (value: SortKey) => void;
   clearAll: () => void;
   setMobileFiltersOpen: (value: boolean) => void;
-  initializeFromParams: (params: {
-    category?: CatalogCategory | "All";
-    team?: string;
-    driver?: string;
-    legend?: string;
-    type?: ProductType;
-    collection?: FeaturedCollection;
-    q?: string;
-  }) => void;
+  initializeFromParams: (params: FilterParams) => void;
 };
 
 const defaultState: ShopFilters = {
@@ -56,9 +64,56 @@ const defaultState: ShopFilters = {
   search: "",
   sort: "Featured",
 };
+const categoryOptions: Array<CatalogCategory | "All"> = ["All", "Pilots", "Teams", "Legends", "Accessories", "Essentials", "Gifts"];
+const colorOptionSet = new Set<ProductColor>(colorOptions);
+const productTypeOptionSet = new Set<ProductType>(productTypeOptions);
+const sizeOptionSet = new Set<FilterSize>(sizeOptions);
+const sortOptionSet = new Set<SortKey>(sortOptions);
 
 function toggleValue<T>(items: T[], value: T) {
   return items.includes(value) ? items.filter((item) => item !== value) : [...items, value];
+}
+
+function getParamValues(value: FilterParamValue) {
+  const values = Array.isArray(value) ? value : value ? [value] : [];
+
+  return values
+    .flatMap((item) => item.split(","))
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function uniqueValues<T>(values: T[]) {
+  return [...new Set(values)];
+}
+
+function getAllowedParamValues<T extends string>(value: FilterParamValue, allowedValues: Set<T>) {
+  return uniqueValues(getParamValues(value).filter((item): item is T => allowedValues.has(item as T)));
+}
+
+function getTextParamValues(value: FilterParamValue) {
+  return uniqueValues(
+    getParamValues(value)
+      .map((item) => sanitizeSearchQuery(item))
+      .filter(Boolean),
+  );
+}
+
+function getFirstParamValue(value: FilterParamValue) {
+  return getParamValues(value)[0];
+}
+
+function getPriceParam(value: FilterParamValue, fallback: number) {
+  const parsedValue = Number(getFirstParamValue(value));
+
+  return Number.isFinite(parsedValue) ? Math.round(parsedValue) : fallback;
+}
+
+function getPriceRangeFromParams(params: FilterParams): [number, number] {
+  const minPrice = Math.max(priceBounds.min, getPriceParam(params.minPrice, defaultState.priceRange[0]));
+  const maxPrice = Math.min(priceBounds.max, getPriceParam(params.maxPrice, defaultState.priceRange[1]));
+
+  return [Math.min(minPrice, maxPrice), Math.max(minPrice, maxPrice)];
 }
 
 export const useShopStore = create<ShopState>((set) => ({
@@ -79,25 +134,25 @@ export const useShopStore = create<ShopState>((set) => ({
   clearAll: () => set({ ...defaultState, mobileFiltersOpen: false }),
   setMobileFiltersOpen: (value) => set({ mobileFiltersOpen: value }),
   initializeFromParams: (params) => {
-    const normalizedParams = filterParamSchema.parse(params) as {
-      category?: CatalogCategory | "All";
-      team?: string;
-      driver?: string;
-      legend?: string;
-      type?: ProductType;
-      collection?: FeaturedCollection;
-      q?: string;
-    };
+    const categoryParam = getFirstParamValue(params.category);
+    const category = categoryOptions.includes(categoryParam as CatalogCategory | "All")
+      ? (categoryParam as CatalogCategory | "All")
+      : "All";
+    const sortParam = getFirstParamValue(params.sort);
 
     set({
       ...defaultState,
-      category: normalizedParams.category ?? "All",
-      teams: normalizedParams.team ? [normalizedParams.team] : [],
-      drivers: normalizedParams.driver ? [normalizedParams.driver] : [],
-      legends: normalizedParams.legend ? [normalizedParams.legend] : [],
-      types: normalizedParams.type ? [normalizedParams.type] : [],
-      collections: normalizedParams.collection ? [normalizedParams.collection] : [],
-      search: normalizedParams.q ?? "",
+      category,
+      priceRange: getPriceRangeFromParams(params),
+      colors: getAllowedParamValues(params.color, colorOptionSet),
+      teams: getTextParamValues(params.team),
+      drivers: getTextParamValues(params.driver),
+      legends: getTextParamValues(params.legend),
+      types: getAllowedParamValues(params.type, productTypeOptionSet),
+      sizes: getAllowedParamValues(params.size, sizeOptionSet),
+      collections: getTextParamValues(params.collection),
+      search: sanitizeSearchQuery(getFirstParamValue(params.q) ?? ""),
+      sort: sortOptionSet.has(sortParam as SortKey) ? (sortParam as SortKey) : defaultState.sort,
     });
   },
 }));

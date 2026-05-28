@@ -7,6 +7,10 @@ import type { Product } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { ProductCard } from "@/components/product-card";
 
+const CAROUSEL_AUTO_SCROLL_SPEED = 140;
+const CAROUSEL_COPY_INDICES = [0, 1, 2] as const;
+const CAROUSEL_MANUAL_SCROLL_DURATION = 520;
+
 export function ProductGrid({
   products,
   empty,
@@ -23,6 +27,31 @@ export function ProductGrid({
   priorityFirstImage?: boolean;
 }) {
   const railRef = useRef<HTMLDivElement>(null);
+  const firstLoopRef = useRef<HTMLDivElement>(null);
+  const manualScrollUntilRef = useRef(0);
+
+  const getLoopWidth = useCallback(() => firstLoopRef.current?.scrollWidth ?? 0, []);
+
+  const normalizeCarouselOffset = useCallback(
+    (node: HTMLDivElement) => {
+      const loopWidth = getLoopWidth();
+
+      if (!loopWidth) {
+        return;
+      }
+
+      if (node.scrollLeft >= loopWidth * 2) {
+        node.scrollLeft -= loopWidth;
+        return;
+      }
+
+      if (node.scrollLeft < loopWidth) {
+        node.scrollLeft += loopWidth;
+      }
+    },
+    [getLoopWidth],
+  );
+
   const carouselStep = useCallback(() => {
     const node = railRef.current;
 
@@ -46,22 +75,14 @@ export function ProductGrid({
     if (!scrollAmount) {
       return;
     }
-    const maxOffset = node.scrollWidth - node.clientWidth;
 
-    if (direction === 1 && node.scrollLeft >= maxOffset - scrollAmount * 0.6) {
-      node.scrollTo({ left: 0, behavior: "smooth" });
-      return;
-    }
-
-    if (direction === -1 && node.scrollLeft <= 4) {
-      node.scrollTo({ left: maxOffset, behavior: "smooth" });
-      return;
-    }
-
+    normalizeCarouselOffset(node);
+    manualScrollUntilRef.current = performance.now() + CAROUSEL_MANUAL_SCROLL_DURATION;
     node.scrollBy({
       left: direction * scrollAmount,
       behavior: "smooth",
     });
+    window.setTimeout(() => normalizeCarouselOffset(node), CAROUSEL_MANUAL_SCROLL_DURATION);
   };
 
   useEffect(() => {
@@ -69,43 +90,61 @@ export function ProductGrid({
       return;
     }
 
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const node = railRef.current;
+
+    if (!node) {
       return;
     }
 
-    const intervalId = window.setInterval(() => {
-      const node = railRef.current;
+    let frameId = 0;
+    let lastTimestamp: number | null = null;
+    let isCancelled = false;
 
-      if (!node || document.visibilityState !== "visible") {
+    const startCarousel = () => {
+      const loopWidth = getLoopWidth();
+
+      if (isCancelled) {
         return;
       }
 
-      if (node.matches(":hover") || node.contains(document.activeElement)) {
+      if (!loopWidth) {
+        frameId = window.requestAnimationFrame(startCarousel);
         return;
       }
 
-      const scrollAmount = carouselStep();
-
-      if (!scrollAmount) {
-        return;
+      if (node.scrollLeft < loopWidth || node.scrollLeft >= loopWidth * 2) {
+        node.scrollLeft = loopWidth;
       }
 
-      const maxOffset = node.scrollWidth - node.clientWidth;
-      const nextOffset = node.scrollLeft + scrollAmount;
+      const animate = (timestamp: number) => {
+        if (lastTimestamp === null) {
+          lastTimestamp = timestamp;
+        }
 
-      if (nextOffset >= maxOffset - 4) {
-        node.scrollTo({ left: 0, behavior: "smooth" });
-        return;
-      }
+        const elapsed = Math.min(timestamp - lastTimestamp, 48);
+        lastTimestamp = timestamp;
 
-      node.scrollBy({
-        left: scrollAmount,
-        behavior: "smooth",
-      });
-    }, 2800);
+        if (document.visibilityState === "visible") {
+          if (timestamp >= manualScrollUntilRef.current) {
+            node.scrollLeft += (CAROUSEL_AUTO_SCROLL_SPEED * elapsed) / 1000;
+          }
 
-    return () => window.clearInterval(intervalId);
-  }, [carouselStep, layout, products.length]);
+          normalizeCarouselOffset(node);
+        }
+
+        frameId = window.requestAnimationFrame(animate);
+      };
+
+      frameId = window.requestAnimationFrame(animate);
+    };
+
+    frameId = window.requestAnimationFrame(startCarousel);
+
+    return () => {
+      isCancelled = true;
+      window.cancelAnimationFrame(frameId);
+    };
+  }, [getLoopWidth, layout, normalizeCarouselOffset, products.length]);
 
   const layoutClassName =
     variant === "showcase"
@@ -120,6 +159,7 @@ export function ProductGrid({
 
   if (layout === "carousel") {
     const controlsEnabled = products.length > 1;
+    const copyIndices = controlsEnabled ? CAROUSEL_COPY_INDICES : ([0] as const);
 
     return (
       <div className={cn("space-y-5", className)}>
@@ -146,17 +186,34 @@ export function ProductGrid({
 
         <div
           ref={railRef}
-          className="flex gap-4 overflow-x-auto scroll-smooth pb-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+          data-product-carousel-rail
+          className="flex gap-4 overflow-x-auto pb-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
         >
-          {products.map((product, index) => (
-            <div
-              key={product.id}
-              data-carousel-card
-              className="w-[min(84vw,320px)] shrink-0 sm:w-[320px] xl:w-[340px]"
-            >
-              <ProductCard product={product} priority={shouldPrioritizeFirstImage && index === 0} variant={variant} />
-            </div>
-          ))}
+          <div className="flex w-max">
+            {copyIndices.map((copyIndex) => (
+              <div
+                key={copyIndex}
+                ref={copyIndex === 0 ? firstLoopRef : undefined}
+                aria-hidden={copyIndex === 1 || !controlsEnabled ? undefined : true}
+                inert={copyIndex === 1 || !controlsEnabled ? undefined : true}
+                className="flex shrink-0 gap-4 pr-4"
+              >
+                {products.map((product, index) => (
+                  <div
+                    key={`${copyIndex}-${product.id}`}
+                    data-carousel-card
+                    className="w-[min(84vw,320px)] shrink-0 sm:w-[320px] xl:w-[340px]"
+                  >
+                    <ProductCard
+                      product={product}
+                      priority={shouldPrioritizeFirstImage && copyIndex === 1 && index === 0}
+                      variant={variant}
+                    />
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );

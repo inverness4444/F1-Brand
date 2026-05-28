@@ -5,7 +5,7 @@ import { RotateCcw, Ruler, ShieldCheck, Star, Truck } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import { productTypeLabels } from "@/lib/catalog-ui";
-import type { Product, ProductSize } from "@/lib/types";
+import type { Product, ProductColor, ProductSize } from "@/lib/types";
 import { cn, formatPrice } from "@/lib/utils";
 import {
   getCollectionLabel,
@@ -36,15 +36,21 @@ function sizeGuideRows(product: Product) {
 export function ProductInfo({ product }: { product: Product }) {
   const addItem = useCartStore((state) => state.addItem);
   const [selectedSize, setSelectedSize] = useState<ProductSize>(product.sizes[0]);
+  const [selectedColor, setSelectedColor] = useState<ProductColor>(product.colors[0]);
   const guide = useMemo(() => sizeGuideRows(product), [product]);
   const reviewCount = Math.max(4, Math.round(product.popularity / 18));
   const isGiftCertificate = product.productType === "gift_certificate";
   const isOutOfStock = product.badge === "OutOfStock";
   const isPreorder = product.badge === "Preorder";
-  const selectedColor = product.colors[0];
+  const selectedVariant = product.variants?.find(
+    (variant) => variant.size === selectedSize && variant.color === selectedColor,
+  );
+  const selectedStock = selectedVariant?.stock ?? (isOutOfStock ? 0 : 10);
+  const selectedVariantIsOut = !isGiftCertificate && selectedStock <= 0;
 
   useEffect(() => {
     setSelectedSize(product.sizes[0]);
+    setSelectedColor(product.colors[0]);
   }, [product]);
 
   const addCurrentItem = () =>
@@ -116,15 +122,21 @@ export function ProductInfo({ product }: { product: Product }) {
               <div className="mt-4 grid grid-cols-3 gap-2 sm:grid-cols-6">
                 {product.sizes.map((size) => {
                   const active = selectedSize === size;
+                  const variant = product.variants?.find(
+                    (entry) => entry.size === size && entry.color === selectedColor,
+                  );
+                  const disabled = Boolean(variant && variant.stock <= 0);
 
                   return (
                     <button
                       key={size}
                       type="button"
                       onClick={() => setSelectedSize(size)}
+                      disabled={disabled}
                       className={cn(
                         "rounded-[0.85rem] border px-3 py-3 text-sm font-semibold transition",
                         active ? "border-[#111111] bg-[#111111] text-white" : "border-[var(--line)] text-[#111111]",
+                        disabled && "cursor-not-allowed border-slate-200 bg-slate-50 text-slate-300",
                       )}
                     >
                       {sizeLabelRu(size)}
@@ -133,6 +145,40 @@ export function ProductInfo({ product }: { product: Product }) {
                 })}
               </div>
             </div>
+
+            <div className="mt-6">
+              <span className="text-sm font-semibold text-[#111111]">
+                Цвет: <span className="font-normal text-[#5f615f]">{selectedColor}</span>
+              </span>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {product.colors.map((color) => {
+                  const active = selectedColor === color;
+                  const variant = product.variants?.find(
+                    (entry) => entry.size === selectedSize && entry.color === color,
+                  );
+                  const disabled = Boolean(variant && variant.stock <= 0);
+
+                  return (
+                    <button
+                      key={color}
+                      type="button"
+                      onClick={() => setSelectedColor(color)}
+                      disabled={disabled}
+                      className={cn(
+                        "rounded-full border px-4 py-2 text-sm font-semibold transition",
+                        active ? "border-[#111111] bg-[#111111] text-white" : "border-[var(--line)] text-[#111111]",
+                        disabled && "cursor-not-allowed border-slate-200 bg-slate-50 text-slate-300",
+                      )}
+                    >
+                      {color}
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="mt-3 text-sm text-[#5f615f]">
+                {selectedVariantIsOut ? "Нет в наличии" : `На складе: ${selectedStock} шт.`}
+              </p>
+            </div>
           </>
         )}
 
@@ -140,7 +186,7 @@ export function ProductInfo({ product }: { product: Product }) {
           <button
             type="button"
             onClick={addCurrentItem}
-            disabled={isOutOfStock}
+            disabled={isOutOfStock || selectedVariantIsOut}
             className={cn(
               "flex h-14 flex-1 items-center justify-center rounded-full px-6 text-[0.95rem] font-semibold tracking-[0.01em] transition",
               isOutOfStock
@@ -148,7 +194,7 @@ export function ProductInfo({ product }: { product: Product }) {
                 : "bg-[#111111] text-white hover:bg-[#242424]",
             )}
           >
-            {isOutOfStock
+            {isOutOfStock || selectedVariantIsOut
               ? "Временно нет в наличии"
               : isGiftCertificate
                 ? "Купить сертификат"

@@ -1,15 +1,25 @@
 import type { Metadata } from "next";
 
 import { Breadcrumbs } from "@/components/info-pages";
+import { StructuredData } from "@/components/structured-data";
+import { breadcrumbJsonLd, createPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "О магазине | Apex Store",
-  description: "О магазине Apex Store и подходе к коллекциям в эстетике Formula 1.",
-};
+export const metadata: Metadata = createPageMetadata({
+  title: "О магазине",
+  path: "/about",
+  description:
+    "О магазине Apex Store: одежда в эстетике Formula 1, коллекции пилотов, команд, легенд, аксессуары и подарочные сертификаты.",
+});
 
 export default function AboutPage() {
   return (
     <div className="pb-16">
+      <StructuredData
+        data={breadcrumbJsonLd([
+          { name: "Главная", path: "/" },
+          { name: "О магазине", path: "/about" },
+        ])}
+      />
       <section className="container-shell pt-8">
         <div className="mx-auto max-w-[1180px] border-b border-[var(--line)] pb-8">
           <Breadcrumbs

@@ -38,10 +38,19 @@ export function WishlistButton({
       return;
     }
 
-    setIsFavorite(favoriteService.isFavorite(currentUser.id, productId));
+    let ignore = false;
+    void favoriteService.isFavorite(currentUser.id, productId).then((active) => {
+      if (!ignore) {
+        setIsFavorite(active);
+      }
+    });
+
+    return () => {
+      ignore = true;
+    };
   }, [currentUser, productId]);
 
-  const handleClick = () => {
+  const handleClick = async () => {
     if (!isHydrated) {
       return;
     }
@@ -52,9 +61,13 @@ export function WishlistButton({
       return;
     }
 
-    const result = favoriteService.toggle(currentUser.id, productId);
-    setIsFavorite(result.active);
-    pushToast(result.active ? "Товар добавлен в избранное" : "Товар удалён из избранного");
+    try {
+      const result = await favoriteService.toggle(currentUser.id, productId);
+      setIsFavorite(result.active);
+      pushToast(result.active ? "Товар добавлен в избранное" : "Товар удалён из избранного");
+    } catch (error) {
+      pushToast(error instanceof Error ? error.message : "Не удалось обновить избранное", "error");
+    }
   };
 
   return (

@@ -23,7 +23,16 @@ export default function AccountFavoritesPage() {
       return;
     }
 
-    setFavoriteIds(favoriteService.getProductIds(currentUser.id));
+    let ignore = false;
+    void favoriteService.getProductIds(currentUser.id).then((ids) => {
+      if (!ignore) {
+        setFavoriteIds(ids);
+      }
+    });
+
+    return () => {
+      ignore = true;
+    };
   }, [currentUser]);
 
   const favoriteProducts = useMemo(() => {
@@ -59,8 +68,8 @@ export default function AccountFavoritesPage() {
             quantity: 1,
           });
         }}
-        onRemove={(productId) => {
-          favoriteService.remove(currentUser.id, productId);
+        onRemove={async (productId) => {
+          await favoriteService.remove(currentUser.id, productId);
           setFavoriteIds((current) => current.filter((id) => id !== productId));
           pushToast("Товар удалён из избранного");
         }}

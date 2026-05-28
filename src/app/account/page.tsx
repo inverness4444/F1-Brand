@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 import { favoriteService } from "@/services/favorite-service";
 import { balanceService } from "@/services/balance-service";
@@ -9,18 +10,48 @@ import { orderService } from "@/services/order-service";
 import { useAuthStore } from "@/store/auth-store";
 import { formatPrice } from "@/lib/utils";
 import { formatDate } from "@/lib/account-utils";
+import type { GiftCertificate, Order } from "@/lib/account-types";
 
 export default function AccountPage() {
   const currentUser = useAuthStore((state) => state.currentUser);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [favoritesCount, setFavoritesCount] = useState(0);
+  const [balanceAmount, setBalanceAmount] = useState(0);
+  const [activatedCertificates, setActivatedCertificates] = useState<GiftCertificate[]>([]);
+
+  useEffect(() => {
+    if (!currentUser) {
+      setOrders([]);
+      setFavoritesCount(0);
+      setBalanceAmount(0);
+      setActivatedCertificates([]);
+      return;
+    }
+
+    let ignore = false;
+    void Promise.all([
+      orderService.listByUser(currentUser.id),
+      favoriteService.listByUser(currentUser.id),
+      balanceService.getByUserIdUnsafe(currentUser.id),
+      giftCertificateService.listByActivatedUser(currentUser.id),
+    ]).then(([nextOrders, favorites, balance, certificates]) => {
+      if (!ignore) {
+        setOrders(nextOrders);
+        setFavoritesCount(favorites.length);
+        setBalanceAmount(balance.amount);
+        setActivatedCertificates(certificates);
+      }
+    });
+
+    return () => {
+      ignore = true;
+    };
+  }, [currentUser]);
 
   if (!currentUser) {
     return null;
   }
 
-  const orders = orderService.listByUser(currentUser.id);
-  const favoritesCount = favoriteService.listByUser(currentUser.id).length;
-  const balance = balanceService.getByUserId(currentUser.id);
-  const activatedCertificates = giftCertificateService.listByActivatedUser(currentUser.id);
   const lastOrder = orders[0] ?? null;
 
   return (
@@ -53,7 +84,7 @@ export default function AccountPage() {
         </div>
         <div className="card-panel p-5">
           <p className="text-sm text-slate-500">Баланс</p>
-          <p className="mt-4 text-3xl font-semibold text-slate-900">{formatPrice(balance.amount)}</p>
+          <p className="mt-4 text-3xl font-semibold text-slate-900">{formatPrice(balanceAmount)}</p>
           <p className="mt-2 text-sm text-slate-500">
             Активировано сертификатов: {activatedCertificates.length}
           </p>

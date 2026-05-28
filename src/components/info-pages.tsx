@@ -3,6 +3,8 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 
 import { buttonClassName } from "@/components/ui/button";
+import { StructuredData } from "@/components/structured-data";
+import { breadcrumbJsonLd } from "@/lib/seo";
 
 type BreadcrumbItem = {
   label: string;
@@ -17,6 +19,7 @@ type InfoSection = {
 type InfoPageLayoutProps = {
   title: string;
   description: string;
+  path?: string;
   children: ReactNode;
 };
 
@@ -56,9 +59,17 @@ export function Breadcrumbs({ items }: { items: BreadcrumbItem[] }) {
   );
 }
 
-export function InfoPageLayout({ title, description, children }: InfoPageLayoutProps) {
+export function InfoPageLayout({ title, description, path, children }: InfoPageLayoutProps) {
   return (
     <div className="pb-16">
+      {path ? (
+        <StructuredData
+          data={breadcrumbJsonLd([
+            { name: "Главная", path: "/" },
+            { name: title, path },
+          ])}
+        />
+      ) : null}
       <section className="container-shell pt-8">
         <div className="border-b border-[var(--line)] pb-8">
           <div className="mx-auto max-w-[1180px]">

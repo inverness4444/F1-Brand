@@ -1,6 +1,6 @@
 "use client";
-import Link from "next/link";
-import { useDeferredValue, useEffect, useMemo } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useDeferredValue, useEffect, useMemo, useRef } from "react";
 
 import { filterProducts, sortProducts } from "@/lib/filter-products";
 import { priceBounds } from "@/lib/data/products";
@@ -9,6 +9,7 @@ import { useCatalogProducts } from "@/hooks/use-catalog-products";
 import { EmptyCatalogState } from "@/components/empty-catalog-state";
 import { FilterSidebar } from "@/components/filter-sidebar";
 import { MobileFilterDrawer } from "@/components/mobile-filters-drawer";
+import { AdminOnlyLink } from "@/components/admin-only-link";
 import { ProductGrid } from "@/components/product-grid";
 import { SortDropdown } from "@/components/sort-dropdown";
 import { buttonClassName } from "@/components/ui/button";
@@ -90,6 +91,13 @@ const sectionFilterConfig: Record<
     showLegendFilter: false,
   },
 };
+const sectionHeading: Record<ShopSection, string> = {
+  all: "Каталог Apex Store",
+  teams: "Командные коллекции Apex Store",
+  pilots: "Коллекции пилотов Apex Store",
+  legends: "Коллекции легенд Apex Store",
+  accessories: "Аксессуары и подарки Apex Store",
+};
 
 function matchesShopSection(product: Product, section: ShopSection) {
   if (section === "all") {
@@ -167,6 +175,14 @@ function getInitialParam(params: InitialShopParams, key: string) {
   return Array.isArray(value) ? value[0] : value;
 }
 
+function appendQueryValues(params: URLSearchParams, key: string, values: string[]) {
+  values.forEach((value) => {
+    if (value.trim()) {
+      params.append(key, value);
+    }
+  });
+}
+
 export function ShopShell({
   section = "all",
   initialParams = {},
@@ -174,6 +190,9 @@ export function ShopShell({
   section?: ShopSection;
   initialParams?: InitialShopParams;
 }) {
+  const pathname = usePathname();
+  const router = useRouter();
+  const hasInitializedFromParamsRef = useRef(false);
   const { collections: catalogCollections, hasHydrated, products } = useCatalogProducts();
   const {
     category,
@@ -205,26 +224,29 @@ export function ShopShell({
   const config = sectionFilterConfig[section];
 
   useEffect(() => {
+    hasInitializedFromParamsRef.current = false;
+
     const categoryParam = getInitialParam(initialParams, "category");
-    const teamParam = getInitialParam(initialParams, "team");
-    const driverParam = getInitialParam(initialParams, "driver");
-    const legendParam = getInitialParam(initialParams, "legend");
-    const collectionParam = getInitialParam(initialParams, "collection");
-    const typeParam = getInitialParam(initialParams, "type");
     const queryParam = getInitialParam(initialParams, "q");
 
     initializeFromParams({
       category: section === "all" && categoryValues.includes(categoryParam as CatalogCategory | "All")
         ? (categoryParam as CatalogCategory | "All")
         : undefined,
-      team: teamParam ?? undefined,
-      driver: driverParam ?? undefined,
-      legend: legendParam ?? undefined,
-      collection: collectionParam ?? undefined,
-      type: typeValues.includes(typeParam as ProductType)
-        ? (typeParam as ProductType)
-        : undefined,
+      team: initialParams.team,
+      driver: initialParams.driver,
+      legend: initialParams.legend,
+      color: initialParams.color,
+      collection: initialParams.collection,
+      type: initialParams.type,
+      size: initialParams.size,
       q: queryParam ?? undefined,
+      sort: initialParams.sort,
+      minPrice: initialParams.minPrice,
+      maxPrice: initialParams.maxPrice,
+    });
+    queueMicrotask(() => {
+      hasInitializedFromParamsRef.current = true;
     });
   }, [initialParams, initializeFromParams, section]);
 
@@ -328,8 +350,65 @@ export function ShopShell({
     filterOptions.colors.length > 0 ||
     showPriceFilter;
 
+  useEffect(() => {
+    if (!hasInitializedFromParamsRef.current) {
+      return;
+    }
+
+    const params = new URLSearchParams();
+
+    if (section === "all" && scopedCategory !== "All") {
+      params.set("category", scopedCategory);
+    }
+
+    appendQueryValues(params, "team", scopedTeams);
+    appendQueryValues(params, "driver", scopedDrivers);
+    appendQueryValues(params, "legend", scopedLegends);
+    appendQueryValues(params, "collection", scopedCollections);
+    appendQueryValues(params, "type", scopedTypes);
+    appendQueryValues(params, "size", scopedSizes);
+    appendQueryValues(params, "color", scopedColors);
+
+    if (priceFilterIsActive) {
+      params.set("minPrice", String(scopedPriceRange[0]));
+      params.set("maxPrice", String(scopedPriceRange[1]));
+    }
+
+    if (normalizedSearch) {
+      params.set("q", normalizedSearch);
+    }
+
+    if (sort !== "Featured") {
+      params.set("sort", sort);
+    }
+
+    const nextSearch = params.toString();
+    const currentSearch = window.location.search.startsWith("?") ? window.location.search.slice(1) : window.location.search;
+
+    if (nextSearch !== currentSearch) {
+      router.replace(nextSearch ? `${pathname}?${nextSearch}` : pathname, { scroll: false });
+    }
+  }, [
+    pathname,
+    router,
+    normalizedSearch,
+    priceFilterIsActive,
+    scopedCategory,
+    scopedColors,
+    scopedCollections,
+    scopedDrivers,
+    scopedLegends,
+    scopedPriceRange,
+    scopedSizes,
+    scopedTeams,
+    scopedTypes,
+    section,
+    sort,
+  ]);
+
   return (
     <div className="pb-16">
+      <h1 className="sr-only">{sectionHeading[section]}</h1>
       <section
         className={
           hasFilterControls
@@ -388,7 +467,7 @@ export function ShopShell({
               </div>
 
               <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
-                <Link
+                <AdminOnlyLink
                   href="/admin"
                   className={buttonClassName({
                     variant: "secondary",
@@ -396,7 +475,7 @@ export function ShopShell({
                   })}
                 >
                   Редактор каталога
-                </Link>
+                </AdminOnlyLink>
                 <SortDropdown value={sort} onChange={setSort} />
                 {hasFiltersOrSearch ? (
                   <button

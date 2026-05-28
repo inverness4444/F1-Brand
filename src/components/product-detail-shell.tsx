@@ -8,7 +8,9 @@ import { buttonClassName } from "@/components/ui/button";
 
 export function ProductDetailShell({ slug, productId }: { slug: string; productId?: string }) {
   const { hasHydrated, products } = useCatalogProducts();
-  const product = products.find((item) => item.id === productId) ?? products.find((item) => item.slug === slug);
+  const product =
+    products.find((item) => item.id === productId) ??
+    products.find((item) => item.slug === slug || item.id === slug);
 
   if (!product && !hasHydrated) {
     return (

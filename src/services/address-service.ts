@@ -1,151 +1,112 @@
 import type { AddressInput, UserAddress } from "@/lib/account-types";
-import { createEntityId } from "@/lib/account-utils";
-import { addressInputSchema, addressesSchema } from "@/lib/validation-schemas";
-import { emitStorageChange, readStorage, storageKeys, writeStorage } from "@/lib/browser-storage";
-import { authService } from "@/services/auth-service";
+import { buildCsrfHeaders } from "@/lib/security-utils";
+import { addressInputSchema, addressesSchema, userAddressSchema } from "@/lib/validation-schemas";
 
-function readAddresses() {
-  return readStorage<UserAddress[]>(storageKeys.addresses, [], addressesSchema);
+async function parseAddresses(response: Response) {
+  const payload = (await response.json().catch(() => null)) as
+    | { addresses?: unknown; error?: string }
+    | null;
+
+  if (!response.ok) {
+    throw new Error(payload?.error ?? "Не удалось загрузить адреса.");
+  }
+
+  return addressesSchema.parse(payload?.addresses ?? []);
 }
 
-function writeAddresses(addresses: UserAddress[]) {
-  writeStorage(storageKeys.addresses, addresses, addressesSchema);
-  emitStorageChange("addresses");
-}
+async function parseAddress(response: Response) {
+  const payload = (await response.json().catch(() => null)) as
+    | { address?: unknown; error?: string }
+    | null;
 
-function normalizeAddressInput(input: AddressInput) {
-  return addressInputSchema.parse(input);
-}
+  if (!response.ok) {
+    throw new Error(payload?.error ?? "Не удалось сохранить адрес.");
+  }
 
-function validateAddressInput(input: AddressInput) {
-  return normalizeAddressInput(input);
+  return userAddressSchema.parse(payload?.address);
 }
 
 export const addressService = {
-  listByUser(userId: string) {
-    try {
-      authService.assertAuthorizedUserId(userId);
-    } catch {
+  async listByUser(_userId: string): Promise<UserAddress[]> {
+    void _userId;
+    const response = await fetch("/api/account/addresses", {
+      cache: "no-store",
+      credentials: "include",
+    });
+
+    if (response.status === 401) {
       return [];
     }
 
-    return readAddresses()
-      .filter((address) => address.userId === userId)
-      .sort((left, right) => Number(right.isDefault) - Number(left.isDefault));
+    return parseAddresses(response);
   },
 
-  getDefault(userId: string) {
-    return this.listByUser(userId).find((address) => address.isDefault) ?? null;
+  async getDefault(userId: string) {
+    return (await this.listByUser(userId)).find((address) => address.isDefault) ?? null;
   },
 
-  create(userId: string, input: AddressInput, isDefault = false) {
-    authService.assertAuthorizedUserId(userId);
-    const normalized = validateAddressInput(input);
-    const now = new Date().toISOString();
-    const currentAddresses = readAddresses();
-    const userAddresses = currentAddresses.filter((address) => address.userId === userId);
-    const shouldBeDefault = isDefault || userAddresses.length === 0;
-
-    const nextAddresses = currentAddresses.map((address) =>
-      shouldBeDefault && address.userId === userId ? { ...address, isDefault: false } : address,
-    );
-
-    const newAddress: UserAddress = {
-      id: createEntityId("address"),
-      userId,
-      isDefault: shouldBeDefault,
-      createdAt: now,
-      updatedAt: now,
-      ...normalized,
-    };
-
-    writeAddresses([newAddress, ...nextAddresses]);
-    return newAddress;
-  },
-
-  update(userId: string, addressId: string, input: AddressInput, isDefault = false) {
-    authService.assertAuthorizedUserId(userId);
-    const normalized = validateAddressInput(input);
-    const currentAddresses = readAddresses();
-    const targetAddress = currentAddresses.find(
-      (address) => address.id === addressId && address.userId === userId,
-    );
-
-    if (!targetAddress) {
-      throw new Error("Адрес не найден.");
-    }
-
-    const shouldBeDefault = isDefault || targetAddress.isDefault;
-    const nextAddresses = currentAddresses.map((address) => {
-      if (address.userId !== userId) {
-        return address;
-      }
-
-      if (shouldBeDefault && address.id !== addressId) {
-        return { ...address, isDefault: false };
-      }
-
-      if (address.id !== addressId) {
-        return address;
-      }
-
-      return {
-        ...address,
-        ...normalized,
-        isDefault: shouldBeDefault,
-        updatedAt: new Date().toISOString(),
-      };
+  async create(_userId: string, input: AddressInput, isDefault = false) {
+    void _userId;
+    const response = await fetch("/api/account/addresses", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...buildCsrfHeaders(),
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        address: addressInputSchema.parse(input),
+        isDefault,
+      }),
     });
 
-    writeAddresses(nextAddresses);
-    return nextAddresses.find((address) => address.id === addressId) ?? null;
+    return parseAddress(response);
   },
 
-  remove(userId: string, addressId: string) {
-    authService.assertAuthorizedUserId(userId);
-    const currentAddresses = readAddresses();
-    const removedAddress = currentAddresses.find(
-      (address) => address.id === addressId && address.userId === userId,
-    );
+  async update(_userId: string, addressId: string, input: AddressInput, isDefault = false) {
+    void _userId;
+    const response = await fetch(`/api/account/addresses/${encodeURIComponent(addressId)}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        ...buildCsrfHeaders(),
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        address: addressInputSchema.parse(input),
+        isDefault,
+      }),
+    });
 
-    if (!removedAddress) {
-      return;
-    }
-
-    const filtered = currentAddresses.filter((address) => address.id !== addressId);
-    const userAddresses = filtered.filter((address) => address.userId === userId);
-
-    if (removedAddress.isDefault && userAddresses.length > 0) {
-      const [firstAddress] = userAddresses;
-      writeAddresses(
-        filtered.map((address) =>
-          address.id === firstAddress.id ? { ...address, isDefault: true } : address,
-        ),
-      );
-      return;
-    }
-
-    writeAddresses(filtered);
+    return parseAddress(response);
   },
 
-  setDefault(userId: string, addressId: string) {
-    authService.assertAuthorizedUserId(userId);
-    const currentAddresses = readAddresses();
-    const targetAddress = currentAddresses.find(
-      (address) => address.id === addressId && address.userId === userId,
-    );
+  async remove(_userId: string, addressId: string) {
+    void _userId;
+    const response = await fetch(`/api/account/addresses/${encodeURIComponent(addressId)}`, {
+      method: "DELETE",
+      headers: buildCsrfHeaders(),
+      credentials: "include",
+    });
 
-    if (!targetAddress) {
-      throw new Error("Адрес не найден.");
+    if (!response.ok) {
+      const payload = (await response.json().catch(() => null)) as { error?: string } | null;
+      throw new Error(payload?.error ?? "Не удалось удалить адрес.");
     }
+  },
 
-    const nextAddresses = currentAddresses.map((address) =>
-      address.userId === userId
-        ? { ...address, isDefault: address.id === addressId, updatedAt: new Date().toISOString() }
-        : address,
-    );
+  async setDefault(_userId: string, addressId: string) {
+    void _userId;
+    const response = await fetch(`/api/account/addresses/${encodeURIComponent(addressId)}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        ...buildCsrfHeaders(),
+      },
+      credentials: "include",
+      body: JSON.stringify({ isDefault: true }),
+    });
 
-    writeAddresses(nextAddresses);
-    return nextAddresses.find((address) => address.id === addressId) ?? null;
+    return parseAddress(response);
   },
 };

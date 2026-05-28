@@ -5,6 +5,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import recoveredCatalogProductsData from "@/lib/data/recovered-products.json";
+import { uniqueImageSources } from "@/lib/image-utils";
 import { catalogPayloadSchema, catalogProductsPayloadSchema } from "@/lib/validation-schemas";
 import type { CatalogCollection, Product } from "@/lib/types";
 
@@ -67,12 +68,12 @@ async function materializeProductImages(product: Product, index: number) {
     ),
   );
   const normalizedGallery =
-    typeof image === "string" && image ? [image, ...gallery.filter((item) => item !== image)] : gallery;
+    typeof image === "string" && image ? [image, ...gallery] : gallery;
 
   return {
     ...product,
     image,
-    gallery: [...new Set(normalizedGallery.filter((item): item is string => typeof item === "string" && Boolean(item)))],
+    gallery: uniqueImageSources(normalizedGallery),
   };
 }
 

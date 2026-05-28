@@ -1,51 +1,34 @@
 import type { BalanceTransaction } from "@/lib/account-types";
-import { createEntityId } from "@/lib/account-utils";
-import { emitStorageChange, readStorage, storageKeys, writeStorage } from "@/lib/browser-storage";
 import { balanceTransactionsSchema } from "@/lib/validation-schemas";
-import { authService } from "@/services/auth-service";
 
-function readTransactions() {
-  return readStorage<BalanceTransaction[]>(
-    storageKeys.balanceTransactions,
-    [],
-    balanceTransactionsSchema,
-  );
-}
+async function fetchBalancePayload() {
+  const response = await fetch("/api/account/balance", {
+    cache: "no-store",
+    credentials: "include",
+  });
+  const payload = (await response.json().catch(() => null)) as
+    | { transactions?: unknown; error?: string }
+    | null;
 
-function writeTransactions(transactions: BalanceTransaction[], emit = true) {
-  writeStorage(storageKeys.balanceTransactions, transactions, balanceTransactionsSchema);
-
-  if (emit) {
-    emitStorageChange("balances");
+  if (!response.ok) {
+    throw new Error(payload?.error ?? "Не удалось загрузить операции баланса.");
   }
+
+  return payload ?? {};
 }
 
 export const balanceTransactionService = {
-  listByUser(userId: string) {
-    try {
-      authService.assertAuthorizedUserId(userId);
-    } catch {
-      return [];
-    }
-
-    return readTransactions()
-      .filter((transaction) => transaction.userId === userId)
-      .sort((left, right) => new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime());
+  async listByUser(_userId: string): Promise<BalanceTransaction[]> {
+    void _userId;
+    const payload = await fetchBalancePayload();
+    return balanceTransactionsSchema.parse(payload.transactions ?? []);
   },
 
-  create(
-    input: Omit<BalanceTransaction, "id" | "createdAt">,
-    options: {
-      emit?: boolean;
-    } = {},
-  ) {
-    const transaction: BalanceTransaction = {
+  create(input: Omit<BalanceTransaction, "id" | "createdAt">) {
+    return {
       ...input,
-      id: createEntityId("balance_transaction"),
+      id: "",
       createdAt: new Date().toISOString(),
     };
-
-    writeTransactions([transaction, ...readTransactions()], options.emit ?? true);
-    return transaction;
   },
 };

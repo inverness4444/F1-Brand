@@ -1,67 +1,77 @@
 import type { FavoriteRecord } from "@/lib/account-types";
-import { createEntityId } from "@/lib/account-utils";
+import { buildCsrfHeaders } from "@/lib/security-utils";
 import { favoritesSchema } from "@/lib/validation-schemas";
-import { emitStorageChange, readStorage, storageKeys, writeStorage } from "@/lib/browser-storage";
-import { authService } from "@/services/auth-service";
 
-function readFavorites() {
-  return readStorage<FavoriteRecord[]>(storageKeys.favorites, [], favoritesSchema);
-}
+async function parseFavorites(response: Response) {
+  const payload = (await response.json().catch(() => null)) as
+    | { favorites?: unknown; error?: string }
+    | null;
 
-function writeFavorites(favorites: FavoriteRecord[]) {
-  writeStorage(storageKeys.favorites, favorites, favoritesSchema);
-  emitStorageChange("favorites");
+  if (!response.ok) {
+    throw new Error(payload?.error ?? "Не удалось загрузить избранное.");
+  }
+
+  return favoritesSchema.parse(payload?.favorites ?? []);
 }
 
 export const favoriteService = {
-  listByUser(userId: string) {
-    try {
-      authService.assertAuthorizedUserId(userId);
-    } catch {
+  async listByUser(_userId: string): Promise<FavoriteRecord[]> {
+    void _userId;
+    const response = await fetch("/api/account/favorites", {
+      cache: "no-store",
+      credentials: "include",
+    });
+
+    if (response.status === 401) {
       return [];
     }
 
-    return readFavorites().filter((favorite) => favorite.userId === userId);
+    return parseFavorites(response);
   },
 
-  getProductIds(userId: string) {
-    return this.listByUser(userId).map((favorite) => favorite.productId);
+  async getProductIds(userId: string) {
+    return (await this.listByUser(userId)).map((favorite) => favorite.productId);
   },
 
-  isFavorite(userId: string, productId: string) {
-    return this.listByUser(userId).some((favorite) => favorite.productId === productId);
+  async isFavorite(userId: string, productId: string) {
+    return (await this.listByUser(userId)).some((favorite) => favorite.productId === productId);
   },
 
-  toggle(userId: string, productId: string) {
-    authService.assertAuthorizedUserId(userId);
-    const favorites = readFavorites();
-    const existingFavorite = favorites.find(
-      (favorite) => favorite.userId === userId && favorite.productId === productId,
-    );
+  async toggle(_userId: string, productId: string) {
+    void _userId;
+    const response = await fetch("/api/account/favorites", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...buildCsrfHeaders(),
+      },
+      credentials: "include",
+      body: JSON.stringify({ productId }),
+    });
+    const payload = (await response.json().catch(() => null)) as { active?: boolean; error?: string } | null;
 
-    if (existingFavorite) {
-      writeFavorites(favorites.filter((favorite) => favorite.id !== existingFavorite.id));
-      return { active: false };
+    if (!response.ok) {
+      throw new Error(payload?.error ?? "Не удалось обновить избранное.");
     }
 
-    writeFavorites([
-      {
-        id: createEntityId("favorite"),
-        userId,
-        productId,
-        createdAt: new Date().toISOString(),
-      },
-      ...favorites,
-    ]);
-    return { active: true };
+    return { active: Boolean(payload?.active) };
   },
 
-  remove(userId: string, productId: string) {
-    authService.assertAuthorizedUserId(userId);
-    writeFavorites(
-      readFavorites().filter(
-        (favorite) => !(favorite.userId === userId && favorite.productId === productId),
-      ),
-    );
+  async remove(_userId: string, productId: string) {
+    void _userId;
+    const response = await fetch("/api/account/favorites", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        ...buildCsrfHeaders(),
+      },
+      credentials: "include",
+      body: JSON.stringify({ productId }),
+    });
+
+    if (!response.ok) {
+      const payload = (await response.json().catch(() => null)) as { error?: string } | null;
+      throw new Error(payload?.error ?? "Не удалось удалить товар из избранного.");
+    }
   },
 };

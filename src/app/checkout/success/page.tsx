@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { CheckCircle2, Copy } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
+import type { Order } from "@/lib/account-types";
 import { orderService } from "@/services/order-service";
 import { useAuthStore } from "@/store/auth-store";
 import { giftCertificateStatusLabelRu } from "@/lib/storefront-text";
@@ -15,8 +16,21 @@ export default function CheckoutSuccessPage() {
   const searchParams = useSearchParams();
   const currentUser = useAuthStore((state) => state.currentUser);
   const orderId = searchParams.get("order");
-  const order = orderService.getCheckoutSuccessOrder(orderId, currentUser?.id ?? null);
+  const [order, setOrder] = useState<Order | null>(null);
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
+
+  useEffect(() => {
+    let ignore = false;
+    void orderService.getCheckoutSuccessOrder(orderId).then((nextOrder) => {
+      if (!ignore) {
+        setOrder(nextOrder);
+      }
+    });
+
+    return () => {
+      ignore = true;
+    };
+  }, [orderId, currentUser?.id]);
 
   const handleCopyCode = async (code: string) => {
     try {

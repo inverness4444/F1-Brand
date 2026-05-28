@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import {
-  readCatalogCollectionsFromFile,
-  readCatalogProductsFromFile,
-  writeCatalogToFiles,
-} from "@/lib/server/catalog-file";
+  readCatalogCollectionsFromDb,
+  readCatalogProductsFromDb,
+  replaceCatalogInDb,
+} from "@/lib/server/catalog-db";
+import { getCurrentUser } from "@/lib/server/auth";
 import { assertCsrfToken, assertSameOrigin, enforceRateLimit } from "@/lib/server/request-security";
 import { catalogPayloadSchema } from "@/lib/validation-schemas";
 
@@ -13,8 +14,8 @@ export const runtime = "nodejs";
 export async function GET() {
   try {
     const [products, collections] = await Promise.all([
-      readCatalogProductsFromFile(),
-      readCatalogCollectionsFromFile(),
+      readCatalogProductsFromDb(),
+      readCatalogCollectionsFromDb(),
     ]);
     return NextResponse.json(
       { products, collections },
@@ -59,7 +60,15 @@ export async function PUT(request: NextRequest) {
     assertSameOrigin(request);
     assertCsrfToken(request);
     const payload = catalogPayloadSchema.parse(await request.json());
-    await writeCatalogToFiles(payload.products, payload.collections);
+    const user = await getCurrentUser();
+    if (!user) {
+      return NextResponse.json({ error: "Войдите в аккаунт." }, { status: 401 });
+    }
+    if (user.role !== "ADMIN") {
+      return NextResponse.json({ error: "Недостаточно прав." }, { status: 403 });
+    }
+
+    await replaceCatalogInDb(payload.products, payload.collections);
 
     return NextResponse.json({
       ok: true,

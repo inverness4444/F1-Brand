@@ -10,7 +10,7 @@ export function AuthProvider() {
   const refresh = useAuthStore((state) => state.refresh);
 
   useEffect(() => {
-    initialize();
+    void initialize();
 
     const handleStorage = (event: Event) => {
       if (event instanceof StorageEvent) {
@@ -33,7 +33,7 @@ export function AuthProvider() {
         }
       }
 
-      refresh();
+      void refresh();
     };
 
     window.addEventListener("storage", handleStorage);

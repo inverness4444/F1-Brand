@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 
 import { InfoCTA, InfoPageLayout, InfoSectionGrid } from "@/components/info-pages";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Политика конфиденциальности | Apex Store",
-  description: "Как Apex Store использует данные пользователей для работы магазина и обработки заказов.",
-};
+export const metadata: Metadata = createPageMetadata({
+  title: "Политика конфиденциальности",
+  path: "/privacy",
+  description:
+    "Как Apex Store использует данные пользователей для регистрации, работы магазина, оформления и доставки заказов.",
+});
 
 const privacySections = [
   {
@@ -38,6 +41,7 @@ export default function PrivacyPage() {
   return (
     <InfoPageLayout
       title="Политика конфиденциальности"
+      path="/privacy"
       description="Мы бережно относимся к данным пользователей и используем их только для работы магазина, обработки заказов и связи с покупателями."
     >
       <InfoSectionGrid sections={privacySections} />

@@ -221,5 +221,5 @@ export function canAccessAdmin(user: Pick<AuthUser, "role"> | null | undefined) 
     return false;
   }
 
-  return user.role === "admin" || process.env.NODE_ENV !== "production";
+  return user.role === "admin";
 }

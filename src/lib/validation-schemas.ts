@@ -475,6 +475,18 @@ export const productSchema = z.object({
   createdAt: isoDateSchema,
   number: z.number().int().min(0).max(99).optional(),
   hexPalette: z.array(z.string().transform(sanitizeHexColor)).min(1).max(6),
+  variants: z
+    .array(
+      z.object({
+        id: z.string().transform((value) => sanitizeIdentifier(value, "")),
+        sku: z.string().transform((value) => sanitizeIdentifier(value, "").toUpperCase()),
+        size: productSizeSchema,
+        color: productColorSchema,
+        stock: z.number().int().min(0),
+        priceOverride: z.number().int().min(0).nullable(),
+      }),
+    )
+    .optional(),
 });
 
 export const catalogCollectionSchema = z.object({

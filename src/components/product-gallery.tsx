@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { ProductImage } from "@/components/product-image";
 import type { Product } from "@/lib/types";
 import { imageByType } from "@/lib/data/products";
+import { uniqueImageSources } from "@/lib/image-utils";
 import { cn } from "@/lib/utils";
 
 export function ProductGallery({ product }: { product: Product }) {
@@ -13,7 +14,7 @@ export function ProductGallery({ product }: { product: Product }) {
   const thumbRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const gallery = useMemo(() => {
     const images = product.gallery.length > 0 ? product.gallery : [product.image];
-    return [...new Set(images.filter(Boolean))];
+    return uniqueImageSources(images);
   }, [product.gallery, product.image]);
   const activeImage = gallery[activeIndex] ?? gallery[0];
   const viewedCount = Math.max(4, Math.round(product.popularity / 10));
@@ -48,6 +49,7 @@ export function ProductGallery({ product }: { product: Product }) {
   }, [activeIndex]);
 
   const thumbnailImageClassName = isGiftCertificate ? "object-contain" : "object-cover";
+  const mainImageClassName = isGiftCertificate ? "object-contain" : "object-cover";
   const thumbnailImageStyle = {
     display: "block",
     height: "100%",
@@ -57,7 +59,7 @@ export function ProductGallery({ product }: { product: Product }) {
   } as const;
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[104px_minmax(0,1fr)] lg:gap-4 xl:grid-cols-[112px_minmax(0,1fr)] xl:gap-5">
+    <div className="grid gap-4 lg:grid-cols-[118px_minmax(0,1fr)] lg:gap-4 xl:grid-cols-[132px_minmax(0,1fr)] xl:gap-5">
       <div className="order-2 flex gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden lg:hidden">
         {gallery.map((image, index) => (
           <button
@@ -97,7 +99,7 @@ export function ProductGallery({ product }: { product: Product }) {
           <ChevronUp className="size-5" />
         </button>
 
-        <div className="flex max-h-[720px] w-full flex-col gap-3 overflow-y-auto px-0.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+        <div className="flex max-h-[820px] w-full flex-col gap-3 overflow-y-auto px-0.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           {gallery.map((image, index) => (
             <button
               key={`${image}-${index}`}
@@ -113,7 +115,7 @@ export function ProductGallery({ product }: { product: Product }) {
                   : "border-[#e6e1da] hover:border-[#c9c0b4]",
               )}
             >
-              <div className="relative h-[144px] w-full overflow-hidden rounded-[0.78rem] bg-transparent xl:h-[158px]">
+              <div className="relative h-[152px] w-full overflow-hidden rounded-[0.78rem] bg-transparent xl:h-[174px]">
                 <ProductImage
                   src={image}
                   fallbackSrc={fallbackImage}
@@ -146,8 +148,7 @@ export function ProductGallery({ product }: { product: Product }) {
           </div>
 
           <div
-            className="relative flex min-h-[320px] items-center justify-center sm:min-h-[560px] xl:min-h-[660px]"
-            style={{ minHeight: 320 }}
+            className="relative flex aspect-[5/6] min-h-[420px] items-center justify-center sm:min-h-[620px] lg:min-h-[720px] xl:min-h-[780px] 2xl:min-h-[840px]"
           >
             <ProductImage
               src={activeImage}
@@ -155,8 +156,8 @@ export function ProductGallery({ product }: { product: Product }) {
               alt={product.name}
               fill
               priority
-              sizes="(min-width: 1280px) calc(100vw - 620px), 100vw"
-              className="max-h-[72vh] w-full object-contain sm:max-h-full"
+              sizes="(min-width: 1536px) calc((100vw - 620px) * 0.62), (min-width: 1280px) calc(100vw - 610px), 100vw"
+              className={cn("h-full w-full", mainImageClassName)}
             />
           </div>
         </div>

@@ -8,6 +8,7 @@ import { Header } from "@/components/header";
 import { Providers } from "@/components/providers";
 import { ScrollbarVisibility } from "@/components/scrollbar-visibility";
 import { TopAnnouncementBar } from "@/components/top-announcement-bar";
+import { defaultOgImage, getSiteUrl, siteName } from "@/lib/seo";
 
 const headingFont = Archivo({
   subsets: ["latin"],
@@ -24,9 +25,43 @@ const bodyFont = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "Apex Store",
+  metadataBase: new URL(getSiteUrl()),
+  title: {
+    default: siteName,
+    template: `%s | ${siteName}`,
+  },
   description:
     "Магазин одежды в эстетике Formula 1 с коллекциями команд, пилотов и базовой спортивной линейкой.",
+  applicationName: siteName,
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: siteName,
+    description:
+      "Магазин одежды в эстетике Formula 1 с коллекциями команд, пилотов и базовой спортивной линейкой.",
+    url: "/",
+    siteName,
+    locale: "ru_RU",
+    type: "website",
+    images: [
+      {
+        url: defaultOgImage,
+        alt: siteName,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteName,
+    description:
+      "Магазин одежды в эстетике Formula 1 с коллекциями команд, пилотов и базовой спортивной линейкой.",
+    images: [defaultOgImage],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

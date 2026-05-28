@@ -11,6 +11,7 @@ import {
 import initialCatalogCollectionsData from "../../data/catalog-collections.json";
 import initialCatalogProductsData from "../../data/catalog-products.json";
 import recoveredCatalogProductsData from "@/lib/data/recovered-products.json";
+import { uniqueImageSources } from "@/lib/image-utils";
 import type {
   CatalogCollection,
   CatalogCategory,
@@ -31,7 +32,7 @@ import {
   SECURITY_LIMITS,
 } from "@/lib/security-utils";
 import { catalogPayloadSchema, catalogProductsPayloadSchema } from "@/lib/validation-schemas";
-import { clamp, slugify } from "@/lib/utils";
+import { clamp, createProductSeoSlug, isGeneratedProductSlug, slugify } from "@/lib/utils";
 
 const validCategories: CatalogCategory[] = ["Pilots", "Teams", "Legends", "Accessories", "Essentials", "Gifts"];
 const internalProductTags = new Set(["New Arrivals", "Sale"]);
@@ -199,11 +200,7 @@ function deriveCollectionTags(
 }
 
 function normalizeGallery(images: string[], image: string) {
-  const cleaned = uniqueValues(
-    images
-      .map((value) => value.trim())
-      .filter(Boolean),
-  );
+  const cleaned = uniqueImageSources(images);
 
   return cleaned.length > 0 ? cleaned : [image];
 }
@@ -222,11 +219,6 @@ export function normalizeProduct(product: Product, existingProducts: Product[] =
     baseId,
     existingProducts.map((item) => item.id),
   );
-  const slug = createUniqueValue(
-    sanitizeIdentifier(product.slug ?? "", slugify(id || name) || `product-${Date.now()}`),
-    existingProducts.map((item) => item.slug),
-  );
-
   let driverName =
     sanitizeText(product.driverName ?? "", {
       maxLength: SECURITY_LIMITS.catalogMetadataMaxLength,
@@ -265,6 +257,24 @@ export function normalizeProduct(product: Product, existingProducts: Product[] =
   const driver = driverName ? driverMap.get(driverName) : undefined;
   const team = teamName ? teamMap.get(teamName) : undefined;
   const legend = legendName ? legendMap.get(legendName) : undefined;
+  const normalizedPrice = Number.isFinite(product.price) ? Math.max(0, Math.round(product.price)) : 2990;
+  const requestedSlug = sanitizeIdentifier(product.slug ?? "", "");
+  const slugSource = {
+    id,
+    name,
+    collection,
+    driverName,
+    teamName,
+    legendName,
+    type,
+    price: normalizedPrice,
+  };
+  const slug = isGeneratedProductSlug(requestedSlug, id)
+    ? createProductSeoSlug(slugSource, existingProducts)
+    : createUniqueValue(
+        requestedSlug || createProductSeoSlug(slugSource, existingProducts),
+        existingProducts.map((item) => item.slug),
+      );
 
   const colors =
     product.colors.length > 0
@@ -302,7 +312,7 @@ export function normalizeProduct(product: Product, existingProducts: Product[] =
     legendName,
     legendSlug: legend?.slug ?? null,
     gender,
-    price: Number.isFinite(product.price) ? Math.max(0, Math.round(product.price)) : 2990,
+    price: normalizedPrice,
     productType: product.type === "Gift Certificate" ? "gift_certificate" : product.productType ?? "standard",
     requiresShipping: product.type === "Gift Certificate" ? false : product.requiresShipping ?? true,
     colors,

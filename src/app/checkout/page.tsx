@@ -5,12 +5,13 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import type { AddressInput, DeliveryMethod, PaymentMethod } from "@/lib/account-types";
+import type { AddressInput, DeliveryMethod, PaymentMethod, UserAddress } from "@/lib/account-types";
 import { deliveryMethods, paymentMethods } from "@/lib/account-constants";
 import { getErrorMessage, getZodFieldErrors } from "@/lib/form-error-utils";
 import { checkoutCustomerSchema } from "@/lib/validation-schemas";
 import { useCatalogProducts } from "@/hooks/use-catalog-products";
 import { addressService } from "@/services/address-service";
+import { balanceService } from "@/services/balance-service";
 import { checkoutService } from "@/services/checkout-service";
 import { useAuthStore } from "@/store/auth-store";
 import { useCartStore } from "@/store/cart-store";
@@ -41,7 +42,9 @@ export default function CheckoutPage() {
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
   const [showNewAddressForm, setShowNewAddressForm] = useState(false);
   const [guestAddress, setGuestAddress] = useState<AddressInput | null>(null);
+  const [addresses, setAddresses] = useState<UserAddress[]>([]);
   const [useBalance, setUseBalance] = useState(false);
+  const [availableBalance, setAvailableBalance] = useState(0);
   const [requestedBalanceInput, setRequestedBalanceInput] = useState("");
   const [values, setValues] = useState({
     name: currentUser?.name ?? "",
@@ -54,7 +57,6 @@ export default function CheckoutPage() {
   const [errors, setErrors] = useState<CheckoutErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const addresses = currentUser ? addressService.listByUser(currentUser.id) : [];
   const effectiveSelectedAddressId =
     selectedAddressId ?? addresses.find((address) => address.isDefault)?.id ?? addresses[0]?.id ?? null;
   const selectedAddress = addresses.find((address) => address.id === effectiveSelectedAddressId) ?? null;
@@ -67,8 +69,9 @@ export default function CheckoutPage() {
         productMap,
         useBalance,
         requestedBalanceAmount,
+        availableBalance,
       }),
-    [cartItems, currentUser?.id, productMap, requestedBalanceAmount, useBalance],
+    [availableBalance, cartItems, currentUser?.id, productMap, requestedBalanceAmount, useBalance],
   );
   const maxBalanceSpend = Math.min(
     checkoutPreview.total,
@@ -77,6 +80,8 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     if (!currentUser) {
+      setAddresses([]);
+      setAvailableBalance(0);
       return;
     }
 
@@ -86,6 +91,42 @@ export default function CheckoutPage() {
       email: current.email || currentUser.email,
       phone: current.phone || currentUser.phone,
     }));
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (!currentUser) {
+      setAvailableBalance(0);
+      return;
+    }
+
+    let ignore = false;
+    void balanceService.getByUserIdUnsafe(currentUser.id).then((balance) => {
+      if (!ignore) {
+        setAvailableBalance(balance.amount);
+      }
+    });
+
+    return () => {
+      ignore = true;
+    };
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (!currentUser) {
+      setAddresses([]);
+      return;
+    }
+
+    let ignore = false;
+    void addressService.listByUser(currentUser.id).then((nextAddresses) => {
+      if (!ignore) {
+        setAddresses(nextAddresses);
+      }
+    });
+
+    return () => {
+      ignore = true;
+    };
   }, [currentUser]);
 
   useEffect(() => {
@@ -133,10 +174,19 @@ export default function CheckoutPage() {
       return;
     }
 
-    const nextAddress = addressService.create(currentUser.id, input, isDefault);
+    const nextAddress = await addressService.create(currentUser.id, input, isDefault);
+    setAddresses(await addressService.listByUser(currentUser.id));
     setSelectedAddressId(nextAddress.id);
     setShowNewAddressForm(false);
     pushToast("Адрес добавлен");
+  };
+
+  const handleCustomerInfoChange = (field: keyof typeof values, value: string) => {
+    if (field === "deliveryMethod" && value === "Курьер" && values.deliveryMethod !== "Курьер") {
+      pushToast("Курьерская доставка доступна только в Москве.", "info");
+    }
+
+    setValues((current) => ({ ...current, [field]: value }));
   };
 
   const handlePlaceOrder = async () => {
@@ -214,7 +264,7 @@ export default function CheckoutPage() {
           <CheckoutCustomerInfo
             values={values}
             errors={errors}
-            onChange={(field, value) => setValues((current) => ({ ...current, [field]: value }))}
+            onChange={handleCustomerInfoChange}
             showDeliverySelector={checkoutPreview.requiresShipping}
             externalPaymentRequired={checkoutPreview.balanceUsage.amountToPay > 0}
           />

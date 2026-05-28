@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 
 import { InfoCTA, InfoPageLayout, InfoSectionGrid } from "@/components/info-pages";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Доставка | Apex Store",
-  description: "Информация о производстве, доставке и отслеживании заказов Apex Store.",
-};
+export const metadata: Metadata = createPageMetadata({
+  title: "Доставка",
+  path: "/delivery",
+  description:
+    "Информация о производстве, доставке, бесплатной доставке от 4 000 ₽ и отслеживании заказов Apex Store.",
+});
 
 const deliverySections = [
   {
@@ -34,6 +37,7 @@ export default function DeliveryPage() {
   return (
     <InfoPageLayout
       title="Доставка"
+      path="/delivery"
       description="Мы доставляем заказы по России и странам СНГ. После оформления заказа вы получите подтверждение, а затем уведомление о производстве и отправке."
     >
       <InfoSectionGrid sections={deliverySections} />

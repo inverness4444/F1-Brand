@@ -1,17 +1,37 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
+import type { Order } from "@/lib/account-types";
 import { orderService } from "@/services/order-service";
 import { useAuthStore } from "@/store/auth-store";
 import { OrdersList } from "@/components/orders-list";
 
 export default function AccountOrdersPage() {
   const currentUser = useAuthStore((state) => state.currentUser);
+  const [orders, setOrders] = useState<Order[]>([]);
+
+  useEffect(() => {
+    if (!currentUser) {
+      setOrders([]);
+      return;
+    }
+
+    let ignore = false;
+    void orderService.listByUser(currentUser.id).then((nextOrders) => {
+      if (!ignore) {
+        setOrders(nextOrders);
+      }
+    });
+
+    return () => {
+      ignore = true;
+    };
+  }, [currentUser]);
 
   if (!currentUser) {
     return null;
   }
-
-  const orders = orderService.listByUser(currentUser.id);
 
   return (
     <div className="space-y-5">

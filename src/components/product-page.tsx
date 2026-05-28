@@ -34,7 +34,7 @@ export function ProductPage({
           <span className="min-w-0 break-words text-[#111111]">{getProductDisplayName(product)}</span>
         </nav>
 
-        <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_460px] xl:gap-8 2xl:grid-cols-[minmax(0,1fr)_500px]">
+        <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1.18fr)_minmax(430px,0.82fr)] xl:gap-9 2xl:grid-cols-[minmax(0,1.28fr)_minmax(460px,0.72fr)] 2xl:gap-10">
           <ProductGallery product={product} />
           <ProductInfo product={product} />
         </div>

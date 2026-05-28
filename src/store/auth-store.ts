@@ -15,8 +15,8 @@ type AuthState = {
   currentSession: AuthSession | null;
   isHydrated: boolean;
   isLoading: boolean;
-  initialize: () => void;
-  refresh: () => void;
+  initialize: () => Promise<void>;
+  refresh: () => Promise<void>;
   login: (payload: LoginPayload) => Promise<AuthUser>;
   register: (payload: RegisterPayload) => Promise<AuthUser>;
   logout: () => Promise<void>;
@@ -27,19 +27,27 @@ export const useAuthStore = create<AuthState>((set) => ({
   currentSession: null,
   isHydrated: false,
   isLoading: false,
-  initialize: () => {
-    const { currentSession, currentUser } = authService.getAuthSnapshot();
-    set({ currentUser, currentSession, isHydrated: true });
+  initialize: async () => {
+    try {
+      const { currentSession, currentUser } = await authService.getAuthSnapshot();
+      set({ currentUser, currentSession, isHydrated: true });
+    } catch {
+      set({ currentUser: null, currentSession: null, isHydrated: true });
+    }
   },
-  refresh: () => {
-    const { currentSession, currentUser } = authService.getAuthSnapshot();
-    set({ currentUser, currentSession, isHydrated: true });
+  refresh: async () => {
+    try {
+      const { currentSession, currentUser } = await authService.getAuthSnapshot();
+      set({ currentUser, currentSession, isHydrated: true });
+    } catch {
+      set({ currentUser: null, currentSession: null, isHydrated: true });
+    }
   },
   login: async (payload) => {
     set({ isLoading: true });
 
     try {
-      const { user, session } = authService.login(payload);
+      const { user, session } = await authService.login(payload);
       set({ currentUser: user, currentSession: session, isHydrated: true, isLoading: false });
       return user;
     } catch (error) {
@@ -51,7 +59,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ isLoading: true });
 
     try {
-      const { user, session } = authService.register(payload);
+      const { user, session } = await authService.register(payload);
       set({ currentUser: user, currentSession: session, isHydrated: true, isLoading: false });
       return user;
     } catch (error) {

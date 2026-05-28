@@ -8,6 +8,7 @@ import { ProductImage } from "@/components/product-image";
 import { ProductBadgeTag } from "@/components/product-badge";
 import type { Product } from "@/lib/types";
 import { imageByType } from "@/lib/data/products";
+import { getImageDedupeKey } from "@/lib/image-utils";
 import { formatPrice, getProductHref } from "@/lib/utils";
 import { getProductDisplayName } from "@/lib/storefront-text";
 
@@ -25,8 +26,10 @@ function ProductCardComponent({
 }) {
   const productHref = getProductHref(product);
   const fallbackImage = imageByType[product.type];
-  const hoverImage = (product.gallery ?? []).find((image) => image && image !== product.image) ?? product.image;
-  const hasAlternateImage = hoverImage !== product.image;
+  const primaryImageKey = getImageDedupeKey(product.image);
+  const hoverImage =
+    (product.gallery ?? []).find((image) => image && getImageDedupeKey(image) !== primaryImageKey) ?? product.image;
+  const hasAlternateImage = getImageDedupeKey(hoverImage) !== primaryImageKey;
   const rating = Math.max(4, Math.min(5, Math.round(product.popularity / 16)));
   const isGiftCertificate = product.productType === "gift_certificate";
   const imageBaseClassName =
@@ -101,20 +104,20 @@ function ProductCardComponent({
   }
 
   const shouldRaiseShowcaseImage = product.id === "custom-1778090477669";
-  const imageFitClassName = isGiftCertificate ? "object-cover object-bottom" : "object-cover object-center";
+  const imageFitClassName = isGiftCertificate ? "object-contain object-center" : "object-cover object-center";
   const showcaseImageStyle: CSSProperties | undefined = shouldRaiseShowcaseImage
     ? { objectPosition: "center 35%" }
     : undefined;
-  const imagePlacementClassName = isGiftCertificate ? "translate-y-32 scale-[1.42]" : "scale-[1.01]";
+  const imagePlacementClassName = isGiftCertificate ? "scale-[0.92]" : "scale-[1.01]";
   const primaryHoverClassName = hasAlternateImage
     ? isGiftCertificate
-      ? "group-hover:translate-y-32 group-hover:scale-[1.45] group-hover:opacity-0"
+      ? "group-hover:scale-[0.95] group-hover:opacity-0"
       : "group-hover:scale-[1.04] group-hover:opacity-0"
     : isGiftCertificate
-      ? "group-hover:translate-y-32 group-hover:scale-[1.45]"
+      ? "group-hover:scale-[0.95]"
       : "group-hover:scale-[1.04]";
   const secondaryHoverClassName = isGiftCertificate
-    ? "group-hover:translate-y-32 group-hover:scale-[1.45] group-hover:opacity-100"
+    ? "group-hover:scale-[0.95] group-hover:opacity-100"
     : "group-hover:scale-[1.04] group-hover:opacity-100";
 
   return (

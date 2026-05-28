@@ -30,7 +30,7 @@ export default function AccountSettingsPage() {
           <div>
             <h2 className="text-2xl font-semibold text-slate-900">Настройки</h2>
             <p className="mt-2 text-sm leading-7 text-slate-500">
-              Управление сессией и базовой безопасностью аккаунта в mock-инфраструктуре магазина.
+              Управление сессией и базовой безопасностью аккаунта.
             </p>
           </div>
         </div>
@@ -58,7 +58,7 @@ export default function AccountSettingsPage() {
         <div className="card-panel min-w-0 p-5 sm:p-6">
           <h3 className="text-xl font-semibold text-slate-900">Сессия</h3>
           <p className="mt-3 text-sm leading-7 text-slate-500">
-            Текущая сессия хранится локально. Позже этот слой можно заменить на backend, Supabase или Prisma/PostgreSQL.
+            Текущая сессия хранится в защищённой HttpOnly cookie и проверяется на сервере.
           </p>
           <div className="mt-5 space-y-3 text-sm text-slate-600">
             <div className="flex items-center justify-between gap-4">
