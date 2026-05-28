@@ -66,12 +66,32 @@ const productBadgeSchema = z.enum(["New", "Hit", "Limited", "Preorder", "OutOfSt
 const commerceProductKindSchema = z.enum(["standard", "gift_certificate"]);
 const orderStatusSchema = z.enum([
   "Новый",
+  "Ожидает оплаты",
   "Оплачен",
   "В производстве",
   "Отправлен",
   "Доставлен",
   "Отменён",
+  "Возвращён",
 ]);
+const orderPaymentStatusSchema = z.enum([
+  "NOT_STARTED",
+  "PENDING",
+  "WAITING_FOR_CAPTURE",
+  "SUCCEEDED",
+  "CANCELED",
+  "REFUNDED",
+  "FAILED",
+]);
+const orderFulfillmentStatusSchema = z.enum([
+  "NOT_FULFILLED",
+  "PROCESSING",
+  "SHIPPED",
+  "DELIVERED",
+  "RETURNED",
+  "CANCELLED",
+]);
+const paymentProviderSchema = z.enum(["YOOKASSA", "MOCK"]);
 const deliveryMethodSchema = z.enum(["СДЭК", "Почта России", "Курьер", "Самовывоз", "Цифровой сертификат"]);
 const paymentMethodSchema = z.enum([
   "Банковская карта",
@@ -350,8 +370,17 @@ export const favoriteRecordSchema = z.object({
 
 export const orderItemSchema = z.object({
   productId: z.string().transform((value) => sanitizeIdentifier(value, "")),
+  variantId: z
+    .string()
+    .nullable()
+    .transform((value) => (value ? sanitizeIdentifier(value, "") : null)),
   slug: z.string().transform((value) => sanitizeIdentifier(value, "")),
   name: requiredTextSchema(SECURITY_LIMITS.catalogNameMaxLength, "Укажите название товара."),
+  variantName: z.string().transform((value) => sanitizeText(value, { maxLength: 120 })),
+  sku: z
+    .string()
+    .nullable()
+    .transform((value) => (value ? sanitizeIdentifier(value, "").toUpperCase() : null)),
   image: z.string().transform(sanitizeAssetUrl),
   productType: productTypeSchema,
   productKind: commerceProductKindSchema.default("standard"),
@@ -377,6 +406,17 @@ export const orderSchema = z.object({
   createdAt: isoDateSchema,
   updatedAt: isoDateSchema,
   status: orderStatusSchema,
+  paymentStatus: orderPaymentStatusSchema,
+  fulfillmentStatus: orderFulfillmentStatusSchema,
+  payment: z
+    .object({
+      provider: paymentProviderSchema,
+      status: orderPaymentStatusSchema,
+      amount: z.number().int().min(0),
+      currency: z.string().min(3).max(3),
+      confirmationUrl: z.string().url().nullable(),
+    })
+    .nullable(),
   items: z.array(orderItemSchema),
   itemCount: z.number().int().min(0),
   customer: checkoutCustomerSchema,

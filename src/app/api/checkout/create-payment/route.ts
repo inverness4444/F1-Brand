@@ -15,6 +15,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(result);
   } catch (error) {
-    return apiError(error, "Не удалось оформить заказ.");
+    return apiError(error, "Не удалось подготовить оплату.");
   }
 }

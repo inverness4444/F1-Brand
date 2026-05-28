@@ -8,11 +8,23 @@ import { formatPrice } from "@/lib/utils";
 
 const statusClassMap: Record<Order["status"], string> = {
   Новый: "bg-slate-100 text-slate-700",
+  "Ожидает оплаты": "bg-amber-100 text-amber-800",
   Оплачен: "bg-emerald-100 text-emerald-800",
   "В производстве": "bg-amber-100 text-amber-800",
   Отправлен: "bg-blue-100 text-blue-800",
   Доставлен: "bg-green-100 text-green-800",
   Отменён: "bg-red-100 text-red-700",
+  Возвращён: "bg-slate-100 text-slate-700",
+};
+
+const paymentStatusLabel: Record<Order["paymentStatus"], string> = {
+  NOT_STARTED: "Не начата",
+  PENDING: "Ожидает оплаты",
+  WAITING_FOR_CAPTURE: "Ожидает списания",
+  SUCCEEDED: "Оплачено",
+  CANCELED: "Отменена",
+  REFUNDED: "Возврат",
+  FAILED: "Ошибка оплаты",
 };
 
 export function OrdersList({ orders }: { orders: Order[] }) {
@@ -54,10 +66,15 @@ export function OrdersList({ orders }: { orders: Order[] }) {
                 ) : null}
               </div>
               <div>
-                <p className="text-xs uppercase tracking-[0.16em] text-slate-400">Товаров</p>
-                <p className="mt-1 font-semibold text-slate-900">{order.itemCount}</p>
+                <p className="text-xs uppercase tracking-[0.16em] text-slate-400">Оплата</p>
+                <p className="mt-1 font-semibold text-slate-900">{paymentStatusLabel[order.paymentStatus]}</p>
               </div>
-              <div className="flex items-end sm:justify-end">
+              <div className="flex flex-wrap items-end gap-2 sm:justify-end">
+                {order.paymentStatus === "PENDING" && order.payment?.confirmationUrl ? (
+                  <a href={order.payment.confirmationUrl} className="button-base button-primary rounded-2xl">
+                    Оплатить
+                  </a>
+                ) : null}
                 <Link
                   href={`/account/orders/${order.id}`}
                   className="button-base button-secondary rounded-2xl"

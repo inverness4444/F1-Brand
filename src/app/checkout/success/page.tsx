@@ -73,6 +73,11 @@ export default function CheckoutSuccessPage() {
           ) : null}
 
           <div className="mt-8 flex flex-wrap justify-center gap-3">
+            {order?.paymentStatus === "PENDING" && order.payment?.confirmationUrl ? (
+              <a href={order.payment.confirmationUrl} className="button-base button-primary rounded-2xl">
+                Продолжить оплату
+              </a>
+            ) : null}
             <Link href="/shop" className="button-base button-secondary rounded-2xl">
               Вернуться в каталог
             </Link>

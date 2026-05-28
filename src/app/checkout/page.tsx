@@ -218,7 +218,7 @@ export default function CheckoutPage() {
     setIsSubmitting(true);
 
     try {
-      const order = await checkoutService.placeOrder(
+      const result = await checkoutService.placeOrder(
         {
           userId: currentUser?.id ?? null,
           customer: customerPayload.success ? customerPayload.data : values,
@@ -234,8 +234,14 @@ export default function CheckoutPage() {
       );
 
       clearCart();
+      if (result.confirmationUrl) {
+        pushToast("Заказ создан. Переходим к оплате.");
+        window.location.assign(result.confirmationUrl);
+        return;
+      }
+
       pushToast("Заказ оформлен");
-      router.push(`/checkout/success?order=${encodeURIComponent(order.id)}`);
+      router.push(`/checkout/success?order=${encodeURIComponent(result.order.id)}`);
     } catch (error) {
       setErrors({
         form: getErrorMessage(error, "Не удалось оформить заказ."),

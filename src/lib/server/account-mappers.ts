@@ -25,12 +25,20 @@ function toIso(value: Date) {
 
 function orderStatusRu(status: Order["status"]) {
   switch (status) {
+    case "AWAITING_PAYMENT":
+      return "Ожидает оплаты";
     case "PAID":
       return "Оплачен";
-    case "FULFILLED":
+    case "PROCESSING":
+      return "В производстве";
+    case "SHIPPED":
+      return "Отправлен";
+    case "DELIVERED":
       return "Доставлен";
     case "CANCELLED":
       return "Отменён";
+    case "REFUNDED":
+      return "Возвращён";
     case "PENDING":
     default:
       return "Новый";
@@ -88,17 +96,20 @@ export function addressFromDb(address: {
 export function orderItemFromDb(item: OrderItem): AccountOrderItem {
   return {
     productId: item.productId ?? item.productSlug,
+    variantId: item.variantId,
     slug: item.productSlug,
     name: item.productName,
-    image: item.productImage,
+    variantName: item.variantName,
+    sku: item.sku,
+    image: item.imageUrl,
     productType: item.productType as AccountOrderItem["productType"],
     productKind: item.productKind as AccountOrderItem["productKind"],
     requiresShipping: item.requiresShipping,
     color: item.color as AccountOrderItem["color"],
     size: item.size as AccountOrderItem["size"],
     quantity: item.quantity,
-    unitPrice: item.unitPriceCents,
-    lineTotal: item.lineTotalCents,
+    unitPrice: item.unitPrice,
+    lineTotal: item.totalPrice,
   };
 }
 
@@ -133,11 +144,11 @@ export function issuedGiftCardFromDb(card: GiftCard): IssuedGiftCertificate {
 }
 
 function shippingAddressSnapshot(order: Order): OrderAddressSnapshot | null {
-  if (!order.shippingAddressSnapshot || typeof order.shippingAddressSnapshot !== "object") {
+  if (!order.deliveryAddressSnapshot || typeof order.deliveryAddressSnapshot !== "object") {
     return null;
   }
 
-  return order.shippingAddressSnapshot as OrderAddressSnapshot;
+  return order.deliveryAddressSnapshot as OrderAddressSnapshot;
 }
 
 export function orderFromDb(order: DbOrder): AccountOrder {
@@ -148,6 +159,17 @@ export function orderFromDb(order: DbOrder): AccountOrder {
     createdAt: toIso(order.createdAt),
     updatedAt: toIso(order.updatedAt),
     status: orderStatusRu(order.status),
+    paymentStatus: order.paymentStatus,
+    fulfillmentStatus: order.fulfillmentStatus,
+    payment: order.payment
+      ? {
+          provider: order.payment.provider,
+          status: order.payment.status,
+          amount: order.payment.amount,
+          currency: order.payment.currency,
+          confirmationUrl: order.payment.confirmationUrl,
+        }
+      : null,
     items: order.items.map(orderItemFromDb),
     itemCount: order.items.reduce((sum, item) => sum + item.quantity, 0),
     customer: {
@@ -159,9 +181,9 @@ export function orderFromDb(order: DbOrder): AccountOrder {
     deliveryMethod: order.deliveryMethod as AccountOrder["deliveryMethod"],
     paymentMethod: order.paymentMethod as AccountOrder["paymentMethod"],
     comment: order.comment,
-    subtotal: order.subtotalCents,
-    shippingCost: order.shippingCostCents,
-    total: order.totalCents,
+    subtotal: order.subtotalAmount,
+    shippingCost: order.deliveryAmount,
+    total: order.totalAmount,
     amountPaidByBalance: order.amountPaidByBalanceCents,
     amountPaidByExternalMethod: order.amountPaidByExternalCents,
     balanceBefore: order.balanceBeforeCents,

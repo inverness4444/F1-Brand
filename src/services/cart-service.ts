@@ -167,8 +167,15 @@ export function toOrderItems(
 ): OrderItem[] {
   return buildCartItems(selections, productMap).map(({ selection, product }) => ({
     productId: product.id,
+    variantId:
+      product.variants?.find((variant) => variant.color === selection.color && variant.size === selection.size)?.id ??
+      null,
     slug: product.slug,
     name: getProductDisplayName(product),
+    variantName: `${selection.size} / ${selection.color}`,
+    sku:
+      product.variants?.find((variant) => variant.color === selection.color && variant.size === selection.size)?.sku ??
+      null,
     image: product.image,
     productType: product.type,
     productKind: product.productType,

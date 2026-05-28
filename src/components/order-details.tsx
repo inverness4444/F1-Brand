@@ -16,11 +16,23 @@ import { Button } from "@/components/ui/button";
 
 const statusClassMap: Record<Order["status"], string> = {
   Новый: "bg-slate-100 text-slate-700",
+  "Ожидает оплаты": "bg-amber-100 text-amber-800",
   Оплачен: "bg-emerald-100 text-emerald-800",
   "В производстве": "bg-amber-100 text-amber-800",
   Отправлен: "bg-blue-100 text-blue-800",
   Доставлен: "bg-green-100 text-green-800",
   Отменён: "bg-red-100 text-red-700",
+  Возвращён: "bg-slate-100 text-slate-700",
+};
+
+const paymentStatusLabel: Record<Order["paymentStatus"], string> = {
+  NOT_STARTED: "Не начата",
+  PENDING: "Ожидает оплаты",
+  WAITING_FOR_CAPTURE: "Ожидает списания",
+  SUCCEEDED: "Оплачено",
+  CANCELED: "Отменена",
+  REFUNDED: "Возврат",
+  FAILED: "Ошибка оплаты",
 };
 
 export function OrderDetails({
@@ -44,6 +56,11 @@ export function OrderDetails({
             <p className="mt-2 text-sm text-slate-500">Оформлен {formatDateTime(order.createdAt)}</p>
           </div>
           <div className="flex flex-wrap gap-3">
+            {order.paymentStatus === "PENDING" && order.payment?.confirmationUrl ? (
+              <a href={order.payment.confirmationUrl} className="button-base button-primary rounded-2xl">
+                Продолжить оплату
+              </a>
+            ) : null}
             <Button variant="secondary" className="rounded-2xl" onClick={onRepeatOrder}>
               <RotateCcw className="size-4" />
               Повторить заказ
@@ -134,6 +151,7 @@ export function OrderDetails({
               <div>
                 <p className="font-semibold text-slate-900">Способ оплаты</p>
                 <p className="mt-2">{order.paymentMethod}</p>
+                <p className="mt-1 text-slate-500">{paymentStatusLabel[order.paymentStatus]}</p>
               </div>
               {order.usedBalance ? (
                 <div className="rounded-[18px] bg-slate-50 px-4 py-3">

@@ -54,7 +54,7 @@ export const checkoutService = {
       throw new Error("Выберите способ доставки.");
     }
 
-    const response = await fetch("/api/checkout", {
+    const response = await fetch("/api/checkout/create-payment", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -64,12 +64,17 @@ export const checkoutService = {
       body: JSON.stringify(normalizedPayload),
     });
 
-    const responsePayload = (await response.json().catch(() => null)) as { order?: unknown; error?: string } | null;
+    const responsePayload = (await response.json().catch(() => null)) as
+      | { order?: unknown; confirmationUrl?: unknown; error?: string }
+      | null;
 
     if (!response.ok) {
       throw new Error(responsePayload?.error ?? "Не удалось оформить заказ.");
     }
 
-    return orderSchema.parse(responsePayload?.order);
+    return {
+      order: orderSchema.parse(responsePayload?.order),
+      confirmationUrl: typeof responsePayload?.confirmationUrl === "string" ? responsePayload.confirmationUrl : null,
+    };
   },
 };

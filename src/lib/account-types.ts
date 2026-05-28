@@ -101,11 +101,38 @@ export type FavoriteRecord = {
 
 export type OrderStatus =
   | "Новый"
+  | "Ожидает оплаты"
   | "Оплачен"
   | "В производстве"
   | "Отправлен"
   | "Доставлен"
-  | "Отменён";
+  | "Отменён"
+  | "Возвращён";
+
+export type OrderPaymentStatus =
+  | "NOT_STARTED"
+  | "PENDING"
+  | "WAITING_FOR_CAPTURE"
+  | "SUCCEEDED"
+  | "CANCELED"
+  | "REFUNDED"
+  | "FAILED";
+
+export type OrderFulfillmentStatus =
+  | "NOT_FULFILLED"
+  | "PROCESSING"
+  | "SHIPPED"
+  | "DELIVERED"
+  | "RETURNED"
+  | "CANCELLED";
+
+export type OrderPayment = {
+  provider: "YOOKASSA" | "MOCK";
+  status: OrderPaymentStatus;
+  amount: number;
+  currency: string;
+  confirmationUrl: string | null;
+};
 
 export type DeliveryMethod = "СДЭК" | "Почта России" | "Курьер" | "Самовывоз" | "Цифровой сертификат";
 export type PaymentMethod =
@@ -117,8 +144,11 @@ export type PaymentMethod =
 
 export type OrderItem = {
   productId: string;
+  variantId: string | null;
   slug: string;
   name: string;
+  variantName: string;
+  sku: string | null;
   image: string;
   productType: ProductType;
   productKind: CommerceProductKind;
@@ -189,6 +219,9 @@ export type Order = {
   createdAt: string;
   updatedAt: string;
   status: OrderStatus;
+  paymentStatus: OrderPaymentStatus;
+  fulfillmentStatus: OrderFulfillmentStatus;
+  payment: OrderPayment | null;
   items: OrderItem[];
   itemCount: number;
   customer: OrderCustomer;

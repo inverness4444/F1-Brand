@@ -41,11 +41,13 @@ export const favoriteTeams2026 = [
 
 export const orderStatuses: OrderStatus[] = [
   "Новый",
+  "Ожидает оплаты",
   "Оплачен",
   "В производстве",
   "Отправлен",
   "Доставлен",
   "Отменён",
+  "Возвращён",
 ];
 
 export const digitalDeliveryMethod: DeliveryMethod = "Цифровой сертификат";
