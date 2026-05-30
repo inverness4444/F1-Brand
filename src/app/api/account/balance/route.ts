@@ -5,8 +5,8 @@ import { normalizeGiftCertificateCode, validateGiftCertificateCode } from "@/lib
 import { getCurrentUser } from "@/lib/server/auth";
 import { balanceFromDb, balanceTransactionFromDb, giftCardFromDb } from "@/lib/server/account-mappers";
 import { apiError, noStoreJson } from "@/lib/server/api";
-import { prisma } from "@/lib/server/db";
-import { assertSameOrigin } from "@/lib/server/request-security";
+import { prisma } from "@/lib/prisma";
+import { assertProtectedMutation, enforceRateLimit } from "@/lib/server/request-security";
 
 export const runtime = "nodejs";
 
@@ -53,7 +53,19 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    assertSameOrigin(request);
+    const rateLimit = await enforceRateLimit(request, "account-gift-card-activate", {
+      maxAttempts: 10,
+      windowMs: 15 * 60 * 1000,
+    });
+
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: "Слишком много попыток активации. Повторите позже." },
+        { status: 429, headers: { "Retry-After": String(rateLimit.retryAfterSeconds) } },
+      );
+    }
+
+    assertProtectedMutation(request);
     const user = await requireApiUser();
     const input = activateSchema.parse(await request.json());
 

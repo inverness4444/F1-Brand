@@ -25,15 +25,16 @@ export function getRecommendedProducts(products: Product[], product: Product) {
     .slice(0, 8);
 }
 
-export function useCatalogProducts() {
+export function useCatalogProducts({ admin = false }: { admin?: boolean } = {}) {
   const products = useCatalogStore((state) => state.products);
   const collections = useCatalogStore((state) => state.collections);
   const hasHydrated = useCatalogStore((state) => state.hasHydrated);
   const initializeCatalog = useCatalogStore((state) => state.initializeCatalog);
+  const mode = admin ? "admin" : "public";
 
   useEffect(() => {
-    void initializeCatalog();
-  }, [initializeCatalog]);
+    void initializeCatalog(mode);
+  }, [initializeCatalog, mode]);
 
   return useMemo(() => {
     const sortedByDate = [...products].sort(

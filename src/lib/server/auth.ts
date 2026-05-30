@@ -8,9 +8,11 @@ import { redirect } from "next/navigation";
 import type { NextResponse } from "next/server";
 
 import type { AuthSession, AuthUser } from "@/lib/account-types";
-import { prisma } from "@/lib/server/db";
+import { prisma } from "@/lib/prisma";
 
 export const SESSION_COOKIE_NAME = "apex-store-session-v1";
+export const ROLE_COOKIE_NAME = "apex-store-role-v1";
+export const CHECKOUT_ACCESS_COOKIE_NAME = "apex-store-checkout-order-v1";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -34,6 +36,50 @@ export function createSessionToken() {
 
 export function hashSessionToken(token: string) {
   return crypto.createHmac("sha256", getAuthSecret()).update(token).digest("hex");
+}
+
+function timingSafeEqualHex(left: string, right: string) {
+  if (left.length !== right.length) {
+    return false;
+  }
+
+  try {
+    return crypto.timingSafeEqual(Buffer.from(left, "hex"), Buffer.from(right, "hex"));
+  } catch {
+    return false;
+  }
+}
+
+function signCheckoutOrderId(orderId: string) {
+  return crypto
+    .createHmac("sha256", getAuthSecret())
+    .update(`checkout-order:${orderId}`)
+    .digest("hex");
+}
+
+export function createCheckoutAccessCookieValue(orderId: string) {
+  return `${orderId}.${signCheckoutOrderId(orderId)}`;
+}
+
+export function verifyCheckoutAccessCookieValue(value: string | null | undefined, orderId: string) {
+  if (!value) {
+    return false;
+  }
+
+  const separatorIndex = value.lastIndexOf(".");
+
+  if (separatorIndex <= 0) {
+    return false;
+  }
+
+  const signedOrderId = value.slice(0, separatorIndex);
+  const signature = value.slice(separatorIndex + 1);
+
+  if (signedOrderId !== orderId || !signature) {
+    return false;
+  }
+
+  return timingSafeEqualHex(signature, signCheckoutOrderId(orderId));
 }
 
 export function getSessionDurationMs(rememberMe: boolean) {
@@ -87,9 +133,62 @@ export function attachSessionCookie(
   });
 }
 
+export function createRoleCookieValue(role: UserRole) {
+  const signature = crypto.createHmac("sha256", getAuthSecret()).update(role).digest("hex");
+  return `${role}.${signature}`;
+}
+
+export function attachRoleCookie(response: NextResponse, role: UserRole, expiresAt: Date) {
+  response.cookies.set({
+    name: ROLE_COOKIE_NAME,
+    value: createRoleCookieValue(role),
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    expires: expiresAt,
+  });
+}
+
 export function clearSessionCookie(response: NextResponse) {
   response.cookies.set({
     name: SESSION_COOKIE_NAME,
+    value: "",
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: 0,
+  });
+}
+
+export function clearRoleCookie(response: NextResponse) {
+  response.cookies.set({
+    name: ROLE_COOKIE_NAME,
+    value: "",
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: 0,
+  });
+}
+
+export function attachCheckoutAccessCookie(response: NextResponse, orderId: string) {
+  response.cookies.set({
+    name: CHECKOUT_ACCESS_COOKIE_NAME,
+    value: createCheckoutAccessCookieValue(orderId),
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 7,
+  });
+}
+
+export function clearCheckoutAccessCookie(response: NextResponse) {
+  response.cookies.set({
+    name: CHECKOUT_ACCESS_COOKIE_NAME,
     value: "",
     httpOnly: true,
     sameSite: "lax",
@@ -124,6 +223,11 @@ export async function getCurrentSession(token?: string | null) {
     return null;
   }
 
+  if (session.user.status === "DISABLED") {
+    await prisma.session.delete({ where: { id: session.id } }).catch(() => undefined);
+    return null;
+  }
+
   if (session.expiresAt.getTime() <= Date.now()) {
     await prisma.session.delete({ where: { id: session.id } }).catch(() => undefined);
     return null;
@@ -151,7 +255,7 @@ export async function requireAdmin() {
   const user = await requireUser();
 
   if (user.role !== "ADMIN") {
-    redirect("/account");
+    redirect("/");
   }
 
   return user;

@@ -203,12 +203,16 @@ export function CartDrawer() {
                             </div>
                           ) : (
                             <div className="mt-3 flex items-center gap-2 text-xs text-[#5f615f]">
-                              <span
-                                className="size-3 rounded-full border border-[#d8d1c6]"
-                                style={{ backgroundColor: colorSwatches[entry.color] }}
-                              />
-                              <span>{colorLabelRu[entry.color]}</span>
-                              <span>•</span>
+                              {entry.product.colorways?.length ? (
+                                <>
+                                  <span
+                                    className="size-3 rounded-full border border-[#d8d1c6]"
+                                    style={{ backgroundColor: colorSwatches[entry.color] }}
+                                  />
+                                  <span>{colorLabelRu[entry.color]}</span>
+                                  <span>•</span>
+                                </>
+                              ) : null}
                               <span>{sizeLabelRu(entry.size)}</span>
                             </div>
                           )}

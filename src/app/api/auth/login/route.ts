@@ -5,6 +5,7 @@ import { normalizeEmail } from "@/lib/account-utils";
 import { loginPayloadSchema } from "@/lib/validation-schemas";
 import {
   attachSessionCookie,
+  attachRoleCookie,
   createSessionToken,
   getSessionDurationMs,
   hashSessionToken,
@@ -12,15 +13,15 @@ import {
   toAuthUser,
 } from "@/lib/server/auth";
 import { apiError } from "@/lib/server/api";
-import { prisma } from "@/lib/server/db";
-import { assertSameOrigin, enforceRateLimit } from "@/lib/server/request-security";
+import { prisma } from "@/lib/prisma";
+import { assertProtectedMutation, enforceRateLimit } from "@/lib/server/request-security";
 
 export const runtime = "nodejs";
 
 export async function POST(request: NextRequest) {
   try {
-    assertSameOrigin(request);
-    const rateLimit = enforceRateLimit(request, "auth-login", {
+    assertProtectedMutation(request);
+    const rateLimit = await enforceRateLimit(request, "auth-login", {
       maxAttempts: 10,
       windowMs: 10 * 60 * 1000,
     });
@@ -39,6 +40,10 @@ export async function POST(request: NextRequest) {
 
     if (!user || !passwordMatches) {
       return NextResponse.json({ error: "Неверный email или пароль." }, { status: 401 });
+    }
+
+    if (user.status === "DISABLED") {
+      return NextResponse.json({ error: "Аккаунт отключён. Обратитесь в поддержку." }, { status: 403 });
     }
 
     await prisma.session.deleteMany({
@@ -81,6 +86,7 @@ export async function POST(request: NextRequest) {
       session: toAuthSession(session),
     });
     attachSessionCookie(response, token, expiresAt);
+    attachRoleCookie(response, user.role, expiresAt);
     return response;
   } catch (error) {
     return apiError(error, "Не удалось выполнить вход.");

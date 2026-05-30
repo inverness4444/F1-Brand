@@ -9,10 +9,8 @@ import { useCatalogProducts } from "@/hooks/use-catalog-products";
 import { EmptyCatalogState } from "@/components/empty-catalog-state";
 import { FilterSidebar } from "@/components/filter-sidebar";
 import { MobileFilterDrawer } from "@/components/mobile-filters-drawer";
-import { AdminOnlyLink } from "@/components/admin-only-link";
 import { ProductGrid } from "@/components/product-grid";
 import { SortDropdown } from "@/components/sort-dropdown";
-import { buttonClassName } from "@/components/ui/button";
 import {
   colorOptions,
   drivers as rosterDrivers,
@@ -467,15 +465,6 @@ export function ShopShell({
               </div>
 
               <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
-                <AdminOnlyLink
-                  href="/admin"
-                  className={buttonClassName({
-                    variant: "secondary",
-                    className: "min-h-[42px] px-4 py-2 text-[0.85rem]",
-                  })}
-                >
-                  Редактор каталога
-                </AdminOnlyLink>
                 <SortDropdown value={sort} onChange={setSort} />
                 {hasFiltersOrSearch ? (
                   <button

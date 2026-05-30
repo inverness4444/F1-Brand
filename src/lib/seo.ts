@@ -163,7 +163,10 @@ export function buildProductSeoDescription(product: Product) {
   const entityText = entity ? `Связано с ${entity}` : null;
   const collectionText = product.collection ? `Коллекция: ${getCollectionLabel(product.collection)}` : null;
   const colorText = product.colors.length
-    ? `Цвета: ${product.colors.map((color) => colorLabelRu[color]).join(", ")}`
+    ? `Цвета на товаре: ${product.colors.map((color) => colorLabelRu[color]).join(", ")}`
+    : null;
+  const colorwayText = product.colorways?.length
+    ? `Расцветки: ${product.colorways.map((color) => colorLabelRu[color]).join(", ")}`
     : null;
   const sizeText = product.sizes.length ? `Размеры: ${product.sizes.join(", ")}` : null;
   const realDescription = !isPlaceholderDescription(product.description)
@@ -180,6 +183,7 @@ export function buildProductSeoDescription(product: Product) {
       entityText,
       collectionText,
       colorText,
+      colorwayText,
       sizeText,
       `Цена: ${formatPrice(product.price)}`,
     ]),

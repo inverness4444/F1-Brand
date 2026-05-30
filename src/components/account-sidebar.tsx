@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
 import { accountNavigation } from "@/lib/account-constants";
+import { canAccessAdmin } from "@/lib/security-utils";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth-store";
 import { useToastStore } from "@/store/toast-store";
@@ -24,6 +25,9 @@ export function AccountSidebar() {
   const currentUser = useAuthStore((state) => state.currentUser);
   const logout = useAuthStore((state) => state.logout);
   const pushToast = useToastStore((state) => state.pushToast);
+  const navigationItems = canAccessAdmin(currentUser)
+    ? [...accountNavigation, { href: "/admin", label: "Админка" }]
+    : accountNavigation;
 
   const handleLogout = async () => {
     await logout();
@@ -35,7 +39,7 @@ export function AccountSidebar() {
     <>
       <nav className="w-full max-w-full min-w-0 lg:hidden">
         <div className="grid grid-cols-2 gap-2 pb-2 sm:grid-cols-3">
-          {accountNavigation.map((item) => {
+          {navigationItems.map((item) => {
             const active = isActive(pathname, item.href);
 
             return (
@@ -78,7 +82,7 @@ export function AccountSidebar() {
         </div>
 
         <div className="mt-4 space-y-1">
-          {accountNavigation.map((item) => {
+          {navigationItems.map((item) => {
             const active = isActive(pathname, item.href);
 
             return (

@@ -8,6 +8,7 @@ import { productTypeLabels } from "@/lib/catalog-ui";
 import type { Product, ProductColor, ProductSize } from "@/lib/types";
 import { cn, formatPrice } from "@/lib/utils";
 import {
+  colorLabelRu,
   getCollectionLabel,
   getProductDescription,
   getProductDisplayName,
@@ -35,8 +36,11 @@ function sizeGuideRows(product: Product) {
 
 export function ProductInfo({ product }: { product: Product }) {
   const addItem = useCartStore((state) => state.addItem);
+  const colorways = product.colorways ?? [];
+  const hasColorways = colorways.length > 0;
+  const fallbackColor = product.variants?.[0]?.color ?? product.colors[0] ?? "Black";
   const [selectedSize, setSelectedSize] = useState<ProductSize>(product.sizes[0]);
-  const [selectedColor, setSelectedColor] = useState<ProductColor>(product.colors[0]);
+  const [selectedColor, setSelectedColor] = useState<ProductColor>(colorways[0] ?? fallbackColor);
   const guide = useMemo(() => sizeGuideRows(product), [product]);
   const reviewCount = Math.max(4, Math.round(product.popularity / 18));
   const isGiftCertificate = product.productType === "gift_certificate";
@@ -50,7 +54,7 @@ export function ProductInfo({ product }: { product: Product }) {
 
   useEffect(() => {
     setSelectedSize(product.sizes[0]);
-    setSelectedColor(product.colors[0]);
+    setSelectedColor((product.colorways ?? [])[0] ?? product.variants?.[0]?.color ?? product.colors[0] ?? "Black");
   }, [product]);
 
   const addCurrentItem = () =>
@@ -146,39 +150,55 @@ export function ProductInfo({ product }: { product: Product }) {
               </div>
             </div>
 
-            <div className="mt-6">
-              <span className="text-sm font-semibold text-[#111111]">
-                Цвет: <span className="font-normal text-[#5f615f]">{selectedColor}</span>
-              </span>
-              <div className="mt-4 flex flex-wrap gap-2">
-                {product.colors.map((color) => {
-                  const active = selectedColor === color;
-                  const variant = product.variants?.find(
-                    (entry) => entry.size === selectedSize && entry.color === color,
-                  );
-                  const disabled = Boolean(variant && variant.stock <= 0);
-
-                  return (
-                    <button
-                      key={color}
-                      type="button"
-                      onClick={() => setSelectedColor(color)}
-                      disabled={disabled}
-                      className={cn(
-                        "rounded-full border px-4 py-2 text-sm font-semibold transition",
-                        active ? "border-[#111111] bg-[#111111] text-white" : "border-[var(--line)] text-[#111111]",
-                        disabled && "cursor-not-allowed border-slate-200 bg-slate-50 text-slate-300",
-                      )}
-                    >
-                      {color}
-                    </button>
-                  );
-                })}
+            {product.colors.length > 0 ? (
+              <div className="mt-6">
+                <span className="text-sm font-semibold text-[#111111]">
+                  Цвета на товаре:{" "}
+                  <span className="font-normal text-[#5f615f]">
+                    {product.colors.map((color) => colorLabelRu[color]).join(", ")}
+                  </span>
+                </span>
               </div>
+            ) : null}
+
+            {hasColorways ? (
+              <div className="mt-6">
+                <span className="text-sm font-semibold text-[#111111]">
+                  Расцветка: <span className="font-normal text-[#5f615f]">{colorLabelRu[selectedColor]}</span>
+                </span>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {colorways.map((color) => {
+                    const active = selectedColor === color;
+                    const variant = product.variants?.find(
+                      (entry) => entry.size === selectedSize && entry.color === color,
+                    );
+                    const disabled = Boolean(variant && variant.stock <= 0);
+
+                    return (
+                      <button
+                        key={color}
+                        type="button"
+                        onClick={() => setSelectedColor(color)}
+                        disabled={disabled}
+                        className={cn(
+                          "rounded-full border px-4 py-2 text-sm font-semibold transition",
+                          active ? "border-[#111111] bg-[#111111] text-white" : "border-[var(--line)] text-[#111111]",
+                          disabled && "cursor-not-allowed border-slate-200 bg-slate-50 text-slate-300",
+                        )}
+                      >
+                        {colorLabelRu[color]}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : null}
+
+            {typeof product.stock === "number" ? (
               <p className="mt-3 text-sm text-[#5f615f]">
-                {selectedVariantIsOut ? "Нет в наличии" : `На складе: ${selectedStock} шт.`}
+                {selectedVariantIsOut ? "Нет в наличии" : `На складе: ${product.stock} шт.`}
               </p>
-            </div>
+            ) : null}
           </>
         )}
 

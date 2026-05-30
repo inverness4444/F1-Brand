@@ -104,7 +104,7 @@ export function OrderDetails({
                   ) : (
                     <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-500">
                       <span>Размер: {sizeLabelRu(item.size)}</span>
-                      <span>Цвет: {colorLabelRu[item.color]}</span>
+                      <span>Расцветка: {colorLabelRu[item.color]}</span>
                       <span>Количество: {item.quantity}</span>
                     </div>
                   )}

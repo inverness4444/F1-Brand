@@ -1,11 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { handleYooKassaWebhook } from "@/lib/payments/yookassa";
-import { prisma } from "@/lib/server/db";
+import { prisma } from "@/lib/prisma";
+import { enforceRateLimit } from "@/lib/server/request-security";
 
 export const runtime = "nodejs";
 
 export async function GET(request: NextRequest) {
+  if (process.env.NODE_ENV === "production" && process.env.ENABLE_MOCK_PAYMENTS !== "true") {
+    return NextResponse.json({ error: "Not found." }, { status: 404 });
+  }
+
+  const rateLimit = await enforceRateLimit(request, "mock-payment-confirm", {
+    maxAttempts: 30,
+    windowMs: 5 * 60 * 1000,
+  });
+
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: "Слишком много запросов. Повторите позже." },
+      { status: 429, headers: { "Retry-After": String(rateLimit.retryAfterSeconds) } },
+    );
+  }
+
   const providerPaymentId = request.nextUrl.searchParams.get("paymentId");
 
   if (!providerPaymentId) {

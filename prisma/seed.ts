@@ -2,11 +2,10 @@ import fs from "node:fs";
 import path from "node:path";
 
 import bcrypt from "bcryptjs";
-import { PrismaClient, UserRole } from "@prisma/client";
+import { UserRole } from "@prisma/client";
 
+import { prisma } from "../src/lib/prisma";
 import type { CatalogCollection, Product } from "../src/lib/types";
-
-const prisma = new PrismaClient();
 
 const sizeOrder = new Map(
   ["XS", "S", "M", "L", "XL", "XXL", "One Size"].map((value, index) => [value, (index + 1) * 10]),
@@ -78,15 +77,7 @@ async function seedCatalog() {
   ]);
   const categoryNames = unique(products.map((product) => product.category));
   const sizeValues = unique(products.flatMap((product) => product.sizes));
-  const colorValues = unique(products.flatMap((product) => product.colors));
-
-  await prisma.$transaction([
-    prisma.product.deleteMany({}),
-    prisma.collection.deleteMany({}),
-    prisma.category.deleteMany({}),
-    prisma.size.deleteMany({}),
-    prisma.color.deleteMany({}),
-  ]);
+  const colorValues = unique(products.flatMap((product) => [...product.colors, ...(product.colorways ?? [])]));
 
   await prisma.category.createMany({
     data: categoryNames.map((name) => ({
@@ -135,16 +126,19 @@ async function seedCatalog() {
   const sizes = new Map((await prisma.size.findMany()).map((size) => [size.value, size]));
   const colors = new Map((await prisma.color.findMany()).map((color) => [color.value, color]));
 
-  await createManyChunked(
-    prisma.product,
-    products.map((product) => ({
+  for (const product of products) {
+    const data = {
       id: product.id,
       slug: product.slug,
       name: product.name,
       description: product.description,
       shortDescription: product.shortDescription,
       priceCents: Math.round(product.price),
-      status: "ACTIVE",
+      oldPriceCents: product.oldPrice ? Math.round(product.oldPrice) : null,
+      stock: product.stock ?? null,
+      designColors: product.colors,
+      colorways: product.colorways ?? [],
+      status: "ACTIVE" as const,
       badge: product.badge,
       type: product.type,
       gender: product.gender,
@@ -162,9 +156,49 @@ async function seedCatalog() {
       number: product.number,
       hexPalette: product.hexPalette,
       createdAt: product.createdAt ? new Date(product.createdAt) : undefined,
-    })),
-    25,
-  );
+    };
+
+    await prisma.product.upsert({
+      where: { id: product.id },
+      create: data,
+      update: {
+        slug: data.slug,
+        name: data.name,
+        description: data.description,
+        shortDescription: data.shortDescription,
+        priceCents: data.priceCents,
+        oldPriceCents: data.oldPriceCents,
+        stock: data.stock,
+        designColors: data.designColors,
+        colorways: data.colorways,
+        status: data.status,
+        badge: data.badge,
+        type: data.type,
+        gender: data.gender,
+        productKind: data.productKind,
+        requiresShipping: data.requiresShipping,
+        popularity: data.popularity,
+        categoryId: data.categoryId,
+        collectionId: data.collectionId,
+        driverName: data.driverName,
+        driverSlug: data.driverSlug,
+        teamName: data.teamName,
+        teamSlug: data.teamSlug,
+        legendName: data.legendName,
+        legendSlug: data.legendSlug,
+        number: data.number,
+        hexPalette: data.hexPalette,
+      },
+    });
+  }
+
+  const seededProductIds = products.map((product) => product.id);
+
+  await prisma.$transaction([
+    prisma.productImage.deleteMany({ where: { productId: { in: seededProductIds } } }),
+    prisma.productCollection.deleteMany({ where: { productId: { in: seededProductIds } } }),
+    prisma.productVariant.deleteMany({ where: { productId: { in: seededProductIds } } }),
+  ]);
 
   const imageRows = products.flatMap((product) =>
     unique([product.image, ...product.gallery]).map((url, sortOrder) => ({
@@ -186,7 +220,10 @@ async function seedCatalog() {
   const variantRows = products.flatMap((product) =>
     unique(product.sizes).flatMap((sizeValue) => {
       const size = sizes.get(sizeValue);
-      return unique(product.colors)
+      const variantColors = product.colorways && product.colorways.length > 0
+        ? product.colorways
+        : [product.colors[0] ?? "Black"];
+      return unique(variantColors)
         .map((colorValue) => {
           const color = colors.get(colorValue);
           if (!size || !color) {
@@ -213,15 +250,34 @@ async function seedCatalog() {
 async function seedAdmin() {
   const email = (process.env.SEED_ADMIN_EMAIL ?? "admin@example.com").trim().toLowerCase();
   const password = process.env.SEED_ADMIN_PASSWORD ?? "Admin12345!";
-  const passwordHash = await bcrypt.hash(password, 12);
-
-  const admin = await prisma.user.upsert({
+  const existingAdmin = await prisma.user.findUnique({
     where: { email },
-    create: {
+    select: { id: true },
+  });
+
+  if (existingAdmin) {
+    await prisma.user.update({
+      where: { id: existingAdmin.id },
+      data: { role: UserRole.ADMIN, status: "ACTIVE" },
+    });
+
+    await prisma.cart.upsert({
+      where: { userId: existingAdmin.id },
+      create: { userId: existingAdmin.id },
+      update: {},
+    });
+
+    return;
+  }
+
+  const passwordHash = await bcrypt.hash(password, 12);
+  const admin = await prisma.user.create({
+    data: {
       email,
       name: "Store Admin",
       phone: "+79990000000",
       role: UserRole.ADMIN,
+      status: "ACTIVE",
       passwordHash,
       carts: {
         create: {},
@@ -231,10 +287,6 @@ async function seedAdmin() {
           amountCents: 0,
         },
       },
-    },
-    update: {
-      role: UserRole.ADMIN,
-      passwordHash,
     },
   });
 

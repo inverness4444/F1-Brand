@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 
 import {
   readCatalogCollectionsFromDb,
@@ -33,14 +34,7 @@ export async function GET() {
 
 export async function PUT(request: NextRequest) {
   try {
-    if (process.env.NODE_ENV === "production" && process.env.ENABLE_CATALOG_API_WRITES !== "true") {
-      return NextResponse.json(
-        { error: "Изменение каталога в production отключено без явного разрешения." },
-        { status: 403 },
-      );
-    }
-
-    const rateLimit = enforceRateLimit(request, "catalog-put", {
+    const rateLimit = await enforceRateLimit(request, "catalog-put", {
       maxAttempts: 15,
       windowMs: 5 * 60 * 1000,
     });
@@ -69,6 +63,9 @@ export async function PUT(request: NextRequest) {
     }
 
     await replaceCatalogInDb(payload.products, payload.collections);
+    revalidatePath("/");
+    revalidatePath("/shop");
+    revalidatePath("/catalog");
 
     return NextResponse.json({
       ok: true,

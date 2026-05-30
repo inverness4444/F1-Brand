@@ -94,10 +94,15 @@ export function validateCartSelections(
         return result;
       }
 
-      if (!product.colors.includes(normalizedSelection.color)) {
+      const purchasableColors =
+        product.colorways && product.colorways.length > 0
+          ? product.colorways
+          : product.variants?.map((variant) => variant.color) ?? product.colors;
+
+      if (!purchasableColors.includes(normalizedSelection.color)) {
         result.invalid.push({
           productId: normalizedSelection.productId,
-          reason: "Выбран недоступный цвет.",
+          reason: "Выбрана недоступная расцветка.",
         });
         return result;
       }

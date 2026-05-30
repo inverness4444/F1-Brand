@@ -5,8 +5,8 @@ import { addressInputSchema } from "@/lib/validation-schemas";
 import { getCurrentUser } from "@/lib/server/auth";
 import { addressFromDb } from "@/lib/server/account-mappers";
 import { apiError } from "@/lib/server/api";
-import { prisma } from "@/lib/server/db";
-import { assertSameOrigin } from "@/lib/server/request-security";
+import { prisma } from "@/lib/prisma";
+import { assertProtectedMutation, enforceRateLimit } from "@/lib/server/request-security";
 
 export const runtime = "nodejs";
 
@@ -29,7 +29,19 @@ async function requireApiUser() {
 
 export async function PATCH(request: NextRequest, context: RouteContext) {
   try {
-    assertSameOrigin(request);
+    const rateLimit = await enforceRateLimit(request, "account-address-update", {
+      maxAttempts: 60,
+      windowMs: 10 * 60 * 1000,
+    });
+
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: "Слишком много запросов. Повторите позже." },
+        { status: 429, headers: { "Retry-After": String(rateLimit.retryAfterSeconds) } },
+      );
+    }
+
+    assertProtectedMutation(request);
     const [{ id }, user] = await Promise.all([context.params, requireApiUser()]);
     const input = updateAddressSchema.parse(await request.json());
     const existing = await prisma.address.findFirst({
@@ -74,7 +86,19 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
 
 export async function DELETE(request: NextRequest, context: RouteContext) {
   try {
-    assertSameOrigin(request);
+    const rateLimit = await enforceRateLimit(request, "account-address-delete", {
+      maxAttempts: 40,
+      windowMs: 10 * 60 * 1000,
+    });
+
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: "Слишком много запросов. Повторите позже." },
+        { status: 429, headers: { "Retry-After": String(rateLimit.retryAfterSeconds) } },
+      );
+    }
+
+    assertProtectedMutation(request);
     const [{ id }, user] = await Promise.all([context.params, requireApiUser()]);
     const existing = await prisma.address.findFirst({
       where: {

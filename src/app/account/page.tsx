@@ -8,6 +8,7 @@ import { balanceService } from "@/services/balance-service";
 import { giftCertificateService } from "@/services/gift-certificate-service";
 import { orderService } from "@/services/order-service";
 import { useAuthStore } from "@/store/auth-store";
+import { canAccessAdmin } from "@/lib/security-utils";
 import { formatPrice } from "@/lib/utils";
 import { formatDate } from "@/lib/account-utils";
 import type { GiftCertificate, Order } from "@/lib/account-types";
@@ -53,6 +54,7 @@ export default function AccountPage() {
   }
 
   const lastOrder = orders[0] ?? null;
+  const isAdmin = canAccessAdmin(currentUser);
 
   return (
     <div className="space-y-5">
@@ -95,6 +97,16 @@ export default function AccountPage() {
         <div className="card-panel p-5 sm:p-6">
           <h3 className="text-xl font-semibold text-slate-900">Быстрые действия</h3>
           <div className="mt-5 flex flex-wrap gap-3">
+            {isAdmin ? (
+              <>
+                <Link href="/admin" className="button-base button-primary rounded-2xl">
+                  Админка
+                </Link>
+                <Link href="/admin/products" className="button-base button-secondary rounded-2xl">
+                  Редактор каталога
+                </Link>
+              </>
+            ) : null}
             <Link href="/shop" className="button-base button-primary rounded-2xl">
               Перейти в каталог
             </Link>

@@ -3,8 +3,8 @@ import { z } from "zod";
 
 import { getCurrentUser } from "@/lib/server/auth";
 import { apiError, noStoreJson } from "@/lib/server/api";
-import { prisma } from "@/lib/server/db";
-import { assertSameOrigin } from "@/lib/server/request-security";
+import { prisma } from "@/lib/prisma";
+import { assertProtectedMutation, enforceRateLimit } from "@/lib/server/request-security";
 
 export const runtime = "nodejs";
 
@@ -43,7 +43,19 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    assertSameOrigin(request);
+    const rateLimit = await enforceRateLimit(request, "account-favorite-toggle", {
+      maxAttempts: 120,
+      windowMs: 5 * 60 * 1000,
+    });
+
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: "Слишком много запросов. Повторите позже." },
+        { status: 429, headers: { "Retry-After": String(rateLimit.retryAfterSeconds) } },
+      );
+    }
+
+    assertProtectedMutation(request);
     const user = await requireApiUser();
     const input = favoritePayloadSchema.parse(await request.json());
     const existing = await prisma.favorite.findUnique({
@@ -75,7 +87,19 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    assertSameOrigin(request);
+    const rateLimit = await enforceRateLimit(request, "account-favorite-delete", {
+      maxAttempts: 120,
+      windowMs: 5 * 60 * 1000,
+    });
+
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: "Слишком много запросов. Повторите позже." },
+        { status: 429, headers: { "Retry-After": String(rateLimit.retryAfterSeconds) } },
+      );
+    }
+
+    assertProtectedMutation(request);
     const user = await requireApiUser();
     const input = favoritePayloadSchema.parse(await request.json());
 

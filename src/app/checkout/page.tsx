@@ -495,7 +495,13 @@ export default function CheckoutPage() {
                       </p>
                     ) : (
                       <p className="mt-1 text-xs text-slate-500">
-                        {colorLabelRu[selection.color]} • {sizeLabelRu(selection.size)} • {selection.quantity} шт.
+                        {[
+                          product.colorways?.length ? colorLabelRu[selection.color] : null,
+                          sizeLabelRu(selection.size),
+                          `${selection.quantity} шт.`,
+                        ]
+                          .filter(Boolean)
+                          .join(" • ")}
                       </p>
                     )}
                     <p className="mt-2 text-sm font-semibold text-slate-900">

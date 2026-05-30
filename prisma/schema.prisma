@@ -13,6 +13,11 @@ enum UserRole {
   ADMIN
 }
 
+enum UserStatus {
+  ACTIVE
+  DISABLED
+}
+
 enum ProductStatus {
   DRAFT
   ACTIVE
@@ -83,6 +88,7 @@ model User {
   phone             String?
   passwordHash      String
   role              UserRole             @default(USER)
+  status            UserStatus           @default(ACTIVE)
   birthday          DateTime?
   favoriteDriver    String?
   favoriteTeam      String?
@@ -102,6 +108,7 @@ model User {
   balanceEntries    BalanceTransaction[]
 
   @@index([role])
+  @@index([status])
 }
 
 model Account {
@@ -178,6 +185,9 @@ model Product {
   shortDescription String
   priceCents       Int
   oldPriceCents    Int?
+  stock            Int?
+  designColors     String[]            @default([])
+  colorways        String[]            @default([])
   status           ProductStatus       @default(ACTIVE)
   badge            String              @default("New")
   type             String              @default("T-shirt")
@@ -387,20 +397,20 @@ model OrderItem {
 }
 
 model Payment {
-  id                String           @id @default(cuid())
-  orderId           String           @unique
-  provider          PaymentProvider  @default(MOCK)
-  providerPaymentId String?          @map("externalId")
-  idempotenceKey    String           @unique
-  status            PaymentStatus    @default(NOT_STARTED)
-  amount            Int              @map("amountCents")
-  currency          String           @default("RUB")
+  id                String          @id @default(cuid())
+  orderId           String          @unique
+  provider          PaymentProvider @default(MOCK)
+  providerPaymentId String?         @map("externalId")
+  idempotenceKey    String          @unique
+  status            PaymentStatus   @default(NOT_STARTED)
+  amount            Int             @map("amountCents")
+  currency          String          @default("RUB")
   confirmationUrl   String?
   paidAt            DateTime?
   capturedAt        DateTime?
   canceledAt        DateTime?
   refundedAt        DateTime?
-  receiptRequired   Boolean          @default(false)
+  receiptRequired   Boolean         @default(false)
   receiptStatus     String?
   receipt           Json?
   rawRequest        Json?
@@ -409,9 +419,9 @@ model Payment {
   errorCode         String?
   errorMessage      String?
   metadata          Json?
-  createdAt         DateTime         @default(now())
-  updatedAt         DateTime         @updatedAt
-  order             Order            @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  order             Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
   refunds           Refund[]
   webhookEvents     WebhookEvent[]
 
@@ -421,19 +431,19 @@ model Payment {
 }
 
 model Refund {
-  id               String        @id @default(cuid())
+  id               String       @id @default(cuid())
   paymentId        String
   orderId          String
-  providerRefundId String?       @unique
+  providerRefundId String?      @unique
   amount           Int
-  currency         String        @default("RUB")
-  status           RefundStatus  @default(PENDING)
+  currency         String       @default("RUB")
+  status           RefundStatus @default(PENDING)
   reason           String?
   rawResponse      Json?
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
-  payment          Payment       @relation(fields: [paymentId], references: [id], onDelete: Cascade)
-  order            Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  payment          Payment      @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  order            Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   @@index([paymentId])
   @@index([orderId])

@@ -4,8 +4,8 @@ import { z } from "zod";
 import { cartSelectionsSchema } from "@/lib/validation-schemas";
 import { getCurrentUser } from "@/lib/server/auth";
 import { apiError, noStoreJson } from "@/lib/server/api";
-import { prisma } from "@/lib/server/db";
-import { assertSameOrigin } from "@/lib/server/request-security";
+import { prisma } from "@/lib/prisma";
+import { assertProtectedMutation, enforceRateLimit } from "@/lib/server/request-security";
 
 export const runtime = "nodejs";
 
@@ -50,7 +50,19 @@ export async function GET() {
 
 export async function PUT(request: NextRequest) {
   try {
-    assertSameOrigin(request);
+    const rateLimit = await enforceRateLimit(request, "account-cart-save", {
+      maxAttempts: 120,
+      windowMs: 5 * 60 * 1000,
+    });
+
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: "Слишком много запросов. Повторите позже." },
+        { status: 429, headers: { "Retry-After": String(rateLimit.retryAfterSeconds) } },
+      );
+    }
+
+    assertProtectedMutation(request);
     const user = await requireApiUser();
     const input = updateCartSchema.parse(await request.json());
     const cart = await prisma.cart.upsert({

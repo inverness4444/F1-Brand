@@ -5,7 +5,7 @@ import crypto from "node:crypto";
 import type { PaymentStatus, Prisma } from "@prisma/client";
 import { Prisma as PrismaNamespace } from "@prisma/client";
 
-import { prisma } from "@/lib/server/db";
+import { prisma } from "@/lib/prisma";
 import {
   deductStockForPaidOrder,
   issueGiftCertificatesForPaidOrder,
@@ -102,6 +102,19 @@ function amountToCents(amount: unknown) {
   }
 
   return Math.round(Number.parseFloat(amount.value) * 100);
+}
+
+function amountCurrency(amount: unknown) {
+  if (!isRecord(amount) || typeof amount.currency !== "string") {
+    return null;
+  }
+
+  return amount.currency;
+}
+
+function metadataOrderId(object: JsonRecord) {
+  const metadata = isRecord(object.metadata) ? object.metadata : null;
+  return typeof metadata?.order_id === "string" ? metadata.order_id : null;
 }
 
 function getAppUrl() {
@@ -470,6 +483,22 @@ export async function handleYooKassaWebhook(payload: unknown) {
             throw new Error(`Payment ${normalized.objectId} was not found.`);
           }
 
+          const webhookAmount = amountToCents(normalized.object.amount);
+          const webhookCurrency = amountCurrency(normalized.object.amount);
+          const webhookOrderId = metadataOrderId(normalized.object);
+
+          if (webhookAmount > 0 && webhookAmount !== payment.amount) {
+            throw new Error("Webhook payment amount does not match the stored payment amount.");
+          }
+
+          if (webhookCurrency && webhookCurrency !== payment.currency) {
+            throw new Error("Webhook payment currency does not match the stored payment currency.");
+          }
+
+          if (webhookOrderId && webhookOrderId !== payment.orderId) {
+            throw new Error("Webhook payment order metadata does not match the stored order.");
+          }
+
           const status = mapYooKassaPaymentStatus(normalized.objectStatus);
 
           await tx.payment.update({
@@ -557,6 +586,15 @@ export async function handleYooKassaWebhook(payload: unknown) {
 
           const status = mapRefundStatus(normalized.object.status);
           const amount = amountToCents(normalized.object.amount);
+          const currency = amountCurrency(normalized.object.amount);
+
+          if (amount <= 0 || amount > payment.amount) {
+            throw new Error("Refund webhook amount is invalid for the stored payment.");
+          }
+
+          if (currency && currency !== payment.currency) {
+            throw new Error("Refund webhook currency does not match the stored payment currency.");
+          }
 
           await tx.refund.upsert({
             where: { providerRefundId: normalized.objectId },
@@ -565,9 +603,7 @@ export async function handleYooKassaWebhook(payload: unknown) {
               orderId: payment.orderId,
               providerRefundId: normalized.objectId,
               amount,
-              currency: isRecord(normalized.object.amount) && typeof normalized.object.amount.currency === "string"
-                ? normalized.object.amount.currency
-                : DEFAULT_CURRENCY,
+              currency: currency ?? DEFAULT_CURRENCY,
               status,
               rawResponse: normalized.payloadJson,
             },

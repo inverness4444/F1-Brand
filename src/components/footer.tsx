@@ -12,7 +12,7 @@ export function Footer() {
           <div className="min-w-0">
             <BrandLogo markClassName="brightness-0 invert" titleClassName="text-white" />
             <p className="mt-5 max-w-sm text-sm leading-7 text-white/60">
-              Магазин одежды в эстетике Formula 1: командные коллекции, капсулы пилотов и чистый спортивный формат без перегруза.
+              Магазин одежды в эстетике Formula 1
             </p>
           </div>
 

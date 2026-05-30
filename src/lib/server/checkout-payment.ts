@@ -15,7 +15,7 @@ import {
 } from "@/lib/payments/yookassa";
 import { orderFromDb } from "@/lib/server/account-mappers";
 import { dbOrderInclude } from "@/lib/server/catalog-db";
-import { prisma } from "@/lib/server/db";
+import { prisma } from "@/lib/prisma";
 import {
   deductStockForPaidOrder,
   issueGiftCertificatesForPaidOrder,

@@ -2,8 +2,8 @@
 
 import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { Download, ImagePlus, Plus, RotateCcw, Save, Search, Trash2, Upload } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import { Download, ImagePlus, Loader2, Plus, RotateCcw, Save, Search, Trash2, Upload } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import {
   colorOptions,
@@ -22,6 +22,7 @@ import type {
   Product,
   ProductBadge,
   ProductColor,
+  ProductStatus,
   ProductSize,
   ProductType,
 } from "@/lib/types";
@@ -60,6 +61,7 @@ const accessoryTypeValues = new Set<ProductType>([
   "Calendar",
   "Poster",
 ]);
+const MAX_IMPORT_FILE_BYTES = 2 * 1024 * 1024;
 
 const colorHexMap: Record<ProductColor, string> = {
   Black: "#111111",
@@ -85,6 +87,18 @@ const badgeMap: Record<ProductBadge, string> = {
   Sale: "Распродажа",
   Original: "Оригинал",
 };
+
+const statusOptions = [
+  { value: "ACTIVE", label: "Активен" },
+  { value: "DRAFT", label: "Черновик" },
+  { value: "ARCHIVED", label: "Скрыт" },
+] as const;
+
+const statusLabelMap = {
+  ACTIVE: "Активен",
+  DRAFT: "Черновик",
+  ARCHIVED: "Скрыт",
+} as const;
 
 function getCustomCollectionTags(product: Pick<Product, "collection" | "collectionTags">) {
   return [...new Set([product.collection, ...product.collectionTags])]
@@ -174,17 +188,6 @@ function readDateTimeLocal(value: string) {
   return value ? new Date(value).toISOString() : new Date().toISOString();
 }
 
-function fileToDataUrl(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-
-    reader.onload = () => resolve(String(reader.result));
-    reader.onerror = () => reject(new Error(`Не удалось загрузить файл ${file.name}`));
-
-    reader.readAsDataURL(file);
-  });
-}
-
 function parseGallery(value: string) {
   return value
     .split("\n")
@@ -197,8 +200,9 @@ function joinGallery(images: string[]) {
 }
 
 export function CatalogEditor() {
+  const router = useRouter();
   const searchParams = useSearchParams();
-  const { collections, products, hasHydrated } = useCatalogProducts();
+  const { collections, products, hasHydrated } = useCatalogProducts({ admin: true });
   const {
     removeCollection,
     removeProduct,
@@ -214,10 +218,19 @@ export function CatalogEditor() {
   const [collectionProductQuery, setCollectionProductQuery] = useState("");
   const [query, setQuery] = useState("");
   const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState<"info" | "success" | "error">("info");
+  const [isSavingProduct, setIsSavingProduct] = useState(false);
+  const [isSavingCollection, setIsSavingCollection] = useState(false);
+  const [isDeletingProduct, setIsDeletingProduct] = useState(false);
   const importInputRef = useRef<HTMLInputElement>(null);
   const mainImageInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
   const requestedProductId = searchParams.get("product");
+
+  const showMessage = (text: string, type: "info" | "success" | "error" = "info") => {
+    setMessage(text);
+    setMessageType(type);
+  };
 
   useEffect(() => {
     if (!hasHydrated) {
@@ -587,6 +600,22 @@ export function CatalogEditor() {
     });
   };
 
+  const toggleColorway = (color: ProductColor) => {
+    if (!draft) {
+      return;
+    }
+
+    const currentColorways = draft.colorways ?? [];
+    const nextColorways = currentColorways.includes(color)
+      ? currentColorways.filter((item) => item !== color)
+      : [...currentColorways, color];
+
+    setDraft({
+      ...draft,
+      colorways: nextColorways,
+    });
+  };
+
   const toggleSize = (size: Exclude<ProductSize, "One Size">) => {
     if (!draft) {
       return;
@@ -605,17 +634,17 @@ export function CatalogEditor() {
   const handleNewProduct = () => {
     setSelectedId(null);
     setDraft(createProductDraft(products));
-    setMessage("Создан новый черновик товара.");
+    showMessage("Создан новый черновик товара.");
   };
 
   const handleNewCollection = () => {
     setSelectedCollectionId(null);
     setCollectionDraft(createCollectionDraft(collections));
-    setMessage("Создан черновик коллекции.");
+    showMessage("Создан черновик коллекции.");
   };
 
   const handleSaveCollection = async () => {
-    if (!collectionDraft) {
+    if (!collectionDraft || isSavingCollection) {
       return;
     }
 
@@ -627,12 +656,16 @@ export function CatalogEditor() {
       createdAt: collectionDraft.createdAt || new Date().toISOString(),
     };
 
+    setIsSavingCollection(true);
+
     try {
       await saveCollectionProducts(normalizedDraft, normalizedDraft.productIds);
       setSelectedCollectionId(normalizedDraft.id);
-      setMessage(`Коллекция «${normalizedDraft.name}» сохранена.`);
+      showMessage(`Коллекция «${normalizedDraft.name}» сохранена.`, "success");
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Не удалось сохранить коллекцию.");
+      showMessage(error instanceof Error ? error.message : "Не удалось сохранить коллекцию.", "error");
+    } finally {
+      setIsSavingCollection(false);
     }
   };
 
@@ -645,7 +678,7 @@ export function CatalogEditor() {
       const nextCollection = collections[0] ? cloneCollection(collections[0]) : null;
       setCollectionDraft(nextCollection);
       setSelectedCollectionId(nextCollection?.id ?? null);
-      setMessage("Черновик коллекции удалён.");
+      showMessage("Черновик коллекции удалён.");
       return;
     }
 
@@ -654,14 +687,24 @@ export function CatalogEditor() {
       const nextCollection = collections.find((collection) => collection.id !== collectionDraft.id) ?? null;
       setSelectedCollectionId(nextCollection?.id ?? null);
       setCollectionDraft(nextCollection ? cloneCollection(nextCollection) : null);
-      setMessage(`Коллекция «${collectionDraft.name}» удалена.`);
+      showMessage(`Коллекция «${collectionDraft.name}» удалена.`, "success");
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Не удалось удалить коллекцию.");
+      showMessage(error instanceof Error ? error.message : "Не удалось удалить коллекцию.", "error");
     }
   };
 
   const handleSave = async () => {
-    if (!draft) {
+    if (!draft || isSavingProduct) {
+      return;
+    }
+
+    if (!draft.name.trim()) {
+      showMessage("Укажите название товара.", "error");
+      return;
+    }
+
+    if (!draft.image.trim()) {
+      showMessage("Укажите URL главного изображения.", "error");
       return;
     }
 
@@ -673,35 +716,45 @@ export function CatalogEditor() {
       gallery: draft.gallery.length > 0 ? draft.gallery : [draft.image],
     };
 
+    setIsSavingProduct(true);
+
     try {
       await upsertProduct(normalizedDraft);
       setSelectedId(normalizedDraft.id);
-      setMessage(`Товар «${normalizedDraft.name}» сохранён.`);
+      router.refresh();
+      showMessage(`Товар «${normalizedDraft.name}» сохранён.`, "success");
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Не удалось сохранить товар.");
+      showMessage(error instanceof Error ? error.message : "Не удалось сохранить товар.", "error");
+    } finally {
+      setIsSavingProduct(false);
     }
   };
 
   const handleDelete = async () => {
-    if (!draft) {
+    if (!draft || isDeletingProduct) {
       return;
     }
 
     if (!isPersistedProduct) {
       setDraft(products[0] ? cloneProduct(products[0]) : null);
       setSelectedId(products[0]?.id ?? null);
-      setMessage("Черновик удалён.");
+      showMessage("Черновик удалён.");
       return;
     }
+
+    setIsDeletingProduct(true);
 
     try {
       await removeProduct(draft.id);
       const nextProduct = products.find((product) => product.id !== draft.id) ?? null;
       setSelectedId(nextProduct?.id ?? null);
       setDraft(nextProduct ? cloneProduct(nextProduct) : null);
-      setMessage(`Товар «${draft.name}» удалён.`);
+      router.refresh();
+      showMessage(`Товар «${draft.name}» удалён.`, "success");
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Не удалось удалить товар.");
+      showMessage(error instanceof Error ? error.message : "Не удалось удалить товар.", "error");
+    } finally {
+      setIsDeletingProduct(false);
     }
   };
 
@@ -715,7 +768,7 @@ export function CatalogEditor() {
     link.click();
 
     URL.revokeObjectURL(url);
-    setMessage("Каталог экспортирован в JSON.");
+    showMessage("Каталог экспортирован в JSON.");
   };
 
   const handleImport = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -726,6 +779,14 @@ export function CatalogEditor() {
     }
 
     try {
+      if (file.size > MAX_IMPORT_FILE_BYTES) {
+        throw new Error("Файл импорта должен быть не больше 2 МБ.");
+      }
+
+      if (file.type && file.type !== "application/json") {
+        throw new Error("Импортируйте JSON-файл каталога.");
+      }
+
       const text = await file.text();
       const parsed = JSON.parse(text);
 
@@ -734,9 +795,10 @@ export function CatalogEditor() {
       }
 
       await replaceProducts(parsed as Product[]);
-      setMessage(`Импортировано товаров: ${parsed.length}.`);
+      router.refresh();
+      showMessage(`Импортировано товаров: ${parsed.length}.`, "success");
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Не удалось импортировать файл.");
+      showMessage(error instanceof Error ? error.message : "Не удалось импортировать файл.", "error");
     } finally {
       event.target.value = "";
     }
@@ -747,49 +809,20 @@ export function CatalogEditor() {
       await resetProducts();
       setSelectedId(null);
       setDraft(null);
-      setMessage("Каталог восстановлен.");
+      router.refresh();
+      showMessage("Каталог восстановлен.", "success");
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Не удалось восстановить каталог.");
+      showMessage(error instanceof Error ? error.message : "Не удалось восстановить каталог.", "error");
     }
   };
 
   const handleMainImageUpload = async (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-
-    if (!file || !draft) {
-      return;
-    }
-
-    const image = await fileToDataUrl(file);
-    setDraft({
-      ...draft,
-      image,
-      gallery: [image, ...draft.gallery.filter((item) => item !== draft.image)],
-    });
-
+    showMessage("Загрузка файлов будет подключена после настройки storage. Сейчас вставьте URL изображения.", "error");
     event.target.value = "";
   };
 
   const handleGalleryUpload = async (event: ChangeEvent<HTMLInputElement>) => {
-    const files = [...(event.target.files ?? [])];
-
-    if (files.length === 0 || !draft) {
-      return;
-    }
-
-    const images = await Promise.all(files.map((file) => fileToDataUrl(file)));
-    const defaultImage = imageByType[draft.type];
-    const shouldUseUploadedImageAsMain =
-      !draft.image || draft.image === defaultImage || draft.gallery.every((image) => image === draft.image || image === defaultImage);
-    const nextGallery = [...draft.gallery, ...images].filter(Boolean);
-    const nextImage = shouldUseUploadedImageAsMain ? images[0] : draft.image;
-
-    setDraft({
-      ...draft,
-      gallery: [...new Set([nextImage, ...nextGallery])],
-      image: nextImage,
-    });
-
+    showMessage("Загрузка файлов будет подключена после настройки storage. Сейчас добавьте URL в галерею.", "error");
     event.target.value = "";
   };
 
@@ -872,9 +905,9 @@ export function CatalogEditor() {
                   </div>
 
                   <div className="mt-5 flex flex-wrap gap-3">
-                    <Button onClick={handleSaveCollection}>
-                      <Save className="size-4" />
-                      Сохранить коллекцию
+                    <Button onClick={handleSaveCollection} disabled={isSavingCollection}>
+                      {isSavingCollection ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
+                      {isSavingCollection ? "Сохраняем" : "Сохранить коллекцию"}
                     </Button>
                     <Button
                       variant="secondary"
@@ -990,6 +1023,8 @@ export function CatalogEditor() {
             {filteredProducts.length > 0 ? (
               filteredProducts.map((product) => {
                 const active = draft?.id === product.id;
+                const createdDate = new Date(product.createdAt).toLocaleDateString("ru-RU");
+                const shouldShowStock = typeof product.stock === "number";
                 return (
                   <button
                     key={product.id}
@@ -1028,7 +1063,14 @@ export function CatalogEditor() {
                         <p className="mt-2 text-xs text-slate-500">
                           {product.driverName ?? product.teamName ?? product.legendName}
                         </p>
-                        <p className="mt-2 text-sm font-semibold text-slate-900">{formatPrice(product.price)}</p>
+                        <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-slate-500">
+                          <span className="font-semibold text-slate-900">{formatPrice(product.price)}</span>
+                          <span>{statusLabelMap[product.status ?? "ACTIVE"]}</span>
+                          <span>Цветов: {product.colors.length}</span>
+                          {product.colorways?.length ? <span>Расцветок: {product.colorways.length}</span> : null}
+                          {shouldShowStock ? <span>Остаток: {product.stock}</span> : null}
+                          <span>{createdDate}</span>
+                        </div>
                       </div>
                     </div>
                   </button>
@@ -1081,9 +1123,9 @@ export function CatalogEditor() {
                   <RotateCcw className="size-4" />
                   Сбросить каталог
                 </Button>
-                <Button onClick={handleSave} disabled={!draft}>
-                  <Save className="size-4" />
-                  Сохранить
+                <Button onClick={handleSave} disabled={!draft || isSavingProduct}>
+                  {isSavingProduct ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
+                  {isSavingProduct ? "Сохраняем" : "Сохранить"}
                 </Button>
               </div>
             </div>
@@ -1091,7 +1133,16 @@ export function CatalogEditor() {
             <input ref={importInputRef} type="file" accept="application/json" className="hidden" onChange={handleImport} />
 
             {message ? (
-              <p className="mt-5 rounded-2xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">{message}</p>
+              <p
+                className={cn(
+                  "mt-5 rounded-2xl border px-4 py-3 text-sm",
+                  messageType === "success" && "border-emerald-100 bg-emerald-50 text-emerald-700",
+                  messageType === "error" && "border-red-100 bg-red-50 text-red-700",
+                  messageType === "info" && "border-slate-200 bg-slate-50 text-slate-700",
+                )}
+              >
+                {message}
+              </p>
             ) : null}
           </div>
 
@@ -1107,18 +1158,18 @@ export function CatalogEditor() {
                     </h2>
                   </div>
                   <div className="flex flex-wrap gap-3">
-                    <Button variant="secondary" onClick={handleDelete}>
-                      <Trash2 className="size-4" />
-                      {isPersistedProduct ? "Удалить товар" : "Удалить черновик"}
+                    <Button variant="secondary" onClick={handleDelete} disabled={isDeletingProduct}>
+                      {isDeletingProduct ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />}
+                      {isDeletingProduct ? "Удаляем" : isPersistedProduct ? "Удалить товар" : "Удалить черновик"}
                     </Button>
-                    <Button onClick={handleSave}>
-                      <Save className="size-4" />
-                      Сохранить изменения
+                    <Button onClick={handleSave} disabled={isSavingProduct}>
+                      {isSavingProduct ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
+                      {isSavingProduct ? "Сохраняем" : "Сохранить изменения"}
                     </Button>
                   </div>
                 </div>
 
-                <div className="grid gap-4 md:grid-cols-2">
+                <div className="grid gap-4 md:grid-cols-3">
                   <label className="space-y-2">
                     <span className="text-sm font-medium text-slate-900">Название</span>
                     <input
@@ -1134,6 +1185,27 @@ export function CatalogEditor() {
                       min={0}
                       value={draft.price}
                       onChange={(event) => updateDraft("price", Number(event.target.value))}
+                      className="input-base rounded-2xl"
+                    />
+                  </label>
+                  <label className="space-y-2">
+                    <span className="text-sm font-medium text-slate-900">Старая цена, ₽</span>
+                    <input
+                      type="number"
+                      min={0}
+                      value={draft.oldPrice ?? ""}
+                      onChange={(event) => updateDraft("oldPrice", event.target.value ? Number(event.target.value) : null)}
+                      className="input-base rounded-2xl"
+                    />
+                  </label>
+                  <label className="space-y-2">
+                    <span className="text-sm font-medium text-slate-900">Остаток</span>
+                    <input
+                      type="number"
+                      min={0}
+                      value={draft.stock ?? ""}
+                      onChange={(event) => updateDraft("stock", event.target.value ? Number(event.target.value) : null)}
+                      placeholder="Не показывать"
                       className="input-base rounded-2xl"
                     />
                   </label>
@@ -1155,7 +1227,7 @@ export function CatalogEditor() {
                   </label>
                 </div>
 
-                <div className="grid gap-4 md:grid-cols-3">
+                <div className="grid gap-4 md:grid-cols-4">
                   <label className="space-y-2">
                     <span className="text-sm font-medium text-slate-900">Раздел</span>
                     <select
@@ -1194,6 +1266,20 @@ export function CatalogEditor() {
                       {badgeOptions.map((option) => (
                         <option key={option} value={option}>
                           {badgeMap[option]}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="space-y-2">
+                    <span className="text-sm font-medium text-slate-900">Статус</span>
+                    <select
+                      value={draft.status ?? "ACTIVE"}
+                      onChange={(event) => updateDraft("status", event.target.value as ProductStatus)}
+                      className="input-base rounded-2xl"
+                    >
+                      {statusOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
                         </option>
                       ))}
                     </select>
@@ -1297,7 +1383,7 @@ export function CatalogEditor() {
                     <input
                       value={draft.image}
                       onChange={(event) => updateDraft("image", event.target.value)}
-                      placeholder="URL или data:image..."
+                      placeholder="https://... или /mockups/tshirt.svg"
                       className="input-base rounded-2xl"
                     />
                   </label>
@@ -1337,13 +1423,16 @@ export function CatalogEditor() {
                     value={joinGallery(draft.gallery)}
                     onChange={(event) => updateDraft("gallery", parseGallery(event.target.value))}
                     rows={4}
-                    placeholder="По одной ссылке или data:image на строку"
+                    placeholder="По одному URL на строку"
                     className="min-h-28 w-full rounded-3xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none"
                   />
                 </label>
 
                 <div>
-                  <p className="text-sm font-medium text-slate-900">Цвета товара</p>
+                  <p className="text-sm font-medium text-slate-900">Цвета на товаре</p>
+                  <p className="mt-1 text-xs leading-6 text-slate-500">
+                    Это цвета принта, полос, номеров и деталей на самой футболке. Они не становятся выбором покупателя.
+                  </p>
                   <div className="mt-3 flex flex-wrap gap-2">
                     {colorOptions.map((color) => {
                       const active = draft.colors.includes(color);
@@ -1355,6 +1444,35 @@ export function CatalogEditor() {
                           className={cn(
                             "flex items-center gap-2 rounded-full border px-4 py-2 text-sm transition",
                             active ? "border-red-300 bg-red-50 text-slate-900" : "border-slate-300 bg-white text-slate-700",
+                          )}
+                        >
+                          <span
+                            className="size-4 rounded-full border border-slate-200"
+                            style={{ backgroundColor: colorHexMap[color] }}
+                          />
+                          {colorLabelRu[color]}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-sm font-medium text-slate-900">Расцветка</p>
+                  <p className="mt-1 text-xs leading-6 text-slate-500">
+                    Это варианты самой вещи для выбора в карточке товара: чёрная, белая и так далее. Если ничего не выбрать, блок расцветки на сайте не показывается.
+                  </p>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {colorOptions.map((color) => {
+                      const active = (draft.colorways ?? []).includes(color);
+                      return (
+                        <button
+                          key={color}
+                          type="button"
+                          onClick={() => toggleColorway(color)}
+                          className={cn(
+                            "flex items-center gap-2 rounded-full border px-4 py-2 text-sm transition",
+                            active ? "border-slate-900 bg-slate-950 text-white" : "border-slate-300 bg-white text-slate-700",
                           )}
                         >
                           <span
@@ -1475,6 +1593,11 @@ export function CatalogEditor() {
                     />
                   ))}
                 </div>
+                {draft?.colorways?.length ? (
+                  <p className="mt-3 text-xs text-slate-500">
+                    Расцветка: {draft.colorways.map((color) => colorLabelRu[color]).join(", ")}
+                  </p>
+                ) : null}
               </div>
             </div>
 
@@ -1485,6 +1608,10 @@ export function CatalogEditor() {
                 </p>
                 <p>
                   <span className="font-semibold text-slate-900">Тип:</span> {productTypeLabels[draft.type]}
+                </p>
+                <p>
+                  <span className="font-semibold text-slate-900">Статус:</span>{" "}
+                  {statusLabelMap[draft.status ?? "ACTIVE"]}
                 </p>
                 <p>
                   <span className="font-semibold text-slate-900">Slug:</span> /product/{draft.slug || "slug"}

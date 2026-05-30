@@ -5,6 +5,7 @@ import { normalizeEmail } from "@/lib/account-utils";
 import { registerPayloadSchema } from "@/lib/validation-schemas";
 import {
   attachSessionCookie,
+  attachRoleCookie,
   createSessionToken,
   getSessionDurationMs,
   hashSessionToken,
@@ -12,27 +13,15 @@ import {
   toAuthUser,
 } from "@/lib/server/auth";
 import { apiError } from "@/lib/server/api";
-import { prisma } from "@/lib/server/db";
-import { assertSameOrigin, enforceRateLimit } from "@/lib/server/request-security";
+import { prisma } from "@/lib/prisma";
+import { assertProtectedMutation, enforceRateLimit } from "@/lib/server/request-security";
 
 export const runtime = "nodejs";
 
-function roleForEmail(email: string) {
-  const adminEmails = new Set(
-    [process.env.SEED_ADMIN_EMAIL, process.env.ADMIN_EMAILS, process.env.NEXT_PUBLIC_ADMIN_EMAILS]
-      .filter(Boolean)
-      .flatMap((value) => value!.split(","))
-      .map((value) => normalizeEmail(value))
-      .filter(Boolean),
-  );
-
-  return adminEmails.has(email) ? "ADMIN" : "USER";
-}
-
 export async function POST(request: NextRequest) {
   try {
-    assertSameOrigin(request);
-    const rateLimit = enforceRateLimit(request, "auth-register", {
+    assertProtectedMutation(request);
+    const rateLimit = await enforceRateLimit(request, "auth-register", {
       maxAttempts: 8,
       windowMs: 15 * 60 * 1000,
     });
@@ -61,7 +50,7 @@ export async function POST(request: NextRequest) {
         name: input.name,
         phone: input.phone,
         passwordHash,
-        role: roleForEmail(email),
+        role: "USER",
         sessions: {
           create: {
             tokenHash: hashSessionToken(token),
@@ -93,6 +82,7 @@ export async function POST(request: NextRequest) {
       session: toAuthSession(user.sessions[0]),
     });
     attachSessionCookie(response, token, expiresAt);
+    attachRoleCookie(response, user.role, expiresAt);
     return response;
   } catch (error) {
     return apiError(error, "Не удалось создать аккаунт.");

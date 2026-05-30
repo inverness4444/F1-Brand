@@ -1,4 +1,4 @@
-import { isValidEmail, normalizeEmail, normalizePhone } from "@/lib/account-utils";
+import { normalizeEmail, normalizePhone } from "@/lib/account-utils";
 import type { AuthUser } from "@/lib/account-types";
 
 export const SECURITY_LIMITS = {
@@ -203,17 +203,9 @@ export function buildCsrfHeaders(): Record<string, string> {
   return token ? { [CSRF_HEADER_NAME]: token } : {};
 }
 
-function configuredAdminEmails() {
-  return new Set(
-    (process.env.NEXT_PUBLIC_ADMIN_EMAILS ?? "")
-      .split(",")
-      .map((value) => sanitizeEmail(value))
-      .filter((value) => value && isValidEmail(value)),
-  );
-}
-
 export function resolveUserRole(email: string): AuthUser["role"] {
-  return configuredAdminEmails().has(sanitizeEmail(email)) ? "admin" : "customer";
+  void email;
+  return "customer";
 }
 
 export function canAccessAdmin(user: Pick<AuthUser, "role"> | null | undefined) {

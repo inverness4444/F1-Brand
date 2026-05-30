@@ -4,14 +4,26 @@ import { normalizeEmail } from "@/lib/account-utils";
 import { profilePayloadSchema } from "@/lib/validation-schemas";
 import { getCurrentUser, toAuthUser } from "@/lib/server/auth";
 import { apiError } from "@/lib/server/api";
-import { prisma } from "@/lib/server/db";
-import { assertSameOrigin } from "@/lib/server/request-security";
+import { prisma } from "@/lib/prisma";
+import { assertProtectedMutation, enforceRateLimit } from "@/lib/server/request-security";
 
 export const runtime = "nodejs";
 
 export async function PATCH(request: NextRequest) {
   try {
-    assertSameOrigin(request);
+    const rateLimit = await enforceRateLimit(request, "account-profile-update", {
+      maxAttempts: 30,
+      windowMs: 10 * 60 * 1000,
+    });
+
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: "Слишком много запросов. Повторите позже." },
+        { status: 429, headers: { "Retry-After": String(rateLimit.retryAfterSeconds) } },
+      );
+    }
+
+    assertProtectedMutation(request);
     const user = await getCurrentUser();
     if (!user) {
       throw new Error("unauthorized");

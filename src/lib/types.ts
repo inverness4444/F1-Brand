@@ -31,6 +31,7 @@ export type ProductType =
   | "Gift Certificate";
 
 export type ProductBadge = "New" | "Hit" | "Limited" | "Preorder" | "OutOfStock" | "Sale" | "Original";
+export type ProductStatus = "DRAFT" | "ACTIVE" | "ARCHIVED";
 
 export type ProductColor =
   | "Black"
@@ -64,12 +65,16 @@ export type Product = {
   legendSlug: string | null;
   gender: ProductGender;
   price: number;
+  oldPrice?: number | null;
+  stock?: number | null;
   productType: CommerceProductKind;
   requiresShipping: boolean;
   colors: ProductColor[];
+  colorways?: ProductColor[];
   sizes: ProductSize[];
   type: ProductType;
   badge: ProductBadge;
+  status?: ProductStatus;
   image: string;
   gallery: string[];
   description: string;

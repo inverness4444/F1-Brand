@@ -2,7 +2,7 @@ import { getCurrentUser } from "@/lib/server/auth";
 import { orderFromDb } from "@/lib/server/account-mappers";
 import { apiError, noStoreJson } from "@/lib/server/api";
 import { dbOrderInclude } from "@/lib/server/catalog-db";
-import { prisma } from "@/lib/server/db";
+import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
 

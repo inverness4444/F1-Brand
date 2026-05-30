@@ -24,6 +24,8 @@ import {
 } from "@/lib/gift-certificate-utils";
 
 const userRoleSchema = z.enum(["customer", "admin"]);
+const adminUserRoleSchema = z.enum(["USER", "ADMIN"]);
+const adminUserStatusSchema = z.enum(["ACTIVE", "DISABLED"]);
 const productColorSchema = z.enum([
   "Black",
   "White",
@@ -63,7 +65,18 @@ const productTypeSchema = z.enum([
   "Gift Certificate",
 ]);
 const productBadgeSchema = z.enum(["New", "Hit", "Limited", "Preorder", "OutOfStock", "Sale", "Original"]);
+const productStatusSchema = z.enum(["DRAFT", "ACTIVE", "ARCHIVED"]);
 const commerceProductKindSchema = z.enum(["standard", "gift_certificate"]);
+const prismaOrderStatusSchema = z.enum([
+  "PENDING",
+  "AWAITING_PAYMENT",
+  "PAID",
+  "PROCESSING",
+  "SHIPPED",
+  "DELIVERED",
+  "CANCELLED",
+  "REFUNDED",
+]);
 const orderStatusSchema = z.enum([
   "Новый",
   "Ожидает оплаты",
@@ -197,6 +210,35 @@ export const profilePayloadSchema = z.object({
   favoriteTeam: optionalTextSchema(SECURITY_LIMITS.profileTextMaxLength).transform((value) => value || null),
 });
 
+export const adminUserUpdateSchema = z
+  .object({
+    name: requiredTextSchema(SECURITY_LIMITS.nameMaxLength, "Введите имя."),
+    email: z
+      .string()
+      .transform(sanitizeEmail)
+      .refine((value) => isValidEmail(value), "Введите корректный email."),
+    phone: z
+      .string()
+      .nullable()
+      .optional()
+      .transform((value) => sanitizePhone(value ?? ""))
+      .refine((value) => value === "" || isValidPhone(value), "Введите корректный телефон."),
+    role: adminUserRoleSchema,
+    status: adminUserStatusSchema,
+    birthday: z
+      .string()
+      .nullable()
+      .optional()
+      .transform((value) => {
+        const nextValue = sanitizeText(value ?? "", { maxLength: 10 });
+        return nextValue || null;
+      })
+      .refine((value) => value === null || /^\d{4}-\d{2}-\d{2}$/.test(value), "Укажите корректную дату."),
+    favoriteDriver: optionalTextSchema(SECURITY_LIMITS.profileTextMaxLength).transform((value) => value || null),
+    favoriteTeam: optionalTextSchema(SECURITY_LIMITS.profileTextMaxLength).transform((value) => value || null),
+  })
+  .strict();
+
 export const addressInputSchema = z.object({
   country: requiredAddressField("Укажите страну."),
   city: requiredAddressField("Укажите город."),
@@ -215,6 +257,13 @@ export const addressInputSchema = z.object({
     .nullable()
     .transform((value) => sanitizeMultilineComment(value ?? "", SECURITY_LIMITS.addressCommentMaxLength)),
 });
+
+export const adminAddressUpdateSchema = z
+  .object({
+    address: addressInputSchema,
+    isDefault: z.boolean().default(false),
+  })
+  .strict();
 
 export const checkoutCustomerSchema = z.object({
   name: requiredTextSchema(SECURITY_LIMITS.nameMaxLength, "Введите имя."),
@@ -469,6 +518,18 @@ export const checkoutPayloadSchema = z.object({
   requestedBalanceAmount: z.number().int().min(0).nullable().default(null),
 });
 
+export const adminOrderUpdateSchema = z
+  .object({
+    status: prismaOrderStatusSchema.optional(),
+    paymentStatus: orderPaymentStatusSchema.optional(),
+    fulfillmentStatus: orderFulfillmentStatusSchema.optional(),
+    customer: checkoutCustomerSchema.optional(),
+    shippingAddress: addressInputSchema.nullable().optional(),
+    comment: z.string().transform((value) => sanitizeMultilineComment(value)).optional(),
+  })
+  .strict()
+  .refine((value) => Object.keys(value).length > 0, "Нет данных для обновления.");
+
 export const persistedCartStateSchema = z
   .object({
     state: z
@@ -495,14 +556,30 @@ export const productSchema = z.object({
   legendSlug: optionalTextSchema(SECURITY_LIMITS.catalogMetadataMaxLength).transform((value) => value || null),
   gender: productGenderSchema,
   price: z.number().int().min(0).max(1_000_000),
+  oldPrice: z.number().int().min(0).max(1_000_000).nullable().optional().default(null),
+  stock: z.number().int().min(0).max(1_000_000).nullable().optional().default(null),
   productType: commerceProductKindSchema.default("standard"),
   requiresShipping: z.boolean().default(true),
   colors: z.array(productColorSchema).min(1).max(12),
+  colorways: z.array(productColorSchema).max(12).optional().default([]),
   sizes: z.array(productSizeSchema).min(1).max(7),
   type: productTypeSchema,
   badge: productBadgeSchema,
-  image: z.string().transform(sanitizeAssetUrl),
-  gallery: z.array(z.string().transform(sanitizeAssetUrl)).max(16),
+  status: productStatusSchema.optional().default("ACTIVE"),
+  image: z
+    .string()
+    .transform(sanitizeAssetUrl)
+    .refine((value) => value.length > 0, "Укажите URL изображения.")
+    .refine((value) => !value.startsWith("data:") && !value.startsWith("blob:"), "Вставьте постоянный URL изображения."),
+  gallery: z
+    .array(
+      z
+        .string()
+        .transform(sanitizeAssetUrl)
+        .refine((value) => value.length > 0, "Укажите URL изображения.")
+        .refine((value) => !value.startsWith("data:") && !value.startsWith("blob:"), "Вставьте постоянный URL изображения."),
+    )
+    .max(16),
   description: z
     .string()
     .transform((value) => sanitizeMultilineComment(value, SECURITY_LIMITS.catalogDescriptionMaxLength))

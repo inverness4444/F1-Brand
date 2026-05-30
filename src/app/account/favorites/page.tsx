@@ -63,7 +63,7 @@ export default function AccountFavoritesPage() {
         onAddToCart={(product) => {
           addItem({
             productId: product.id,
-            color: product.colors[0],
+            color: product.colorways?.[0] ?? product.variants?.[0]?.color ?? product.colors[0],
             size: product.sizes[0],
             quantity: 1,
           });
