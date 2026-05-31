@@ -129,6 +129,7 @@ function normalizeCollection(collection: CatalogCollection, existingCollections:
     id,
     slug,
     name,
+    visible: collection.visible ?? true,
     productIds: uniqueValues((collection.productIds ?? []).map((value) => sanitizeIdentifier(value, "")).filter(Boolean)),
     createdAt: isValidDate(collection.createdAt) ? new Date(collection.createdAt).toISOString() : new Date().toISOString(),
   } satisfies CatalogCollection;

@@ -8,7 +8,10 @@ import { Header } from "@/components/header";
 import { Providers } from "@/components/providers";
 import { ScrollbarVisibility } from "@/components/scrollbar-visibility";
 import { TopAnnouncementBar } from "@/components/top-announcement-bar";
-import { defaultOgImage, getSiteUrl, siteName } from "@/lib/seo";
+import { defaultOgImage, getSiteUrl, publicRobots, siteName } from "@/lib/seo";
+
+const siteDescription =
+  "Apex Store — магазин одежды и мерча в гоночном стиле: футболки, худи, аксессуары и motorsport-inspired streetwear для фанатов автоспорта.";
 
 const headingFont = Archivo({
   subsets: ["latin"],
@@ -30,16 +33,14 @@ export const metadata: Metadata = {
     default: siteName,
     template: `%s | ${siteName}`,
   },
-  description:
-    "Магазин одежды в эстетике Formula 1 с коллекциями команд, пилотов и базовой спортивной линейкой.",
+  description: siteDescription,
   applicationName: siteName,
   alternates: {
     canonical: "/",
   },
   openGraph: {
     title: siteName,
-    description:
-      "Магазин одежды в эстетике Formula 1 с коллекциями команд, пилотов и базовой спортивной линейкой.",
+    description: siteDescription,
     url: "/",
     siteName,
     locale: "ru_RU",
@@ -54,14 +55,10 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: siteName,
-    description:
-      "Магазин одежды в эстетике Formula 1 с коллекциями команд, пилотов и базовой спортивной линейкой.",
+    description: siteDescription,
     images: [defaultOgImage],
   },
-  robots: {
-    index: true,
-    follow: true,
-  },
+  robots: publicRobots(),
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 
 import { buttonClassName } from "@/components/ui/button";
 import { StructuredData } from "@/components/structured-data";
-import { breadcrumbJsonLd } from "@/lib/seo";
+import { breadcrumbJsonLd, webPageJsonLd } from "@/lib/seo";
 
 type BreadcrumbItem = {
   label: string;
@@ -64,10 +64,17 @@ export function InfoPageLayout({ title, description, path, children }: InfoPageL
     <div className="pb-16">
       {path ? (
         <StructuredData
-          data={breadcrumbJsonLd([
-            { name: "Главная", path: "/" },
-            { name: title, path },
-          ])}
+          data={[
+            breadcrumbJsonLd([
+              { name: "Главная", path: "/" },
+              { name: title, path },
+            ]),
+            webPageJsonLd({
+              name: title,
+              description,
+              path,
+            }),
+          ]}
         />
       ) : null}
       <section className="container-shell pt-8">

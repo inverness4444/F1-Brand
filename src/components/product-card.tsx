@@ -1,6 +1,5 @@
 "use client";
 
-import { Star } from "lucide-react";
 import Link from "next/link";
 import { memo, type CSSProperties } from "react";
 
@@ -10,7 +9,7 @@ import type { Product } from "@/lib/types";
 import { imageByType } from "@/lib/data/products";
 import { getImageDedupeKey } from "@/lib/image-utils";
 import { formatPrice, getProductHref } from "@/lib/utils";
-import { getProductDisplayName } from "@/lib/storefront-text";
+import { getProductCategoryBreadcrumb, getProductDisplayName } from "@/lib/storefront-text";
 
 const catalogImageSizes = "(min-width: 1280px) 30vw, (min-width: 640px) 48vw, 100vw";
 const showcaseImageSizes = "(min-width: 1280px) 340px, (min-width: 640px) 320px, 84vw";
@@ -30,8 +29,8 @@ function ProductCardComponent({
   const hoverImage =
     (product.gallery ?? []).find((image) => image && getImageDedupeKey(image) !== primaryImageKey) ?? product.image;
   const hasAlternateImage = getImageDedupeKey(hoverImage) !== primaryImageKey;
-  const rating = Math.max(4, Math.min(5, Math.round(product.popularity / 16)));
   const isGiftCertificate = product.productType === "gift_certificate";
+  const imageAlt = `${getProductDisplayName(product)} — ${getProductCategoryBreadcrumb(product).label}`;
   const imageBaseClassName =
     "absolute inset-0 h-full w-full transition duration-500 transform-gpu [will-change:transform]";
 
@@ -63,7 +62,7 @@ function ProductCardComponent({
               <ProductImage
                 src={product.image}
                 fallbackSrc={fallbackImage}
-                alt={product.name}
+                alt={imageAlt}
                 fill
                 priority={priority}
                 sizes={catalogImageSizes}
@@ -136,7 +135,7 @@ function ProductCardComponent({
             <ProductImage
               src={product.image}
               fallbackSrc={fallbackImage}
-              alt={product.name}
+              alt={imageAlt}
               fill
               priority={priority}
               sizes={showcaseImageSizes}
@@ -160,14 +159,10 @@ function ProductCardComponent({
         <div className="relative z-10 mt-3 flex min-h-[6.2rem] flex-col bg-white pt-0">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <span className="line-clamp-2 min-h-[2.85rem] break-words text-[0.95rem] font-semibold leading-[1.42] tracking-[-0.025em] text-[#111111] sm:text-[1.02rem]">
+              <span className="line-clamp-2 min-h-[2.85rem] break-words text-[0.95rem] font-semibold leading-[1.42] tracking-normal text-[#111111] sm:text-[1.02rem]">
                 {getProductDisplayName(product)}
               </span>
               <p className="mt-1 text-[0.95rem] font-medium text-[#111111] sm:text-[1rem]">{formatPrice(product.price)}</p>
-            </div>
-            <div className="mt-0.5 flex shrink-0 items-center gap-1 text-[0.84rem] font-medium text-[#111111] sm:text-[0.96rem]">
-              <Star className="size-3.5 fill-current text-[#111111] sm:size-4" />
-              <span>{rating}</span>
             </div>
           </div>
         </div>

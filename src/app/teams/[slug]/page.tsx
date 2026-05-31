@@ -9,6 +9,7 @@ import {
   breadcrumbJsonLd,
   createPageMetadata,
   getTeamDescriptionForSeo,
+  webPageJsonLd,
 } from "@/lib/seo";
 import { getTeamDescription } from "@/lib/storefront-text";
 
@@ -16,15 +17,12 @@ type PageProps = {
   params: Promise<{ slug: string }>;
 };
 
-export async function generateStaticParams() {
-  const products = await readCatalogProductsFromDb();
-  const productTeamSlugs = new Set(products.map((product) => product.teamSlug).filter(Boolean));
+export const dynamicParams = false;
 
-  return teams
-    .filter((team) => productTeamSlugs.has(team.slug))
-    .map((team) => ({
-      slug: team.slug,
-    }));
+export async function generateStaticParams() {
+  return teams.map((team) => ({
+    slug: team.slug,
+  }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -32,22 +30,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const team = teams.find((entry) => entry.slug === slug);
 
   if (!team) {
-    return {
-      title: "Команда не найдена",
-      robots: {
-        index: false,
-        follow: false,
-      },
-    };
+    notFound();
   }
 
   const products = await readCatalogProductsFromDb();
   const teamProducts = products.filter((product) => product.teamSlug === team.slug);
 
   return createPageMetadata({
-    title: team.name,
+    title: `Коллекция ${team.name}`,
     path: `/teams/${team.slug}`,
     description: getTeamDescriptionForSeo(team, teamProducts),
+    index: teamProducts.length > 0,
   });
 }
 
@@ -62,11 +55,18 @@ export default async function TeamCollectionPage({ params }: PageProps) {
   return (
     <>
       <StructuredData
-        data={breadcrumbJsonLd([
-          { name: "Главная", path: "/" },
-          { name: "Команды", path: "/teams" },
-          { name: team.name, path: `/teams/${team.slug}` },
-        ])}
+        data={[
+          breadcrumbJsonLd([
+            { name: "Главная", path: "/" },
+            { name: "Команды", path: "/teams" },
+            { name: team.name, path: `/teams/${team.slug}` },
+          ]),
+          webPageJsonLd({
+            name: `Коллекция ${team.name}`,
+            description: getTeamDescription(team),
+            path: `/teams/${team.slug}`,
+          }),
+        ]}
       />
       <CollectionPageContent
         eyebrow="Командная коллекция"

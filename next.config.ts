@@ -1,6 +1,27 @@
 import type { NextConfig } from "next";
 
 const isDevelopment = process.env.NODE_ENV !== "production";
+const noIndexHeader = { key: "X-Robots-Tag", value: "noindex, nofollow, noarchive" };
+
+function canonicalSiteUrl() {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+
+  if (!siteUrl) {
+    return null;
+  }
+
+  try {
+    const url = new URL(siteUrl);
+
+    if (url.hostname === "localhost" || url.hostname === "127.0.0.1") {
+      return null;
+    }
+
+    return url;
+  } catch {
+    return null;
+  }
+}
 
 function buildContentSecurityPolicy() {
   return [
@@ -58,6 +79,87 @@ const nextConfig: NextConfig = {
       {
         source: "/:path*",
         headers,
+      },
+      {
+        source: "/api/:path*",
+        headers: [noIndexHeader],
+      },
+      {
+        source: "/admin/:path*",
+        headers: [noIndexHeader],
+      },
+      {
+        source: "/account/:path*",
+        headers: [noIndexHeader],
+      },
+      {
+        source: "/checkout/:path*",
+        headers: [noIndexHeader],
+      },
+      {
+        source: "/login",
+        headers: [noIndexHeader],
+      },
+      {
+        source: "/register",
+        headers: [noIndexHeader],
+      },
+      {
+        source: "/forgot-password",
+        headers: [noIndexHeader],
+      },
+    ];
+  },
+  async redirects() {
+    const canonicalUrl = canonicalSiteUrl();
+    const routeRedirects = [
+      {
+        source: "/catalog",
+        destination: "/shop",
+        permanent: true,
+      },
+      {
+        source: "/new-drops",
+        destination: "/new",
+        permanent: true,
+      },
+      {
+        source: "/men",
+        destination: "/shop",
+        permanent: true,
+      },
+      {
+        source: "/women",
+        destination: "/shop",
+        permanent: true,
+      },
+    ];
+
+    if (!canonicalUrl) {
+      return routeRedirects;
+    }
+
+    const canonicalHost = canonicalUrl.host;
+    const alternateHost = canonicalUrl.hostname.startsWith("www.")
+      ? canonicalUrl.host.replace(/^www\./, "")
+      : `www.${canonicalUrl.host}`;
+
+    if (alternateHost === canonicalHost) {
+      return routeRedirects;
+    }
+
+    return [
+      ...routeRedirects,
+      {
+        source: "/:path*",
+        has: [
+          {
+            type: "host",
+            value: alternateHost,
+          },
+        ],
+        destination: `${canonicalUrl.protocol}//${canonicalHost}/:path*`,
+        permanent: true,
       },
     ];
   },

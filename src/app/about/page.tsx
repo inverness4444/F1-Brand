@@ -2,23 +2,31 @@ import type { Metadata } from "next";
 
 import { Breadcrumbs } from "@/components/info-pages";
 import { StructuredData } from "@/components/structured-data";
-import { breadcrumbJsonLd, createPageMetadata } from "@/lib/seo";
+import { breadcrumbJsonLd, createPageMetadata, webPageJsonLd } from "@/lib/seo";
 
 export const metadata: Metadata = createPageMetadata({
   title: "О магазине",
   path: "/about",
   description:
-    "О магазине Apex Store: одежда в эстетике Formula 1, коллекции пилотов, команд, легенд, аксессуары и подарочные сертификаты.",
+    "О магазине Apex Store: одежда и мерч в гоночном стиле, коллекции пилотов, команд, легенд, аксессуары и подарочные сертификаты.",
 });
 
 export default function AboutPage() {
   return (
     <div className="pb-16">
       <StructuredData
-        data={breadcrumbJsonLd([
-          { name: "Главная", path: "/" },
-          { name: "О магазине", path: "/about" },
-        ])}
+        data={[
+          breadcrumbJsonLd([
+            { name: "Главная", path: "/" },
+            { name: "О магазине", path: "/about" },
+          ]),
+          webPageJsonLd({
+            name: "О магазине",
+            description:
+              "Apex Store — интернет-магазин одежды, аксессуаров и подарков в стиле автоспорта.",
+            path: "/about",
+          }),
+        ]}
       />
       <section className="container-shell pt-8">
         <div className="mx-auto max-w-[1180px] border-b border-[var(--line)] pb-8">
@@ -33,7 +41,7 @@ export default function AboutPage() {
             Apex Store
           </h1>
           <p className="mt-5 max-w-3xl text-base leading-8 text-[#5f615f] sm:text-lg">
-            Магазин одежды в эстетике Formula 1: командные коллекции, капсулы пилотов, аксессуары и подарочные сертификаты в чистой спортивной подаче.
+            Магазин одежды и мерча в гоночном стиле: командные коллекции, капсулы пилотов, аксессуары и подарочные сертификаты в чистой спортивной подаче.
           </p>
         </div>
       </section>

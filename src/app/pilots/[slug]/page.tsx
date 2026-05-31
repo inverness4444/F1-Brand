@@ -9,6 +9,7 @@ import {
   breadcrumbJsonLd,
   createPageMetadata,
   getDriverDescriptionForSeo,
+  webPageJsonLd,
 } from "@/lib/seo";
 import { getDriverDescription } from "@/lib/storefront-text";
 
@@ -16,15 +17,12 @@ type PageProps = {
   params: Promise<{ slug: string }>;
 };
 
-export async function generateStaticParams() {
-  const products = await readCatalogProductsFromDb();
-  const productDriverSlugs = new Set(products.map((product) => product.driverSlug).filter(Boolean));
+export const dynamicParams = false;
 
-  return drivers
-    .filter((driver) => productDriverSlugs.has(driver.slug))
-    .map((driver) => ({
-      slug: driver.slug,
-    }));
+export async function generateStaticParams() {
+  return drivers.map((driver) => ({
+    slug: driver.slug,
+  }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -32,22 +30,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const driver = drivers.find((entry) => entry.slug === slug);
 
   if (!driver) {
-    return {
-      title: "Пилот не найден",
-      robots: {
-        index: false,
-        follow: false,
-      },
-    };
+    notFound();
   }
 
   const products = await readCatalogProductsFromDb();
   const driverProducts = products.filter((product) => product.driverSlug === driver.slug);
 
   return createPageMetadata({
-    title: driver.name,
+    title: `Коллекция ${driver.name}`,
     path: `/pilots/${driver.slug}`,
     description: getDriverDescriptionForSeo(driver, driverProducts),
+    index: driverProducts.length > 0,
   });
 }
 
@@ -62,11 +55,18 @@ export default async function DriverCollectionPage({ params }: PageProps) {
   return (
     <>
       <StructuredData
-        data={breadcrumbJsonLd([
-          { name: "Главная", path: "/" },
-          { name: "Пилоты", path: "/pilots" },
-          { name: driver.name, path: `/pilots/${driver.slug}` },
-        ])}
+        data={[
+          breadcrumbJsonLd([
+            { name: "Главная", path: "/" },
+            { name: "Пилоты", path: "/pilots" },
+            { name: driver.name, path: `/pilots/${driver.slug}` },
+          ]),
+          webPageJsonLd({
+            name: `Коллекция ${driver.name}`,
+            description: getDriverDescription(driver),
+            path: `/pilots/${driver.slug}`,
+          }),
+        ]}
       />
       <CollectionPageContent
         eyebrow={`${driver.teamName} · №${driver.number}`}

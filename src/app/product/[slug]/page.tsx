@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import { ProductDetailShell } from "@/components/product-detail-shell";
 import { StructuredData } from "@/components/structured-data";
 import { readCatalogProductsFromDb } from "@/lib/server/catalog-db";
+import { getProductCategoryBreadcrumb } from "@/lib/storefront-text";
 import {
   breadcrumbJsonLd,
   buildProductMetadata,
@@ -15,6 +16,8 @@ type PageProps = {
   searchParams: Promise<{ product?: string }>;
 };
 
+export const dynamic = "force-dynamic";
+
 async function findProduct(slug: string, productId?: string) {
   const products = await readCatalogProductsFromDb();
 
@@ -24,26 +27,12 @@ async function findProduct(slug: string, productId?: string) {
   );
 }
 
-export async function generateStaticParams() {
-  const products = await readCatalogProductsFromDb();
-
-  return products.map((product) => ({
-    slug: product.slug,
-  }));
-}
-
 export async function generateMetadata({ params, searchParams }: PageProps): Promise<Metadata> {
   const [{ slug }, { product: productId }] = await Promise.all([params, searchParams]);
   const product = await findProduct(slug, productId);
 
   if (!product) {
-    return {
-      title: "Товар не найден",
-      robots: {
-        index: false,
-        follow: false,
-      },
-    };
+    notFound();
   }
 
   return buildProductMetadata(product);
@@ -52,6 +41,11 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
 export default async function ProductDetailPage({ params, searchParams }: PageProps) {
   const [{ slug }, { product }] = await Promise.all([params, searchParams]);
   const foundProduct = await findProduct(slug, product);
+  const categoryBreadcrumb = foundProduct ? getProductCategoryBreadcrumb(foundProduct) : null;
+
+  if (!foundProduct) {
+    notFound();
+  }
 
   if (foundProduct && slug !== foundProduct.slug) {
     redirect(`/product/${foundProduct.slug}`);
@@ -65,7 +59,9 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
             productJsonLd(foundProduct),
             breadcrumbJsonLd([
               { name: "Главная", path: "/" },
-              { name: "Каталог", path: "/shop" },
+              categoryBreadcrumb
+                ? { name: categoryBreadcrumb.label, path: categoryBreadcrumb.href }
+                : { name: "Каталог", path: "/shop" },
               {
                 name: foundProduct.name,
                 path: `/product/${foundProduct.slug}`,

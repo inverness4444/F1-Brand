@@ -5,13 +5,15 @@ import {
   categoryLabelRu,
   colorLabelRu,
   getCollectionLabel,
+  getProductCategoryBreadcrumb,
+  getProductDisplayName,
   productTypeLabelRu,
 } from "@/lib/storefront-text";
 import type { Driver, Legend, Product, Team } from "@/lib/types";
 import { formatPrice } from "@/lib/utils";
 
 export const siteName = "Apex Store";
-export const defaultOgImage = "/apex-logo-preview.png";
+export const defaultOgImage = "/og-default.jpg";
 export const siteUrlFallback = "http://localhost:3000";
 export const priceCurrency = "RUB";
 
@@ -21,6 +23,8 @@ type MetadataInput = {
   path: string;
   image?: string | null;
   absoluteTitle?: boolean;
+  index?: boolean;
+  follow?: boolean;
 };
 
 type BreadcrumbItem = {
@@ -41,6 +45,69 @@ function normalizeSiteUrl(value: string) {
   }
 }
 
+function booleanEnv(value: string | undefined) {
+  if (!value) {
+    return null;
+  }
+
+  if (["1", "true", "yes"].includes(value.toLowerCase())) {
+    return true;
+  }
+
+  if (["0", "false", "no"].includes(value.toLowerCase())) {
+    return false;
+  }
+
+  return null;
+}
+
+export function publicPagesAreIndexable() {
+  const explicitValue = booleanEnv(process.env.NEXT_PUBLIC_SITE_INDEXABLE ?? process.env.SITE_INDEXABLE);
+
+  if (explicitValue !== null) {
+    return explicitValue;
+  }
+
+  if (process.env.VERCEL_ENV && process.env.VERCEL_ENV !== "production") {
+    return false;
+  }
+
+  if (process.env.NODE_ENV !== "production") {
+    return false;
+  }
+
+  return true;
+}
+
+export function publicRobots(index = true, follow = true): Metadata["robots"] {
+  const environmentIndexable = publicPagesAreIndexable();
+  const shouldIndex = index && environmentIndexable;
+  const shouldFollow = follow && environmentIndexable;
+
+  return {
+    index: shouldIndex,
+    follow: shouldFollow,
+    googleBot: {
+      index: shouldIndex,
+      follow: shouldFollow,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  };
+}
+
+export function privateRobots(): Metadata["robots"] {
+  return {
+    index: false,
+    follow: false,
+    googleBot: {
+      index: false,
+      follow: false,
+    },
+  };
+}
+
 export function getSiteUrl() {
   const rawSiteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
 
@@ -55,8 +122,25 @@ export function absoluteUrl(path = "/") {
   return new URL(path.startsWith("/") ? path : `/${path}`, getSiteUrl()).toString();
 }
 
+export function sanitizeMotorsportSeoText(value: string) {
+  return value
+    .replace(/\bFormula\s*1\b/gi, "гоночной культурой")
+    .replace(/\bF1\b/g, "racing-inspired")
+    .replace(/\bofficial-store\b/gi, "premium retail")
+    .replace(/\bofficial\s+store\b/gi, "premium retail")
+    .replace(/\bofficial\s+teamwear\b/gi, "premium teamwear")
+    .replace(/\bofficial\b/gi, "premium")
+    .replace(/официальн(?:ый|ого|ом|ая|ую|ые|ых|ыми)? магазин(?:а|е|ом)?/gi, "премиального спортивного магазина")
+    .replace(/официальн(?:ый|ого|ом|ая|ую|ые|ых|ыми)? мерч/gi, "мерч в стиле автоспорта")
+    .replace(/официальн(?:ая|ую|ые|ых|ыми|ый|ого|ом)? коллекци(?:я|ю|и|й)/gi, "racing-inspired коллекция");
+}
+
 export function cleanText(value: string, maxLength = 180) {
-  const normalized = value.replace(/\s+/g, " ").trim();
+  const normalized = sanitizeMotorsportSeoText(value)
+    .replace(/\.{2,}/g, ".")
+    .replace(/\s+([.,:;!?])/g, "$1")
+    .replace(/\s+/g, " ")
+    .trim();
 
   if (normalized.length <= maxLength) {
     return normalized;
@@ -78,10 +162,13 @@ export function createPageMetadata({
   path,
   image = defaultOgImage,
   absoluteTitle = false,
+  index = true,
+  follow = true,
 }: MetadataInput): Metadata {
+  const cleanTitle = cleanText(title, 80);
   const cleanDescription = cleanText(description, 200);
-  const metadataTitle = absoluteTitle ? { absolute: title } : title;
-  const socialTitle = absoluteTitle ? title : fullTitle(title);
+  const metadataTitle = absoluteTitle ? { absolute: cleanTitle } : cleanTitle;
+  const socialTitle = absoluteTitle ? cleanTitle : fullTitle(cleanTitle);
   const socialImage = image || defaultOgImage;
 
   return {
@@ -101,6 +188,8 @@ export function createPageMetadata({
         {
           url: socialImage,
           alt: socialTitle,
+          width: socialImage === defaultOgImage ? 1200 : undefined,
+          height: socialImage === defaultOgImage ? 630 : undefined,
         },
       ],
     },
@@ -110,20 +199,14 @@ export function createPageMetadata({
       description: cleanDescription,
       images: [socialImage],
     },
-    robots: {
-      index: true,
-      follow: true,
-    },
+    robots: publicRobots(index, follow),
   };
 }
 
 export function createPrivateMetadata(title: string): Metadata {
   return {
     title,
-    robots: {
-      index: false,
-      follow: false,
-    },
+    robots: privateRobots(),
   };
 }
 
@@ -193,9 +276,10 @@ export function buildProductSeoDescription(product: Product) {
 
 export function buildProductMetadata(product: Product) {
   const path = `/product/${product.slug}`;
+  const breadcrumb = getProductCategoryBreadcrumb(product);
 
   return createPageMetadata({
-    title: product.name,
+    title: cleanText(`${getProductDisplayName(product)} — ${breadcrumb.label}`, 70),
     description: buildProductSeoDescription(product),
     path,
     image: productSeoImage(product),
@@ -228,6 +312,7 @@ export function buildCollectionDescription({
   return cleanText(
     joinNonEmpty([
       `${title}: ${products.length} товаров в каталоге ${siteName}`,
+      "Одежда в гоночном стиле, motorsport-inspired apparel, футболки, худи, streetwear и мерч для фанатов автоспорта",
       productTypes.length ? `Типы товаров: ${productTypes.join(", ")}` : null,
       collections.length ? `Коллекции: ${collections.join(", ")}` : null,
       entities.length ? `Связанные пилоты, команды и легенды: ${entities.join(", ")}` : null,
@@ -284,6 +369,30 @@ export function websiteJsonLd() {
   };
 }
 
+export function webPageJsonLd({
+  name,
+  description,
+  path,
+}: {
+  name: string;
+  description: string;
+  path: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name,
+    description: cleanText(description, 220),
+    url: absoluteUrl(path),
+    inLanguage: "ru-RU",
+    isPartOf: {
+      "@type": "WebSite",
+      name: siteName,
+      url: absoluteUrl("/"),
+    },
+  };
+}
+
 export function productJsonLd(product: Product) {
   const availability =
     product.badge === "OutOfStock"
@@ -319,7 +428,7 @@ export function productJsonLd(product: Product) {
   };
 }
 
-export function breadcrumbJsonLd(items: BreadcrumbItem[]) {
+export function breadcrumbJsonLd(items: readonly BreadcrumbItem[]) {
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -332,7 +441,7 @@ export function breadcrumbJsonLd(items: BreadcrumbItem[]) {
   };
 }
 
-export function faqJsonLd(items: FAQItem[]) {
+export function faqJsonLd(items: readonly FAQItem[]) {
   return {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -345,4 +454,34 @@ export function faqJsonLd(items: FAQItem[]) {
       },
     })),
   };
+}
+
+const nonCanonicalQueryKeys = new Set([
+  "category",
+  "team",
+  "driver",
+  "legend",
+  "collection",
+  "type",
+  "color",
+  "size",
+  "minPrice",
+  "maxPrice",
+  "sort",
+  "q",
+  "page",
+]);
+
+export function hasNonCanonicalSearchParams(params: Record<string, string | string[] | undefined>) {
+  return Object.entries(params).some(([key, value]) => {
+    if (!nonCanonicalQueryKeys.has(key)) {
+      return false;
+    }
+
+    if (Array.isArray(value)) {
+      return value.some((entry) => entry.trim().length > 0);
+    }
+
+    return Boolean(value?.trim());
+  });
 }

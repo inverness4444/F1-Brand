@@ -21,12 +21,7 @@ const publicStaticPages = [
   "/",
   "/shop",
   "/new",
-  "/teams",
-  "/pilots",
-  "/legends",
-  "/accessories",
   "/gift-cards",
-  "/sale",
   ...infoPages,
 ] as const;
 
@@ -46,8 +41,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const productTeamSlugs = new Set(products.map((product) => product.teamSlug).filter(Boolean));
   const productDriverSlugs = new Set(products.map((product) => product.driverSlug).filter(Boolean));
   const productLegendSlugs = new Set(products.map((product) => product.legendSlug).filter(Boolean));
+  const hasSaleProducts = products.some((product) => product.badge === "Sale" || product.collectionTags.includes("Sale"));
+  const hasAccessoryProducts = products.some(
+    (product) => product.category === "Accessories" || product.category === "Gifts",
+  );
+  const staticPages = [
+    ...publicStaticPages,
+    ...(productTeamSlugs.size > 0 ? ["/teams"] : []),
+    ...(productDriverSlugs.size > 0 ? ["/pilots"] : []),
+    ...(productLegendSlugs.size > 0 ? ["/legends"] : []),
+    ...(hasAccessoryProducts ? ["/accessories"] : []),
+    ...(hasSaleProducts ? ["/sale"] : []),
+  ];
 
-  const staticEntries: MetadataRoute.Sitemap = publicStaticPages.map((path) => ({
+  const staticEntries: MetadataRoute.Sitemap = staticPages.map((path) => ({
     url: absoluteUrl(path),
     lastModified: catalogLastModified,
     changeFrequency: path === "/" || path === "/shop" ? "daily" : "weekly",

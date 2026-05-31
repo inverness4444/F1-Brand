@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useDeferredValue, useEffect, useMemo, useRef } from "react";
 
@@ -90,11 +91,50 @@ const sectionFilterConfig: Record<
   },
 };
 const sectionHeading: Record<ShopSection, string> = {
-  all: "Каталог Apex Store",
-  teams: "Командные коллекции Apex Store",
-  pilots: "Коллекции пилотов Apex Store",
-  legends: "Коллекции легенд Apex Store",
-  accessories: "Аксессуары и подарки Apex Store",
+  all: "Каталог одежды и мерча в гоночном стиле",
+  teams: "Командные коллекции в гоночном стиле",
+  pilots: "Коллекции пилотов и racing-inspired streetwear",
+  legends: "Архивные коллекции автоспорта",
+  accessories: "Аксессуары и подарки для фанатов гонок",
+};
+const sectionIntro: Record<
+  ShopSection,
+  {
+    eyebrow: string;
+    breadcrumb: string;
+    description: string;
+  }
+> = {
+  all: {
+    eyebrow: "Каталог",
+    breadcrumb: "Каталог",
+    description:
+      "Футболки, худи, куртки, аксессуары и подарочные сертификаты в стиле автоспорта. Используйте фильтры по размеру, цвету, типу товара и коллекции, чтобы быстрее найти подходящую вещь.",
+  },
+  teams: {
+    eyebrow: "Команды",
+    breadcrumb: "Команды",
+    description:
+      "Командные коллекции с гоночной эстетикой: чистые спортивные силуэты, streetwear-подача, футболки, худи и верхняя одежда для фанатов автоспорта.",
+  },
+  pilots: {
+    eyebrow: "Пилоты",
+    breadcrumb: "Пилоты",
+    description:
+      "Коллекции пилотов в motorsport-inspired стиле: одежда и мерч для повседневной носки, фанатских встреч и гоночных уикендов.",
+  },
+  legends: {
+    eyebrow: "Легенды",
+    breadcrumb: "Легенды",
+    description:
+      "Архивные капсулы и вещи, вдохновлённые наследием автоспорта: футболки, лонгсливы и аксессуары с аккуратной современной подачей.",
+  },
+  accessories: {
+    eyebrow: "Аксессуары",
+    breadcrumb: "Аксессуары",
+    description:
+      "Кепки, шарфы, брелки, постеры, календари, кошельки и подарочные сертификаты в гоночном стиле для себя или в подарок фанату гонок.",
+  },
 };
 
 function matchesShopSection(product: Product, section: ShopSection) {
@@ -220,6 +260,7 @@ export function ShopShell({
     setMobileFiltersOpen,
   } = useShopStore();
   const config = sectionFilterConfig[section];
+  const intro = sectionIntro[section];
 
   useEffect(() => {
     hasInitializedFromParamsRef.current = false;
@@ -406,12 +447,29 @@ export function ShopShell({
 
   return (
     <div className="pb-16">
-      <h1 className="sr-only">{sectionHeading[section]}</h1>
+      <section className="container-shell pt-8">
+        <div className="border-b border-[var(--line)] pb-8">
+          <nav className="flex flex-wrap items-center gap-2 text-sm text-[#6b6a66]" aria-label="Breadcrumb">
+            <Link href="/" className="transition hover:text-[#111111]">
+              Главная
+            </Link>
+            <span className="text-[#b5b0a8]">/</span>
+            <span className="font-medium text-[#111111]">{intro.breadcrumb}</span>
+          </nav>
+          <p className="section-kicker mt-8">{intro.eyebrow}</p>
+          <h1 className="mt-4 max-w-5xl break-words font-[var(--font-heading)] text-4xl font-semibold leading-none tracking-normal text-[#111111] sm:text-5xl lg:text-6xl">
+            {sectionHeading[section]}
+          </h1>
+          <p className="mt-5 max-w-3xl text-base leading-8 text-[#5f615f] sm:text-lg">
+            {intro.description}
+          </p>
+        </div>
+      </section>
       <section
         className={
           hasFilterControls
-            ? "container-shell grid gap-8 pt-8 lg:grid-cols-[188px_minmax(0,1fr)] lg:gap-6 xl:grid-cols-[200px_minmax(0,1fr)] xl:gap-8"
-            : "container-shell pt-8"
+            ? "container-shell mt-8 grid gap-8 lg:grid-cols-[188px_minmax(0,1fr)] lg:gap-6 xl:grid-cols-[200px_minmax(0,1fr)] xl:gap-8"
+            : "container-shell mt-8"
         }
       >
         {hasFilterControls ? (
@@ -528,7 +586,7 @@ export function ShopShell({
                 <EmptyCatalogState compact />
               ) : sectionIsEmpty ? (
                 <div className="border border-[var(--line)] bg-white p-8 text-center">
-                  <h3 className="font-[var(--font-heading)] text-3xl font-semibold tracking-[-0.05em] text-[#111111]">
+                  <h3 className="font-[var(--font-heading)] text-3xl font-semibold tracking-normal text-[#111111]">
                     В этом разделе пока нет товаров
                   </h3>
                   <p className="mt-3 text-sm leading-7 text-[#5f615f]">
@@ -537,7 +595,7 @@ export function ShopShell({
                 </div>
               ) : (
                 <div className="border border-[var(--line)] bg-white p-8 text-center">
-                  <h3 className="font-[var(--font-heading)] text-3xl font-semibold tracking-[-0.05em] text-[#111111]">
+                  <h3 className="font-[var(--font-heading)] text-3xl font-semibold tracking-normal text-[#111111]">
                     Ничего не найдено
                   </h3>
                   <p className="mt-3 text-sm leading-7 text-[#5f615f]">

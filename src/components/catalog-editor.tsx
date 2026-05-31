@@ -2,7 +2,7 @@
 
 import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { Download, ImagePlus, Loader2, Plus, RotateCcw, Save, Search, Trash2, Upload } from "lucide-react";
+import { Download, Eye, EyeOff, ImagePlus, Loader2, Plus, RotateCcw, Save, Search, Trash2, Upload } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import {
@@ -167,6 +167,7 @@ function createCollectionDraft(existingCollections: CatalogCollection[]): Catalo
     id,
     slug,
     name: baseName,
+    visible: true,
     productIds: [],
     createdAt: new Date().toISOString(),
   };
@@ -652,6 +653,7 @@ export function CatalogEditor() {
       ...collectionDraft,
       id: collectionDraft.id.trim() || slugify(collectionDraft.name) || `collection-${Date.now()}`,
       slug: slugify(collectionDraft.slug || collectionDraft.name) || collectionDraft.id,
+      visible: collectionDraft.visible ?? true,
       productIds: [...new Set(collectionDraft.productIds)],
       createdAt: collectionDraft.createdAt || new Date().toISOString(),
     };
@@ -868,9 +870,16 @@ export function CatalogEditor() {
                           : "border-slate-200 bg-white text-slate-800 hover:border-slate-300 hover:bg-slate-50",
                       )}
                     >
-                      <span className="block text-sm font-semibold">{collection.name}</span>
+                      <span className="flex items-center justify-between gap-3">
+                        <span className="min-w-0 truncate text-sm font-semibold">{collection.name}</span>
+                        {collection.visible ? (
+                          <Eye className={cn("size-4 shrink-0", active ? "text-slate-300" : "text-slate-500")} />
+                        ) : (
+                          <EyeOff className={cn("size-4 shrink-0", active ? "text-slate-300" : "text-slate-500")} />
+                        )}
+                      </span>
                       <span className={cn("mt-1 block text-xs", active ? "text-slate-300" : "text-slate-500")}>
-                        {collection.productIds.length} товаров
+                        {collection.productIds.length} товаров · {collection.visible ? "на сайте" : "скрыта"}
                       </span>
                     </button>
                   );
@@ -901,6 +910,35 @@ export function CatalogEditor() {
                         onChange={(event) => updateCollectionDraft("slug", slugify(event.target.value))}
                         className="input-base rounded-2xl"
                       />
+                    </label>
+                    <label className="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 sm:col-span-2 lg:col-span-1">
+                      <span className="min-w-0">
+                        <span className="block text-sm font-medium text-slate-900">Видимость</span>
+                        <span className="mt-1 block text-xs leading-5 text-slate-500">
+                          {collectionDraft.visible ? "Показывается в магазине" : "Скрыта из магазина"}
+                        </span>
+                      </span>
+                      <input
+                        type="checkbox"
+                        checked={collectionDraft.visible}
+                        onChange={(event) => updateCollectionDraft("visible", event.target.checked)}
+                        className="peer sr-only"
+                      />
+                      <span
+                        className={cn(
+                          "relative h-8 w-14 shrink-0 rounded-full border transition",
+                          collectionDraft.visible ? "border-slate-900 bg-slate-950" : "border-slate-300 bg-white",
+                        )}
+                      >
+                        <span
+                          className={cn(
+                            "absolute top-1 flex size-6 items-center justify-center rounded-full bg-white text-slate-900 shadow-sm transition",
+                            collectionDraft.visible ? "left-7" : "left-1",
+                          )}
+                        >
+                          {collectionDraft.visible ? <Eye className="size-3.5" /> : <EyeOff className="size-3.5" />}
+                        </span>
+                      </span>
                     </label>
                   </div>
 

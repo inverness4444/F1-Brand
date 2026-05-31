@@ -8,6 +8,7 @@ export type CatalogCollection = {
   id: string;
   slug: string;
   name: string;
+  visible: boolean;
   productIds: string[];
   createdAt: string;
 };

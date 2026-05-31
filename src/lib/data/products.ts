@@ -290,7 +290,7 @@ const driverProductsSeed: ProductSeed[] = [
     price: 4490,
     name: "Lewis Hamilton Ferrari Driver Tee",
     shortDescription: "Signature Ferrari driver tee with clean race energy.",
-    description: "An official-store style driver tee with crisp Ferrari tones, athletic fit and a modern premium finish designed for everyday wear.",
+    description: "An premium retail style driver tee with crisp Ferrari tones, athletic fit and a modern premium finish designed for everyday wear.",
   },
   {
     driverName: "Lewis Hamilton",
@@ -628,7 +628,7 @@ const driverProductsSeed: ProductSeed[] = [
     price: 3990,
     name: "Carlos Sainz Williams Heritage Tee",
     shortDescription: "Refined heritage tee in classic Williams blue.",
-    description: "A premium driver tee that lands somewhere between official teamwear and elevated everyday sportswear, with crisp blue identity.",
+    description: "A premium driver tee that lands somewhere between premium teamwear and elevated everyday sportswear, with crisp blue identity.",
   },
   {
     driverName: "Carlos Sainz",
@@ -771,7 +771,7 @@ const driverProductsSeed: ProductSeed[] = [
     price: 3190,
     name: "Valtteri Bottas Racing Cap",
     shortDescription: "Premium structured cap with heritage luxury accents.",
-    description: "A clean everyday accessory with controlled contrast, crisp build and a polished official-store feel.",
+    description: "A clean everyday accessory with controlled contrast, crisp build and a polished premium retail feel.",
   },
 ];
 
@@ -810,7 +810,7 @@ const teamProductsSeed: ProductSeed[] = [
     price: 17990,
     name: "Ferrari Team Jacket",
     shortDescription: "Technical outerwear with premium Scuderia structure.",
-    description: "A high-impact but clean outer layer that feels worthy of an official premium teamwear collection.",
+    description: "A high-impact but clean outer layer that feels worthy of an premium teamwear collection.",
   },
   {
     teamName: "McLaren",
@@ -1074,7 +1074,7 @@ const teamProductsSeed: ProductSeed[] = [
     price: 2990,
     name: "Williams Heritage Cap",
     shortDescription: "Classic cap with premium Williams heritage tone.",
-    description: "A polished everyday cap finished in heritage blues and shaped with official-store level restraint.",
+    description: "A polished everyday cap finished in heritage blues and shaped with premium retail level restraint.",
   },
   {
     teamName: "Williams",
@@ -1204,7 +1204,7 @@ const essentialsSeed: ProductSeed[] = [
   { category: "Essentials", collection: "Essentials", gender: "Unisex", type: "Accessory", badge: "New", price: 2990, name: "Paddock Holdall", shortDescription: "Premium accessory with understated travel-sportswear feel.", description: "A soft utility accessory that mirrors the clean lines of modern team travel gear." },
   { category: "Essentials", collection: "Essentials", gender: "Unisex", type: "Accessory", badge: "New", price: 990, name: "Garage Keyring", shortDescription: "Small premium accessory with clean motorsport attitude.", description: "A subtle giftable item kept minimal and commercial." },
   { category: "Essentials", collection: "Essentials", gender: "Unisex", type: "Accessory", badge: "Sale", price: 1290, name: "Racing Club Socks", shortDescription: "Premium athletic socks with clean sale pricing.", description: "Comfort-driven sportswear essentials finished in a restrained motorsport palette.", collectionTags: ["Essentials", "Sale"] },
-  { category: "Essentials", collection: "Essentials", gender: "Unisex", type: "Accessory", badge: "New", price: 2190, name: "Teamwear Gym Towel", shortDescription: "Premium towel with official-store style simplicity.", description: "A clean, useful accessory designed to round out the wider performance range." },
+  { category: "Essentials", collection: "Essentials", gender: "Unisex", type: "Accessory", badge: "New", price: 2190, name: "Teamwear Gym Towel", shortDescription: "Premium towel with premium retail style simplicity.", description: "A clean, useful accessory designed to round out the wider performance range." },
   { category: "Essentials", collection: "Essentials", gender: "Unisex", type: "Accessory", badge: "Sale", price: 2490, name: "Carbon Travel Pouch", shortDescription: "Premium pouch with subtle technical race-store feel.", description: "A compact accessory with neat structure, easy utility and discounted premium appeal.", collectionTags: ["Essentials", "Sale"] },
 ];
 

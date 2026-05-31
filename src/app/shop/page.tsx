@@ -1,28 +1,55 @@
 import type { Metadata } from "next";
 
 import { ShopShell } from "@/components/shop-shell";
+import { StructuredData } from "@/components/structured-data";
 import { readCatalogProductsFromDb } from "@/lib/server/catalog-db";
-import { buildCollectionDescription, createPageMetadata } from "@/lib/seo";
+import {
+  breadcrumbJsonLd,
+  buildCollectionDescription,
+  createPageMetadata,
+  hasNonCanonicalSearchParams,
+  webPageJsonLd,
+} from "@/lib/seo";
 
 type ShopPageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
-export async function generateMetadata(): Promise<Metadata> {
-  const products = await readCatalogProductsFromDb();
+export async function generateMetadata({ searchParams }: ShopPageProps): Promise<Metadata> {
+  const [products, params] = await Promise.all([readCatalogProductsFromDb(), searchParams]);
+  const description = buildCollectionDescription({
+    title: "Каталог Apex Store",
+    products,
+    fallback:
+      "Каталог Apex Store: одежда и мерч в гоночном стиле, футболки, худи, аксессуары, подарочные сертификаты и motorsport-inspired streetwear сезона 2026.",
+  });
 
   return createPageMetadata({
-    title: "Каталог",
+    title: "Каталог одежды в гоночном стиле",
     path: "/shop",
-    description: buildCollectionDescription({
-      title: "Каталог Apex Store",
-      products,
-      fallback:
-        "Каталог Apex Store: одежда в эстетике Formula 1, коллекции пилотов, легенд, подарочные сертификаты и спортивные модели сезона 2026.",
-    }),
+    description,
+    index: !hasNonCanonicalSearchParams(params),
   });
 }
 
 export default async function ShopPage({ searchParams }: ShopPageProps) {
-  return <ShopShell initialParams={await searchParams} />;
+  return (
+    <>
+      <StructuredData
+        data={[
+          breadcrumbJsonLd([
+            { name: "Главная", path: "/" },
+            { name: "Каталог", path: "/shop" },
+          ]),
+          webPageJsonLd({
+            name: "Каталог одежды и мерча в гоночном стиле",
+            description:
+              "Футболки, худи, аксессуары и подарочные сертификаты в стиле автоспорта для фанатов гонок.",
+            path: "/shop",
+          }),
+        ]}
+      />
+      <ShopShell initialParams={await searchParams} />
+    </>
+  );
 }

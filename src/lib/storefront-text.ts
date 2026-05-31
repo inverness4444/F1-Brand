@@ -32,8 +32,14 @@ export const collectionLabelRu: Record<Product["collection"], string> = {
   Sale: "Распродажа",
 };
 
+function safeCollectionLabel(value: string) {
+  return value
+    .replace(/\bF1\b/g, "Racing")
+    .replace(/\bFormula\s*1\b/gi, "автоспорт");
+}
+
 export function getCollectionLabel(collection: string) {
-  return collection ? collectionLabelRu[collection] ?? collection : "Без коллекции";
+  return collection ? safeCollectionLabel(collectionLabelRu[collection] ?? collection) : "Без коллекции";
 }
 
 export const colorLabelRu: Record<ProductColor, string> = {
@@ -72,6 +78,22 @@ export const categoryLabelRu = {
   Essentials: "База",
   Gifts: "Подарочные сертификаты",
 } as const;
+
+export const categorySeoPath: Record<Product["category"], string> = {
+  Pilots: "/pilots",
+  Teams: "/teams",
+  Legends: "/legends",
+  Accessories: "/accessories",
+  Essentials: "/shop",
+  Gifts: "/gift-cards",
+};
+
+export function getProductCategoryBreadcrumb(product: Pick<Product, "category">) {
+  return {
+    label: categoryLabelRu[product.category],
+    href: categorySeoPath[product.category],
+  };
+}
 
 export const giftCertificateStatusLabelRu: Record<GiftCertificateStatus, string> = {
   purchased: "Не активирован",
@@ -172,18 +194,18 @@ export function getProductShortDescription(
   }
 
   if (product.driverName) {
-    return `${productTypeLabelRu[product.type]} из коллекции ${product.driverName} в стилистике фирменного магазина спортивной одежды.`;
+    return `${productTypeLabelRu[product.type]} из коллекции ${product.driverName} в гоночном стиле с чистой спортивной подачей.`;
   }
 
   if (product.teamName) {
-    return `${productTypeLabelRu[product.type]} из командной коллекции ${product.teamName} с чистой спортивной подачей.`;
+    return `${productTypeLabelRu[product.type]} из коллекции ${product.teamName} с motorsport-inspired акцентами и спокойной streetwear-подачей.`;
   }
 
   if (product.legendName) {
-    return `${productTypeLabelRu[product.type]} из архивной коллекции ${product.legendName} в выверенном стиле.`;
+    return `${productTypeLabelRu[product.type]} из архивной коллекции ${product.legendName} в выверенном стиле автоспорта.`;
   }
 
-  return `${productTypeLabelRu[product.type]} из раздела «${categoryLabelRu[product.category]}» с акцентом на чистый спортивный дизайн.`;
+  return `${productTypeLabelRu[product.type]} из раздела «${categoryLabelRu[product.category]}» с акцентом на чистый спортивный дизайн и повседневную посадку.`;
 }
 
 export function getProductDescription(
@@ -194,28 +216,28 @@ export function getProductDescription(
   }
 
   if (product.driverName) {
-    return `${productTypeLabelRu[product.type]} из коллекции ${product.driverName}. Модель выполнена в эстетике фирменного магазина командной одежды: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой Formula 1.`;
+    return `${productTypeLabelRu[product.type]} из коллекции ${product.driverName}. Модель выполнена в гоночной эстетике: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой автоспорта.`;
   }
 
   if (product.teamName) {
-    return `${productTypeLabelRu[product.type]} из коллекции ${product.teamName}. Это вещь в духе официального магазина спортивной одежды: минималистичная подача, качественная структура и уверенный командный характер без перегруза.`;
+    return `${productTypeLabelRu[product.type]} из коллекции ${product.teamName}. Это вещь в духе премиального спортивного ритейла: минималистичная подача, качественная структура и уверенный командный характер без перегруза.`;
   }
 
   if (product.legendName) {
-    return `${productTypeLabelRu[product.type]} из коллекции легенд ${product.legendName}. В основе спокойный, выверенный подход: архивное вдохновение Formula 1, аккуратная типографика и современная спортивная подача.`;
+    return `${productTypeLabelRu[product.type]} из коллекции легенд ${product.legendName}. В основе спокойный, выверенный подход: архивное вдохновение автоспортом, аккуратная типографика и современная спортивная подача.`;
   }
 
-  return `${productTypeLabelRu[product.type]} из раздела «${categoryLabelRu[product.category]}». Базовая модель с чистой коммерческой подачей, вдохновлённой официальными магазинами спортивной одежды.`;
+  return `${productTypeLabelRu[product.type]} из раздела «${categoryLabelRu[product.category]}». Базовая модель с чистой коммерческой подачей, вдохновлённой современным спортивным ритейлом.`;
 }
 
 export function getTeamDescription(team: Team) {
-  return `Коллекция ${team.name} с чистой спортивной подачей, аккуратными цветовыми акцентами и ощущением официального магазина командной одежды.`;
+  return `Коллекция ${team.name} с чистой спортивной подачей, аккуратными цветовыми акцентами и эстетикой гоночного streetwear.`;
 }
 
 export function getDriverDescription(driver: Driver) {
-  return `Коллекция ${driver.name} в стиле современной спортивной одежды, вдохновлённая командой ${driver.teamName} и сезоном Formula 1 2026.`;
+  return `Коллекция ${driver.name} в стиле современной спортивной одежды, вдохновлённая командой ${driver.teamName} и гоночным сезоном 2026.`;
 }
 
 export function getLegendDescription(legend: Legend) {
-  return `Архивная капсула ${legend.name} с чистой спортивной подачей, вдохновлённой наследием Formula 1 и современным спортивным ритейлом.`;
+  return `Архивная капсула ${legend.name} с чистой спортивной подачей, вдохновлённой наследием автоспорта и современным спортивным ритейлом.`;
 }

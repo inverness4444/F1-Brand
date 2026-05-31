@@ -11,26 +11,26 @@ const tiles = [
   {
     title: "Командная коллекция",
     href: "/teams",
-    description: "Коллекции команд Formula 1 в стиле официального магазина спортивной одежды.",
+    description: "Коллекции команд в гоночном стиле: футболки, худи, куртки и аксессуары для фанатов автоспорта.",
     source: "teamwearProducts" as const,
-    imageSrc: "/category-team-collection-2.jpg",
-    imageClassName: "h-full w-full object-cover object-[center_42%]",
+    imageSrc: undefined,
+    imageClassName: "h-full w-full object-cover object-center",
   },
   {
     title: "Коллекции пилотов",
     href: "/pilots",
-    description: "Одежда, вдохновлённая составом пилотов Formula 1 сезона 2026.",
+    description: "Motorsport-inspired apparel с пилотской эстетикой: streetwear, футболки и спортивные силуэты.",
     source: "driverCollectionProducts" as const,
-    imageSrc: "/category-team-collection.jpg",
-    imageClassName: "h-full w-full object-cover object-[center_56%]",
+    imageSrc: undefined,
+    imageClassName: "h-full w-full object-cover object-center",
   },
   {
     title: "Аксессуары",
     href: "/accessories",
-    description: "Кепки, дорожные аксессуары и аккуратные функциональные дополнения.",
-    source: "saleProducts" as const,
-    imageSrc: "/category-accessories.jpg",
-    imageClassName: "h-full w-full object-cover object-[center_38%]",
+    description: "Кепки, шарфы, постеры, брелки и подарки в стиле автоспорта для повседневной носки.",
+    source: "essentialsProducts" as const,
+    imageSrc: undefined,
+    imageClassName: "h-full w-full object-cover object-center",
   },
 ];
 
@@ -42,7 +42,7 @@ export function CategoryTiles() {
       <section className="container-shell mt-14">
         <div className="mb-6">
           <p className="section-kicker">Категории</p>
-          <h2 className="mt-3 font-[var(--font-heading)] text-4xl font-semibold tracking-[-0.06em] text-[#111111]">
+          <h2 className="mt-3 font-[var(--font-heading)] text-4xl font-semibold tracking-normal text-[#111111]">
             Основные разделы магазина в подаче современного спортивного ритейла.
           </h2>
         </div>
@@ -55,7 +55,7 @@ export function CategoryTiles() {
     <section className="container-shell mt-14">
       <div className="mb-6">
         <p className="section-kicker">Категории</p>
-        <h2 className="mt-3 font-[var(--font-heading)] text-4xl font-semibold tracking-[-0.06em] text-[#111111]">
+        <h2 className="mt-3 font-[var(--font-heading)] text-4xl font-semibold tracking-normal text-[#111111]">
           Основные разделы магазина в подаче современного спортивного ритейла.
         </h2>
       </div>
@@ -78,7 +78,7 @@ export function CategoryTiles() {
                   <ProductImage
                     src={imageSrc}
                     fallbackSrc={product ? imageByType[product.type] : undefined}
-                    alt={product?.name ?? tile.title}
+                    alt={product ? `${product.name} — ${tile.title}` : tile.title}
                     fill
                     sizes="(min-width: 768px) 33vw, 100vw"
                     className={imageClassName}
@@ -86,7 +86,7 @@ export function CategoryTiles() {
                 ) : null}
               </div>
               <div className="p-5">
-                <h3 className="font-[var(--font-heading)] text-2xl font-semibold tracking-[-0.05em] text-[#111111]">
+                <h3 className="font-[var(--font-heading)] text-2xl font-semibold tracking-normal text-[#111111]">
                   {tile.title}
                 </h3>
                 <p className="mt-2 text-sm leading-7 text-[#5f615f]">{tile.description}</p>

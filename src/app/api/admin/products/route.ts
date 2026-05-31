@@ -62,7 +62,7 @@ export async function GET() {
 
   const [products, collections] = await Promise.all([
     readAdminCatalogProductsFromDb(),
-    readCatalogCollectionsFromDb(),
+    readCatalogCollectionsFromDb({ includeHidden: true }),
   ]);
 
   return NextResponse.json(
@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
       gallery: product.gallery.length > 0 ? product.gallery : [product.image],
     };
     const savedProduct = await upsertProductFromCatalogPayload(productWithId);
-    const collections = await readCatalogCollectionsFromDb();
+    const collections = await readCatalogCollectionsFromDb({ includeHidden: true });
 
     revalidateCatalogPaths(savedProduct.slug);
 
@@ -177,7 +177,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     const deletedProduct = await deleteProductFromDb(productId);
-    const collections = await readCatalogCollectionsFromDb();
+    const collections = await readCatalogCollectionsFromDb({ includeHidden: true });
 
     revalidateCatalogPaths(deletedProduct?.slug);
 

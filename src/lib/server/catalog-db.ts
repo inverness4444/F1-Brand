@@ -69,6 +69,10 @@ type DbCollection = Prisma.CollectionGetPayload<{
   };
 }>;
 
+type CollectionReadOptions = {
+  includeHidden?: boolean;
+};
+
 const validCategories = new Set<CatalogCategory>([
   "Pilots",
   "Teams",
@@ -160,15 +164,19 @@ function asSizes(values: string[]) {
   return sizes.length > 0 ? unique(sizes) : (["One Size"] as ProductSize[]);
 }
 
-export function productFromDb(product: DbProduct): Product {
+export function productFromDb(product: DbProduct, options: CollectionReadOptions = {}): Product {
   const images = product.images.map((image) => image.url).filter(Boolean);
   const variantColors = asColors(product.variants.map((variant) => variant.color.value));
   const colors = product.designColors.length > 0 ? asColors(product.designColors) : variantColors;
   const colorways = asOptionalColors(product.colorways);
   const sizes = asSizes(product.variants.map((variant) => variant.size.value));
+  const primaryCollection = options.includeHidden || product.collection?.visible ? product.collection : null;
+  const productCollections = options.includeHidden
+    ? product.collections
+    : product.collections.filter((item) => item.collection.visible);
   const collectionTags = unique([
-    product.collection?.name,
-    ...product.collections.map((item) => item.collection.name),
+    primaryCollection?.name,
+    ...productCollections.map((item) => item.collection.name),
     product.badge === "Sale" ? "Sale" : null,
   ].filter((value): value is string => Boolean(value)));
   const image = images[0] ?? "/mockups/tshirt.svg";
@@ -178,7 +186,7 @@ export function productFromDb(product: DbProduct): Product {
     slug: product.slug,
     name: product.name,
     category: asCategory(product.category?.name),
-    collection: product.collection?.name ?? "",
+    collection: primaryCollection?.name ?? "",
     collectionTags,
     driverName: product.driverName,
     driverSlug: product.driverSlug,
@@ -222,6 +230,7 @@ export function collectionFromDb(collection: DbCollection): CatalogCollection {
     id: collection.id,
     slug: collection.slug,
     name: collection.name,
+    visible: collection.visible,
     productIds: collection.productRefs.map((ref) => ref.productId),
     createdAt: collection.createdAt.toISOString(),
   };
@@ -248,7 +257,7 @@ export async function readCatalogProductsFromDb() {
       ],
     });
 
-    return products.map(productFromDb);
+    return products.map((product) => productFromDb(product));
   } catch (error) {
     if (!shouldFallbackToFileCatalog()) {
       throw error;
@@ -276,16 +285,40 @@ export async function readAdminCatalogProductsFromDb() {
     ],
   });
 
-  return products.map(productFromDb);
+  return products.map((product) => productFromDb(product, { includeHidden: true }));
 }
 
-export async function readCatalogCollectionsFromDb() {
+function filterVisibleCollections(collections: CatalogCollection[], options: CollectionReadOptions = {}) {
+  return options.includeHidden ? collections : collections.filter((collection) => collection.visible);
+}
+
+function mergeCollectionsByName(collections: CatalogCollection[]) {
+  return collections.reduce<CatalogCollection[]>((result, collection) => {
+    const existing = result.find((item) => item.name === collection.name);
+
+    if (!existing) {
+      result.push(collection);
+      return result;
+    }
+
+    existing.productIds = unique([...existing.productIds, ...collection.productIds]);
+    existing.visible = existing.visible || collection.visible;
+    return result;
+  }, []);
+}
+
+export async function readCatalogCollectionsFromDb(options: CollectionReadOptions = {}) {
   if (!isDatabaseConfigured()) {
-    return readCatalogCollectionsFromFile();
+    return mergeCollectionsByName(filterVisibleCollections(await readCatalogCollectionsFromFile(), options));
   }
 
   try {
     const collections = await prisma.collection.findMany({
+      where: options.includeHidden
+        ? undefined
+        : {
+            visible: true,
+          },
       include: {
         productRefs: true,
       },
@@ -299,14 +332,14 @@ export async function readCatalogCollectionsFromDb() {
       ],
     });
 
-    return collections.map(collectionFromDb);
+    return mergeCollectionsByName(collections.map(collectionFromDb));
   } catch (error) {
     if (!shouldFallbackToFileCatalog()) {
       throw error;
     }
 
     console.error("Failed to read collections from database. Falling back to file catalog.");
-    return readCatalogCollectionsFromFile();
+    return mergeCollectionsByName(filterVisibleCollections(await readCatalogCollectionsFromFile(), options));
   }
 }
 
@@ -319,13 +352,29 @@ async function ensureCategory(category: CatalogCategory) {
   });
 }
 
-async function ensureCollection(name: string) {
+async function ensureCollection(name: string, visible?: boolean) {
   const slug = slugify(name || "collection");
-  return prisma.collection.upsert({
+  const collectionName = name || "Collection";
+  const visibilityUpdate = typeof visible === "boolean" ? { visible } : {};
+
+  const collection = await prisma.collection.upsert({
     where: { slug },
-    create: { id: slug, slug, name: name || "Collection" },
-    update: { name: name || "Collection" },
+    create: { id: slug, slug, name: collectionName, visible: visible ?? true },
+    update: { name: collectionName, ...visibilityUpdate },
   });
+
+  if (typeof visible === "boolean") {
+    await prisma.collection.updateMany({
+      where: {
+        name: collectionName,
+      },
+      data: {
+        visible,
+      },
+    });
+  }
+
+  return collection;
 }
 
 async function ensureSize(value: ProductSize) {
@@ -587,7 +636,7 @@ export async function replaceCatalogInDb(products: Product[], collections: Catal
   const currentIds = new Set(products.map((product) => product.id));
 
   for (const collection of collections) {
-    await ensureCollection(collection.name);
+    await ensureCollection(collection.name, collection.visible);
   }
 
   for (const product of products) {

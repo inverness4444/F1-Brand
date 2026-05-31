@@ -1,29 +1,56 @@
 import type { Metadata } from "next";
 
 import { ShopShell } from "@/components/shop-shell";
+import { StructuredData } from "@/components/structured-data";
 import { readCatalogProductsFromDb } from "@/lib/server/catalog-db";
-import { buildCollectionDescription, createPageMetadata } from "@/lib/seo";
+import {
+  breadcrumbJsonLd,
+  buildCollectionDescription,
+  createPageMetadata,
+  hasNonCanonicalSearchParams,
+  webPageJsonLd,
+} from "@/lib/seo";
 
 type LegendsPageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
-export async function generateMetadata(): Promise<Metadata> {
-  const products = await readCatalogProductsFromDb();
+export async function generateMetadata({ searchParams }: LegendsPageProps): Promise<Metadata> {
+  const [products, params] = await Promise.all([readCatalogProductsFromDb(), searchParams]);
   const legendProducts = products.filter((product) => Boolean(product.legendSlug));
+  const description = buildCollectionDescription({
+    title: "Коллекции легенд",
+    products: legendProducts,
+    fallback:
+      "Архивные коллекции Apex Store: одежда и мерч в стиле автоспорта, футболки, лонгсливы и аксессуары с современной подачей.",
+  });
 
   return createPageMetadata({
-    title: "Легенды",
+    title: "Архивные коллекции автоспорта",
     path: "/legends",
-    description: buildCollectionDescription({
-      title: "Коллекции легенд",
-      products: legendProducts,
-      fallback:
-        "Коллекции легенд Apex Store: архивные капсулы и товары, связанные с наследием Formula 1.",
-    }),
+    description,
+    index: legendProducts.length > 0 && !hasNonCanonicalSearchParams(params),
   });
 }
 
 export default async function LegendsPage({ searchParams }: LegendsPageProps) {
-  return <ShopShell section="legends" initialParams={await searchParams} />;
+  return (
+    <>
+      <StructuredData
+        data={[
+          breadcrumbJsonLd([
+            { name: "Главная", path: "/" },
+            { name: "Легенды", path: "/legends" },
+          ]),
+          webPageJsonLd({
+            name: "Архивные коллекции автоспорта",
+            description:
+              "Архивные капсулы, футболки и аксессуары в гоночном стиле для фанатов истории автоспорта.",
+            path: "/legends",
+          }),
+        ]}
+      />
+      <ShopShell section="legends" initialParams={await searchParams} />
+    </>
+  );
 }

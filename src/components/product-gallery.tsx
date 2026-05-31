@@ -8,6 +8,7 @@ import type { Product } from "@/lib/types";
 import { imageByType } from "@/lib/data/products";
 import { uniqueImageSources } from "@/lib/image-utils";
 import { cn } from "@/lib/utils";
+import { getProductCategoryBreadcrumb, getProductDisplayName } from "@/lib/storefront-text";
 
 export function ProductGallery({ product }: { product: Product }) {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -17,9 +18,9 @@ export function ProductGallery({ product }: { product: Product }) {
     return uniqueImageSources(images);
   }, [product.gallery, product.image]);
   const activeImage = gallery[activeIndex] ?? gallery[0];
-  const viewedCount = Math.max(4, Math.round(product.popularity / 10));
   const isGiftCertificate = product.productType === "gift_certificate";
   const fallbackImage = imageByType[product.type];
+  const imageAlt = `${getProductDisplayName(product)} — ${getProductCategoryBreadcrumb(product).label}`;
 
   const setActiveImage = (nextIndex: number) => {
     if (gallery.length === 0) {
@@ -77,7 +78,7 @@ export function ProductGallery({ product }: { product: Product }) {
               <ProductImage
                 src={image}
                 fallbackSrc={fallbackImage}
-                alt={product.name}
+                alt={imageAlt}
                 fill
                 sizes="90px"
                 style={thumbnailImageStyle}
@@ -119,7 +120,7 @@ export function ProductGallery({ product }: { product: Product }) {
                 <ProductImage
                   src={image}
                   fallbackSrc={fallbackImage}
-                  alt={product.name}
+                  alt={imageAlt}
                   fill
                   sizes="112px"
                   style={thumbnailImageStyle}
@@ -144,7 +145,7 @@ export function ProductGallery({ product }: { product: Product }) {
       <div className="order-1">
         <div className="relative overflow-hidden rounded-[1.8rem] bg-white">
           <div className="pointer-events-none absolute left-4 top-4 z-10 inline-flex max-w-[calc(100%-2rem)] rounded-full bg-white/96 px-4 py-2 text-[0.64rem] font-semibold uppercase tracking-[0.14em] text-[#111111] shadow-[0_6px_18px_rgba(17,17,17,0.08)] backdrop-blur-sm sm:left-5 sm:top-5 sm:px-5 sm:text-[0.72rem]">
-            Popular {viewedCount} viewed in last 12 hrs
+            Motorsport-inspired
           </div>
 
           <div
@@ -153,7 +154,7 @@ export function ProductGallery({ product }: { product: Product }) {
             <ProductImage
               src={activeImage}
               fallbackSrc={fallbackImage}
-              alt={product.name}
+              alt={imageAlt}
               fill
               priority
               sizes="(min-width: 1536px) calc((100vw - 620px) * 0.62), (min-width: 1280px) calc(100vw - 610px), 100vw"

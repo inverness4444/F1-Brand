@@ -75,7 +75,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     const deletedCollection = await deleteCollectionFromDb(collectionId);
-    const collections = await readCatalogCollectionsFromDb();
+    const collections = await readCatalogCollectionsFromDb({ includeHidden: true });
 
     revalidateCatalogPaths(deletedCollection?.slug);
 

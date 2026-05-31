@@ -610,6 +610,7 @@ export const catalogCollectionSchema = z.object({
   id: z.string().transform((value) => sanitizeIdentifier(value, "")),
   slug: z.string().transform((value) => sanitizeIdentifier(value, "")),
   name: requiredTextSchema(SECURITY_LIMITS.catalogMetadataMaxLength, "Укажите название коллекции."),
+  visible: z.boolean().optional().default(true),
   productIds: z.array(z.string().transform((value) => sanitizeIdentifier(value, ""))).max(500).default([]),
   createdAt: isoDateSchema,
 });

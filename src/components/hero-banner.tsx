@@ -9,7 +9,7 @@ export function HeroBanner() {
       <div className="relative overflow-hidden bg-[#111111]">
         <Image
           src="/hero-racing-collection-rotated.jpg"
-          alt="Ночной заезд Formula 1"
+          alt="Одежда и мерч в гоночном стиле Apex Store"
           fill
           priority
           quality={82}
@@ -23,10 +23,10 @@ export function HeroBanner() {
               Apex Store
             </p>
             <h1 className="mt-4 font-[var(--font-heading)] text-[clamp(2.35rem,11vw,6.4rem)] font-semibold leading-[0.9] tracking-normal">
-              Racing DNA
+              Одежда в гоночном стиле
             </h1>
             <p className="mt-5 max-w-xl text-[0.95rem] leading-7 text-white/82 sm:text-base sm:leading-8">
-              Подборка одежды, командных коллекций, капсул пилотов и аксессуаров в одной витрине.
+              Motorsport-inspired streetwear, футболки, худи, аксессуары и подарки для фанатов автоспорта в одной витрине.
             </p>
             <div className="mt-8">
               <Link

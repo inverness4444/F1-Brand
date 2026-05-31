@@ -7,7 +7,6 @@ import type { Product } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { ProductCard } from "@/components/product-card";
 
-const CAROUSEL_AUTO_SCROLL_SPEED = 140;
 const CAROUSEL_COPY_INDICES = [0, 1, 2] as const;
 const CAROUSEL_MANUAL_SCROLL_DURATION = 520;
 
@@ -28,7 +27,6 @@ export function ProductGrid({
 }) {
   const railRef = useRef<HTMLDivElement>(null);
   const firstLoopRef = useRef<HTMLDivElement>(null);
-  const manualScrollUntilRef = useRef(0);
 
   const getLoopWidth = useCallback(() => firstLoopRef.current?.scrollWidth ?? 0, []);
 
@@ -77,7 +75,6 @@ export function ProductGrid({
     }
 
     normalizeCarouselOffset(node);
-    manualScrollUntilRef.current = performance.now() + CAROUSEL_MANUAL_SCROLL_DURATION;
     node.scrollBy({
       left: direction * scrollAmount,
       behavior: "smooth",
@@ -96,55 +93,20 @@ export function ProductGrid({
       return;
     }
 
-    let frameId = 0;
-    let lastTimestamp: number | null = null;
-    let isCancelled = false;
-
-    const startCarousel = () => {
+    const frameId = window.requestAnimationFrame(() => {
       const loopWidth = getLoopWidth();
 
-      if (isCancelled) {
-        return;
-      }
-
       if (!loopWidth) {
-        frameId = window.requestAnimationFrame(startCarousel);
         return;
       }
 
-      if (node.scrollLeft < loopWidth || node.scrollLeft >= loopWidth * 2) {
-        node.scrollLeft = loopWidth;
-      }
-
-      const animate = (timestamp: number) => {
-        if (lastTimestamp === null) {
-          lastTimestamp = timestamp;
-        }
-
-        const elapsed = Math.min(timestamp - lastTimestamp, 48);
-        lastTimestamp = timestamp;
-
-        if (document.visibilityState === "visible") {
-          if (timestamp >= manualScrollUntilRef.current) {
-            node.scrollLeft += (CAROUSEL_AUTO_SCROLL_SPEED * elapsed) / 1000;
-          }
-
-          normalizeCarouselOffset(node);
-        }
-
-        frameId = window.requestAnimationFrame(animate);
-      };
-
-      frameId = window.requestAnimationFrame(animate);
-    };
-
-    frameId = window.requestAnimationFrame(startCarousel);
+      node.scrollLeft = loopWidth;
+    });
 
     return () => {
-      isCancelled = true;
       window.cancelAnimationFrame(frameId);
     };
-  }, [getLoopWidth, layout, normalizeCarouselOffset, products.length]);
+  }, [getLoopWidth, layout, products.length]);
 
   const layoutClassName =
     variant === "showcase"
@@ -187,6 +149,7 @@ export function ProductGrid({
         <div
           ref={railRef}
           data-product-carousel-rail
+          onScroll={(event) => normalizeCarouselOffset(event.currentTarget)}
           className="flex gap-4 overflow-x-auto pb-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
         >
           <div className="flex w-max">

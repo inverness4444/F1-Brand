@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { RotateCcw, Ruler, ShieldCheck, Star, Truck } from "lucide-react";
+import { RotateCcw, Ruler, ShieldCheck, Truck } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import { productTypeLabels } from "@/lib/catalog-ui";
@@ -42,7 +42,6 @@ export function ProductInfo({ product }: { product: Product }) {
   const [selectedSize, setSelectedSize] = useState<ProductSize>(product.sizes[0]);
   const [selectedColor, setSelectedColor] = useState<ProductColor>(colorways[0] ?? fallbackColor);
   const guide = useMemo(() => sizeGuideRows(product), [product]);
-  const reviewCount = Math.max(4, Math.round(product.popularity / 18));
   const isGiftCertificate = product.productType === "gift_certificate";
   const isOutOfStock = product.badge === "OutOfStock";
   const isPreorder = product.badge === "Preorder";
@@ -68,7 +67,7 @@ export function ProductInfo({ product }: { product: Product }) {
   return (
     <aside className="min-w-0 h-fit lg:sticky lg:top-28">
       <p className="section-kicker">{getCollectionLabel(product.collection)}</p>
-      <h1 className="mt-4 max-w-full break-words font-[var(--font-heading)] text-[clamp(2rem,9vw,3.4rem)] font-semibold leading-[0.96] tracking-[-0.06em] text-[#111111] sm:max-w-[12ch]">
+      <h1 className="mt-4 max-w-full break-words font-[var(--font-heading)] text-[clamp(2rem,9vw,3.4rem)] font-semibold leading-[0.96] tracking-normal text-[#111111] sm:max-w-[12ch]">
         {getProductDisplayName(product)}
       </h1>
       <div className="mt-4 flex flex-wrap gap-2">
@@ -79,16 +78,12 @@ export function ProductInfo({ product }: { product: Product }) {
           </div>
         ) : null}
       </div>
-      <p className="mt-4 text-[1.7rem] font-semibold tracking-[-0.04em] text-[#111111] sm:text-[2.05rem]">{formatPrice(product.price)}</p>
+      <p className="mt-4 text-[1.7rem] font-semibold tracking-normal text-[#111111] sm:text-[2.05rem]">{formatPrice(product.price)}</p>
 
-      <div className="mt-4 flex items-center gap-2 text-sm text-[#111111]">
-        <div className="flex items-center gap-0.5">
-          {Array.from({ length: 5 }, (_, index) => (
-            <Star key={index} className="size-4 fill-[#111111] text-[#111111]" />
-          ))}
-        </div>
-        <span className="font-semibold">5</span>
-        <span className="text-[#7b7a75]">({reviewCount})</span>
+      <div className="mt-4 inline-flex max-w-full flex-wrap items-center gap-2 rounded-full border border-[var(--line)] bg-white px-3 py-2 text-sm text-[#111111]">
+        <span className="font-semibold">Motorsport-inspired</span>
+        <span className="text-[#b5b0a8]">/</span>
+        <span className="text-[#7b7a75]">streetwear для фанатов гонок</span>
       </div>
 
       <p className="mt-5 max-w-full text-[0.95rem] leading-7 text-[#5f615f] sm:max-w-[44ch] sm:text-[0.98rem] sm:leading-8">
@@ -256,7 +251,7 @@ export function ProductInfo({ product }: { product: Product }) {
             <p>{productTypeLabels[product.type]}</p>
             <p>{getCollectionLabel(product.collection)}</p>
             <p>Чистая спортивная подача</p>
-            <p>Коммерческая витрина в стиле официального магазина</p>
+            <p>Коммерческая подача в стиле премиального спортивного ритейла</p>
           </div>
         </details>
         <details id="size-guide" className="border-b border-[var(--line)] py-4" open={isGiftCertificate ? false : undefined}>

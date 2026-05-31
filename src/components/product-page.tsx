@@ -3,7 +3,7 @@
 import Link from "next/link";
 
 import type { Product } from "@/lib/types";
-import { getProductDisplayName } from "@/lib/storefront-text";
+import { getProductCategoryBreadcrumb, getProductDisplayName } from "@/lib/storefront-text";
 import { ProductGallery } from "@/components/product-gallery";
 import { ProductGrid } from "@/components/product-grid";
 import { ProductInfo } from "@/components/product-info";
@@ -16,19 +16,20 @@ export function ProductPage({
   recommendedProducts: Product[];
 }) {
   const isGiftCertificate = product.productType === "gift_certificate";
+  const categoryBreadcrumb = getProductCategoryBreadcrumb(product);
   const completeTheLook = recommendedProducts.slice(0, 4);
   const alsoLike = recommendedProducts.slice(4, 8).length > 0 ? recommendedProducts.slice(4, 8) : recommendedProducts.slice(0, 4);
 
   return (
     <div className="pb-14">
       <section className="container-shell pt-6">
-        <nav className="mb-5 flex min-w-0 flex-wrap items-center gap-2 text-sm text-[#7b7a75]">
+        <nav className="mb-5 flex min-w-0 flex-wrap items-center gap-2 text-sm text-[#7b7a75]" aria-label="Breadcrumb">
           <Link href="/" className="transition hover:text-[#111111]">
             Главная
           </Link>
           <span>/</span>
-          <Link href="/shop" className="transition hover:text-[#111111]">
-            Каталог
+          <Link href={categoryBreadcrumb.href} className="transition hover:text-[#111111]">
+            {categoryBreadcrumb.label}
           </Link>
           <span>/</span>
           <span className="min-w-0 break-words text-[#111111]">{getProductDisplayName(product)}</span>

@@ -12,7 +12,7 @@ export function Footer() {
           <div className="min-w-0">
             <BrandLogo markClassName="brightness-0 invert" titleClassName="text-white" />
             <p className="mt-5 max-w-sm text-sm leading-7 text-white/60">
-              Магазин одежды в эстетике Formula 1
+              Магазин одежды и мерча в гоночном стиле
             </p>
           </div>
 

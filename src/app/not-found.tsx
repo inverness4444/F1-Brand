@@ -1,6 +1,10 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 
 import { buttonClassName } from "@/components/ui/button";
+import { createPrivateMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = createPrivateMetadata("Страница не найдена");
 
 export default function NotFound() {
   return (

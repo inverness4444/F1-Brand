@@ -4,7 +4,9 @@ import { CollectionHero } from "@/components/collection-hero";
 import { EmptyCatalogState } from "@/components/empty-catalog-state";
 import { NewsletterSection } from "@/components/newsletter-section";
 import { ProductGrid } from "@/components/product-grid";
+import { StructuredData } from "@/components/structured-data";
 import { useCatalogProducts } from "@/hooks/use-catalog-products";
+import { breadcrumbJsonLd, faqJsonLd, webPageJsonLd } from "@/lib/seo";
 
 const faqItems = [
   {
@@ -45,6 +47,21 @@ export default function GiftCardsPage() {
 
   return (
     <div className="pb-14">
+      <StructuredData
+        data={[
+          breadcrumbJsonLd([
+            { name: "Главная", path: "/" },
+            { name: "Подарочные сертификаты", path: "/gift-cards" },
+          ]),
+          webPageJsonLd({
+            name: "Подарочные сертификаты Apex Store",
+            description:
+              "Цифровые подарочные сертификаты для покупки одежды, аксессуаров и мерча в гоночном стиле.",
+            path: "/gift-cards",
+          }),
+          faqJsonLd(faqItems),
+        ]}
+      />
       <CollectionHero
         eyebrow="Подарочные сертификаты"
         title="Подарите выбор"
