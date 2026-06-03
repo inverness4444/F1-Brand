@@ -55,10 +55,14 @@ function ProductCardComponent({
       : "group-hover:scale-[1.03] group-hover:opacity-100";
 
     return (
-      <article className="group flex h-full min-w-0 flex-col">
+      <article className="group flex h-full min-w-0 flex-col" data-product-card="catalog">
         <Link href={productHref} className="flex h-full min-w-0 flex-col gap-2">
           <div className="relative overflow-hidden rounded-[0.95rem] bg-white">
-            <div className="relative aspect-square overflow-hidden rounded-[0.95rem] bg-white" style={{ aspectRatio: "1 / 1" }}>
+            <div
+              className="relative aspect-square overflow-hidden rounded-[0.95rem] bg-white"
+              data-product-card-image-frame
+              style={{ aspectRatio: "1 / 1" }}
+            >
               <ProductImage
                 src={product.image}
                 fallbackSrc={fallbackImage}
@@ -67,6 +71,7 @@ function ProductCardComponent({
                 priority={priority}
                 sizes={catalogImageSizes}
                 style={catalogImageStyle}
+                data-product-card-image
                 className={`${imageBaseClassName} ${imageFitClassName} ${imagePlacementClassName} ${primaryHoverClassName}`}
               />
               {hasAlternateImage ? (
@@ -77,17 +82,24 @@ function ProductCardComponent({
                   fill
                   sizes={catalogImageSizes}
                   style={catalogImageStyle}
+                  data-product-card-image
                   className={`${imageBaseClassName} ${imageFitClassName} ${imagePlacementClassName} opacity-0 ${secondaryHoverClassName}`}
                 />
               ) : null}
               <div className="pointer-events-none absolute bottom-4 left-4 z-10">
-                <ProductBadgeTag badge={product.badge} className="border-[#ebe6de] bg-white text-[#111111]" />
+                <ProductBadgeTag
+                  badge={product.badge}
+                  className="mobile-product-badge border-[#ebe6de] bg-white text-[#111111]"
+                />
               </div>
             </div>
           </div>
 
-          <div className="space-y-1 px-0.5">
-            <p className="line-clamp-2 break-words text-[0.97rem] font-semibold leading-[1.4] text-[#111111]">
+          <div className="space-y-1 px-0.5" data-product-card-copy>
+            <p
+              className="line-clamp-2 break-words text-[0.97rem] font-semibold leading-[1.4] text-[#111111]"
+              data-product-card-title
+            >
               {getProductDisplayName(product)}
             </p>
             {isGiftCertificate ? (
@@ -95,7 +107,9 @@ function ProductCardComponent({
             ) : product.shortDescription ? (
               <p className="line-clamp-1 text-[0.86rem] text-[#6a6a66]">{product.shortDescription}</p>
             ) : null}
-            <p className="text-[0.96rem] font-medium text-[#111111]">{formatPrice(product.price)}</p>
+            <p className="text-[0.96rem] font-medium text-[#111111]" data-product-card-price>
+              {formatPrice(product.price)}
+            </p>
           </div>
         </Link>
       </article>
@@ -120,14 +134,18 @@ function ProductCardComponent({
     : "group-hover:scale-[1.04] group-hover:opacity-100";
 
   return (
-    <article className="group flex h-full min-w-0 flex-col">
+    <article className="group flex h-full min-w-0 flex-col" data-product-card="showcase">
       <Link href={productHref} className="flex h-full min-w-0 flex-col">
         <div className="relative overflow-hidden rounded-[1.2rem] bg-white">
-          <div className="relative aspect-square overflow-hidden bg-white" style={{ aspectRatio: "1 / 1" }}>
+          <div
+            className="relative aspect-square overflow-hidden bg-white"
+            data-product-card-image-frame
+            style={{ aspectRatio: "1 / 1" }}
+          >
             <div className="absolute left-4 top-4 z-10 flex max-w-[calc(100%-2rem)] flex-wrap gap-2">
-              <ProductBadgeTag badge={product.badge} />
+              <ProductBadgeTag badge={product.badge} className="mobile-product-badge" />
               {isGiftCertificate ? (
-                <span className="rounded-full border border-[#f0dcc9] bg-[#fff6ef] px-3 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-[#7b2220]">
+                <span className="mobile-product-badge rounded-full border border-[#f0dcc9] bg-[#fff6ef] px-3 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-[#7b2220]">
                   Digital Gift Card
                 </span>
               ) : null}
@@ -140,6 +158,7 @@ function ProductCardComponent({
               priority={priority}
               sizes={showcaseImageSizes}
               style={showcaseImageStyle}
+              data-product-card-image
               className={`${imageBaseClassName} ${imageFitClassName} ${imagePlacementClassName} ${primaryHoverClassName}`}
             />
             {hasAlternateImage ? (
@@ -150,19 +169,25 @@ function ProductCardComponent({
                 fill
                 sizes={showcaseImageSizes}
                 style={showcaseImageStyle}
+                data-product-card-image
                 className={`${imageBaseClassName} ${imageFitClassName} ${imagePlacementClassName} opacity-0 ${secondaryHoverClassName}`}
               />
             ) : null}
           </div>
         </div>
 
-        <div className="relative z-10 mt-3 flex min-h-[6.2rem] flex-col bg-white pt-0">
+        <div className="relative z-10 mt-3 flex min-h-[6.2rem] flex-col bg-white pt-0" data-product-card-copy>
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <span className="line-clamp-2 min-h-[2.85rem] break-words text-[0.95rem] font-semibold leading-[1.42] tracking-normal text-[#111111] sm:text-[1.02rem]">
+              <span
+                className="line-clamp-2 min-h-[2.85rem] break-words text-[0.95rem] font-semibold leading-[1.42] tracking-normal text-[#111111] sm:text-[1.02rem]"
+                data-product-card-title
+              >
                 {getProductDisplayName(product)}
               </span>
-              <p className="mt-1 text-[0.95rem] font-medium text-[#111111] sm:text-[1rem]">{formatPrice(product.price)}</p>
+              <p className="mt-1 text-[0.95rem] font-medium text-[#111111] sm:text-[1rem]" data-product-card-price>
+                {formatPrice(product.price)}
+              </p>
             </div>
           </div>
         </div>

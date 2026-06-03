@@ -13,6 +13,11 @@ import {
   toAuthUser,
 } from "@/lib/server/auth";
 import { apiError } from "@/lib/server/api";
+import {
+  clearGuestCartCookie,
+  getGuestCartTokenFromRequest,
+  mergeGuestCartIntoUserCart,
+} from "@/lib/server/cart";
 import { prisma } from "@/lib/prisma";
 import { assertProtectedMutation, enforceRateLimit } from "@/lib/server/request-security";
 
@@ -71,6 +76,8 @@ export async function POST(request: NextRequest) {
       update: {},
     });
 
+    await mergeGuestCartIntoUserCart(getGuestCartTokenFromRequest(request), user.id);
+
     const token = createSessionToken();
     const expiresAt = new Date(Date.now() + getSessionDurationMs(input.rememberMe));
     const session = await prisma.session.create({
@@ -87,6 +94,7 @@ export async function POST(request: NextRequest) {
     });
     attachSessionCookie(response, token, expiresAt);
     attachRoleCookie(response, user.role, expiresAt);
+    clearGuestCartCookie(response);
     return response;
   } catch (error) {
     return apiError(error, "Не удалось выполнить вход.");

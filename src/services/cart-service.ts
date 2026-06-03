@@ -1,5 +1,5 @@
 import type { CartSelection, OrderItem } from "@/lib/account-types";
-import { readStorage, storageKeys } from "@/lib/browser-storage";
+import { readStorage, removeStorage, storageKeys } from "@/lib/browser-storage";
 import { getProductDisplayName } from "@/lib/storefront-text";
 import { buildCsrfHeaders, SECURITY_LIMITS } from "@/lib/security-utils";
 import { cartSelectionSchema, persistedCartStateSchema } from "@/lib/validation-schemas";
@@ -28,8 +28,12 @@ export function readPersistedCart() {
   return snapshot?.state?.items ?? [];
 }
 
+export function removePersistedCart() {
+  removeStorage(CART_STORAGE_KEY);
+}
+
 export async function fetchServerCart() {
-  const response = await fetch("/api/account/cart", {
+  const response = await fetch("/api/cart", {
     cache: "no-store",
     credentials: "include",
   });
@@ -48,7 +52,7 @@ export async function fetchServerCart() {
 }
 
 export async function saveServerCart(items: CartSelection[]) {
-  const response = await fetch("/api/account/cart", {
+  const response = await fetch("/api/cart", {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -61,6 +65,19 @@ export async function saveServerCart(items: CartSelection[]) {
   if (!response.ok) {
     const payload = (await response.json().catch(() => null)) as { error?: string } | null;
     throw new Error(payload?.error ?? "Не удалось сохранить корзину.");
+  }
+}
+
+export async function clearServerCart() {
+  const response = await fetch("/api/cart", {
+    method: "DELETE",
+    headers: buildCsrfHeaders(),
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    const payload = (await response.json().catch(() => null)) as { error?: string } | null;
+    throw new Error(payload?.error ?? "Не удалось очистить корзину.");
   }
 }
 

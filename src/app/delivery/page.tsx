@@ -7,7 +7,7 @@ export const metadata: Metadata = createPageMetadata({
   title: "Доставка",
   path: "/delivery",
   description:
-    "Информация о производстве, доставке, бесплатной доставке от 4 000 ₽ и отслеживании заказов Apex Store.",
+    "Информация о производстве, доставке, бесплатной доставке от 4 000 ₽ и отслеживании заказов Velocity Club.",
 });
 
 const deliverySections = [

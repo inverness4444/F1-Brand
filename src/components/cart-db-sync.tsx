@@ -3,7 +3,13 @@
 import { useEffect, useRef } from "react";
 
 import type { CartSelection } from "@/lib/account-types";
-import { fetchServerCart, MAX_CART_ITEM_QUANTITY, saveServerCart } from "@/services/cart-service";
+import {
+  fetchServerCart,
+  MAX_CART_ITEM_QUANTITY,
+  readPersistedCart,
+  removePersistedCart,
+  saveServerCart,
+} from "@/services/cart-service";
 import { useAuthStore } from "@/store/auth-store";
 import { useCartStore } from "@/store/cart-store";
 
@@ -32,32 +38,60 @@ export function CartDbSync() {
   const items = useCartStore((state) => state.items);
   const hasCartHydrated = useCartStore((state) => state.hasHydrated);
   const setItems = useCartStore((state) => state.setItems);
-  const syncedUserRef = useRef<string | null>(null);
+  const setHasHydrated = useCartStore((state) => state.setHasHydrated);
+  const syncedScopeRef = useRef<string | null>(null);
   const skipNextSaveRef = useRef(false);
 
   useEffect(() => {
-    if (!isAuthHydrated || !hasCartHydrated || !currentUser) {
-      syncedUserRef.current = null;
+    if (!isAuthHydrated) {
       return;
     }
 
-    if (syncedUserRef.current === currentUser.id) {
+    const scope = currentUser?.id ?? "guest";
+
+    if (syncedScopeRef.current === scope) {
       return;
     }
 
-    syncedUserRef.current = currentUser.id;
+    syncedScopeRef.current = scope;
+    skipNextSaveRef.current = true;
+    setHasHydrated(false);
+    setItems([]);
+
+    let ignore = false;
     void fetchServerCart()
       .then((serverItems) => {
-        const merged = mergeCartItems(items, serverItems);
+        if (ignore) {
+          return;
+        }
+
+        const legacyItems = readPersistedCart();
+        const clientItems = useCartStore.getState().items;
+        const mergedWithClient = clientItems.length > 0 ? mergeCartItems(clientItems, serverItems) : serverItems;
+        const merged = legacyItems.length > 0 ? mergeCartItems(legacyItems, mergedWithClient) : mergedWithClient;
+
         skipNextSaveRef.current = true;
         setItems(merged);
-        return saveServerCart(merged);
+        setHasHydrated(true);
+        removePersistedCart();
+
+        if (legacyItems.length > 0 || clientItems.length > 0) {
+          void saveServerCart(merged).catch(() => undefined);
+        }
       })
-      .catch(() => undefined);
-  }, [currentUser, hasCartHydrated, isAuthHydrated, items, setItems]);
+      .catch(() => {
+        if (!ignore) {
+          setHasHydrated(true);
+        }
+      });
+
+    return () => {
+      ignore = true;
+    };
+  }, [currentUser, isAuthHydrated, setHasHydrated, setItems]);
 
   useEffect(() => {
-    if (!isAuthHydrated || !hasCartHydrated || !currentUser) {
+    if (!isAuthHydrated || !hasCartHydrated) {
       return;
     }
 

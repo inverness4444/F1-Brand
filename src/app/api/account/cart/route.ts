@@ -3,8 +3,8 @@ import { z } from "zod";
 
 import { cartSelectionsSchema } from "@/lib/validation-schemas";
 import { getCurrentUser } from "@/lib/server/auth";
+import { fetchUserCartSelections, saveUserCartSelections } from "@/lib/server/cart";
 import { apiError, noStoreJson } from "@/lib/server/api";
-import { prisma } from "@/lib/prisma";
 import { assertProtectedMutation, enforceRateLimit } from "@/lib/server/request-security";
 
 export const runtime = "nodejs";
@@ -24,25 +24,7 @@ async function requireApiUser() {
 export async function GET() {
   try {
     const user = await requireApiUser();
-    const cart = await prisma.cart.upsert({
-      where: { userId: user.id },
-      create: { userId: user.id },
-      update: {},
-      include: {
-        items: {
-          orderBy: { createdAt: "asc" },
-        },
-      },
-    });
-
-    return noStoreJson({
-      items: cart.items.map((item) => ({
-        productId: item.productId,
-        color: item.color,
-        size: item.size,
-        quantity: item.quantity,
-      })),
-    });
+    return noStoreJson({ items: await fetchUserCartSelections(user.id) });
   } catch (error) {
     return apiError(error, "Не удалось загрузить корзину.");
   }
@@ -65,37 +47,7 @@ export async function PUT(request: NextRequest) {
     assertProtectedMutation(request);
     const user = await requireApiUser();
     const input = updateCartSchema.parse(await request.json());
-    const cart = await prisma.cart.upsert({
-      where: { userId: user.id },
-      create: { userId: user.id },
-      update: {},
-    });
-
-    await prisma.$transaction(async (tx) => {
-      await tx.cartItem.deleteMany({ where: { cartId: cart.id } });
-
-      for (const item of input.items) {
-        const variant = await tx.productVariant.findFirst({
-          where: {
-            productId: item.productId,
-            size: { value: item.size },
-            color: { value: item.color },
-            active: true,
-          },
-        });
-
-        await tx.cartItem.create({
-          data: {
-            cartId: cart.id,
-            productId: item.productId,
-            variantId: variant?.id,
-            color: item.color,
-            size: item.size,
-            quantity: item.quantity,
-          },
-        });
-      }
-    });
+    await saveUserCartSelections(user.id, input.items);
 
     return NextResponse.json({ ok: true });
   } catch (error) {

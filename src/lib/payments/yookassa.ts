@@ -122,7 +122,7 @@ function getAppUrl() {
     process.env.APP_URL ??
     process.env.NEXT_PUBLIC_SITE_URL ??
     process.env.AUTH_URL ??
-    "http://localhost:3000"
+    "https://velocityclub.ru"
   ).replace(/\/+$/, "");
 }
 
@@ -138,7 +138,20 @@ function hasRealYooKassaCredentials() {
   );
 }
 
+function mockPaymentsEnabled() {
+  return process.env.NODE_ENV !== "production" || process.env.ENABLE_MOCK_PAYMENTS === "true";
+}
+
+function assertPaymentProviderConfigured() {
+  if (hasRealYooKassaCredentials() || mockPaymentsEnabled()) {
+    return;
+  }
+
+  throw new Error("Платёжный провайдер не настроен для production.");
+}
+
 export function getYooKassaProviderMode() {
+  assertPaymentProviderConfigured();
   return hasRealYooKassaCredentials() ? "YOOKASSA" : "MOCK";
 }
 
@@ -282,6 +295,7 @@ export async function createYooKassaPayment(input: CreateYooKassaPaymentInput): 
   const requestBody = buildPaymentRequest(input);
 
   if (!hasRealYooKassaCredentials()) {
+    assertPaymentProviderConfigured();
     const providerPaymentId = `mock_${crypto.randomUUID()}`;
     const confirmationUrl = `${getAppUrl()}/api/payments/yookassa/mock/confirm?paymentId=${encodeURIComponent(
       providerPaymentId,

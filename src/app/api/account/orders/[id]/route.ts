@@ -1,10 +1,7 @@
 import { NextRequest } from "next/server";
 
-import {
-  CHECKOUT_ACCESS_COOKIE_NAME,
-  getCurrentUser,
-  verifyCheckoutAccessCookieValue,
-} from "@/lib/server/auth";
+import { CHECKOUT_ACCESS_COOKIE_NAME } from "@/lib/cookie-constants";
+import { getCurrentUser, verifyCheckoutAccessCookieValue } from "@/lib/server/auth";
 import { orderFromDb } from "@/lib/server/account-mappers";
 import { apiError, noStoreJson } from "@/lib/server/api";
 import { dbOrderInclude } from "@/lib/server/catalog-db";

@@ -1,10 +1,9 @@
 import type { CheckoutPayload } from "@/lib/account-types";
 import { calculateBalanceUsage } from "@/lib/balance-utils";
 import type { Product } from "@/lib/types";
-import { checkoutPayloadSchema } from "@/lib/validation-schemas";
+import { checkoutPayloadSchema, orderSchema } from "@/lib/validation-schemas";
 import { buildCsrfHeaders } from "@/lib/security-utils";
-import { calculateCartSummary } from "@/services/cart-service";
-import { orderSchema } from "@/lib/validation-schemas";
+import { calculateCartSummary, saveServerCart } from "@/services/cart-service";
 
 export const checkoutService = {
   buildCheckoutPreview({
@@ -53,6 +52,8 @@ export const checkoutService = {
     if (summary.requiresShipping && !normalizedPayload.deliveryMethod) {
       throw new Error("Выберите способ доставки.");
     }
+
+    await saveServerCart(normalizedPayload.selections);
 
     const response = await fetch("/api/checkout/create-payment", {
       method: "POST",

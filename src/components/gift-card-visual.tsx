@@ -52,7 +52,7 @@ export function GiftCardVisual({
 
         <div className={cn("mt-4", compact ? "space-y-1" : "space-y-2")}>
           <p className={cn("uppercase tracking-[0.24em] text-white/60", compact ? "text-[0.55rem]" : "text-[0.68rem]")}>
-            Apex Store
+            Velocity Club
           </p>
           <p
             className={cn(

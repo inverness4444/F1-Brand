@@ -24,7 +24,7 @@ export async function generateMetadata({ searchParams }: AccessoriesPageProps): 
     title: "Аксессуары и подарки",
     products: accessoryProducts,
     fallback:
-      "Аксессуары Apex Store в стиле автоспорта: кепки, шарфы, постеры, календари, брелки, кошельки, картхолдеры и подарочные сертификаты.",
+      "Аксессуары Velocity Club в стиле автоспорта: кепки, шарфы, постеры, календари, брелки, кошельки, картхолдеры и подарочные сертификаты.",
   });
 
   return createPageMetadata({

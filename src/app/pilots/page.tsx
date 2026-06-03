@@ -22,7 +22,7 @@ export async function generateMetadata({ searchParams }: PilotsPageProps): Promi
     title: "Коллекции пилотов",
     products: pilotProducts,
     fallback:
-      "Коллекции пилотов Apex Store: racing-inspired одежда, футболки, худи и streetwear для фанатов автоспорта.",
+      "Коллекции пилотов Velocity Club: racing-inspired одежда, футболки, худи и streetwear для фанатов автоспорта.",
   });
 
   return createPageMetadata({

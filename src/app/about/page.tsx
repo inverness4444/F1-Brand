@@ -8,7 +8,7 @@ export const metadata: Metadata = createPageMetadata({
   title: "О магазине",
   path: "/about",
   description:
-    "О магазине Apex Store: одежда и мерч в гоночном стиле, коллекции пилотов, команд, легенд, аксессуары и подарочные сертификаты.",
+    "О магазине Velocity Club: одежда и мерч в гоночном стиле, коллекции пилотов, команд, легенд, аксессуары и подарочные сертификаты.",
 });
 
 export default function AboutPage() {
@@ -23,7 +23,7 @@ export default function AboutPage() {
           webPageJsonLd({
             name: "О магазине",
             description:
-              "Apex Store — интернет-магазин одежды, аксессуаров и подарков в стиле автоспорта.",
+              "Velocity Club — интернет-магазин одежды, аксессуаров и подарков в стиле автоспорта.",
             path: "/about",
           }),
         ]}
@@ -38,7 +38,7 @@ export default function AboutPage() {
           />
           <p className="section-kicker mt-8">О бренде</p>
           <h1 className="mt-4 max-w-4xl break-words font-[var(--font-heading)] text-4xl font-semibold leading-none tracking-normal text-[#111111] sm:text-5xl lg:text-7xl">
-            Apex Store
+            Velocity Club
           </h1>
           <p className="mt-5 max-w-3xl text-base leading-8 text-[#5f615f] sm:text-lg">
             Магазин одежды и мерча в гоночном стиле: командные коллекции, капсулы пилотов, аксессуары и подарочные сертификаты в чистой спортивной подаче.
@@ -55,7 +55,7 @@ export default function AboutPage() {
               </h2>
               <div className="space-y-4 text-[0.98rem] leading-8 text-[#5f615f] sm:text-base">
                 <p>
-                  Apex Store собран как премиальная e-commerce витрина спортивной одежды: без лишнего шума, с понятной навигацией, рабочим каталогом, фильтрами, карточками товаров, корзиной и личным кабинетом.
+                  Velocity Club собран как премиальная e-commerce витрина спортивной одежды: без лишнего шума, с понятной навигацией, рабочим каталогом, фильтрами, карточками товаров, корзиной и личным кабинетом.
                 </p>
                 <p>
                   В каталоге разделы разделены по смыслу: пилоты, команды, легенды и аксессуары. Это помогает покупателям быстрее находить нужные вещи и не смешивать разные типы коллекций.

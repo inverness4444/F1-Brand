@@ -122,12 +122,76 @@ function unique<T>(values: T[]) {
   return [...new Set(values)];
 }
 
+const CATALOG_DATABASE_RETRY_MS = Number(process.env.CATALOG_DATABASE_RETRY_MS ?? 60_000);
+const CATALOG_DATABASE_HEALTHY_MS = Number(process.env.CATALOG_DATABASE_HEALTHY_MS ?? 10_000);
+let catalogDatabaseUnavailableUntil = 0;
+let catalogDatabaseAvailableUntil = 0;
+let catalogDatabaseProbe: Promise<boolean> | null = null;
+let catalogFallbackLogged = false;
+
+function isProductionBuildPhase() {
+  return process.env.NEXT_PHASE === "phase-production-build" || process.env.npm_lifecycle_event === "build";
+}
+
 function shouldFallbackToFileCatalog() {
-  return (
-    process.env.NODE_ENV !== "production" ||
-    process.env.NEXT_PHASE === "phase-production-build" ||
-    process.env.npm_lifecycle_event === "build"
-  );
+  return process.env.NODE_ENV !== "production" || isProductionBuildPhase();
+}
+
+function isFileCatalogForced() {
+  return process.env.CATALOG_SOURCE?.toLowerCase() === "file";
+}
+
+function logCatalogFallback() {
+  if (catalogFallbackLogged || process.env.CATALOG_FALLBACK_LOGS !== "true") {
+    return;
+  }
+
+  catalogFallbackLogged = true;
+  console.warn("Catalog database is unavailable. Using file catalog fallback.");
+}
+
+function markCatalogDatabaseUnavailable() {
+  catalogDatabaseUnavailableUntil = Date.now() + CATALOG_DATABASE_RETRY_MS;
+  catalogDatabaseAvailableUntil = 0;
+  logCatalogFallback();
+}
+
+async function canReadCatalogFromDatabase() {
+  if (!isDatabaseConfigured() || isProductionBuildPhase() || isFileCatalogForced()) {
+    return false;
+  }
+
+  if (!shouldFallbackToFileCatalog()) {
+    return true;
+  }
+
+  const now = Date.now();
+
+  if (now < catalogDatabaseUnavailableUntil) {
+    return false;
+  }
+
+  if (now < catalogDatabaseAvailableUntil) {
+    return true;
+  }
+
+  catalogDatabaseProbe ??= prisma
+    .$queryRaw`SELECT 1`
+    .then(() => {
+      catalogDatabaseAvailableUntil = Date.now() + CATALOG_DATABASE_HEALTHY_MS;
+      catalogDatabaseUnavailableUntil = 0;
+      catalogFallbackLogged = false;
+      return true;
+    })
+    .catch(() => {
+      markCatalogDatabaseUnavailable();
+      return false;
+    })
+    .finally(() => {
+      catalogDatabaseProbe = null;
+    });
+
+  return catalogDatabaseProbe;
 }
 
 function asCategory(value?: string | null): CatalogCategory {
@@ -237,7 +301,7 @@ export function collectionFromDb(collection: DbCollection): CatalogCollection {
 }
 
 export async function readCatalogProductsFromDb() {
-  if (!isDatabaseConfigured()) {
+  if (!(await canReadCatalogFromDatabase())) {
     return readCatalogProductsFromFile();
   }
 
@@ -263,7 +327,7 @@ export async function readCatalogProductsFromDb() {
       throw error;
     }
 
-    console.error("Failed to read catalog from database. Falling back to file catalog.");
+    markCatalogDatabaseUnavailable();
     return readCatalogProductsFromFile();
   }
 }
@@ -308,7 +372,7 @@ function mergeCollectionsByName(collections: CatalogCollection[]) {
 }
 
 export async function readCatalogCollectionsFromDb(options: CollectionReadOptions = {}) {
-  if (!isDatabaseConfigured()) {
+  if (!(await canReadCatalogFromDatabase())) {
     return mergeCollectionsByName(filterVisibleCollections(await readCatalogCollectionsFromFile(), options));
   }
 
@@ -338,7 +402,7 @@ export async function readCatalogCollectionsFromDb(options: CollectionReadOption
       throw error;
     }
 
-    console.error("Failed to read collections from database. Falling back to file catalog.");
+    markCatalogDatabaseUnavailable();
     return mergeCollectionsByName(filterVisibleCollections(await readCatalogCollectionsFromFile(), options));
   }
 }
@@ -605,8 +669,19 @@ export async function deleteProductFromDb(productId: string) {
     return null;
   }
 
-  await prisma.product.delete({
+  await prisma.product.update({
     where: { id: productId },
+    data: {
+      status: "ARCHIVED",
+      variants: {
+        updateMany: {
+          where: {},
+          data: {
+            active: false,
+          },
+        },
+      },
+    },
   });
 
   return product;

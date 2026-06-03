@@ -7,7 +7,7 @@ export const metadata: Metadata = createPageMetadata({
   title: "Пользовательское соглашение",
   path: "/terms",
   description:
-    "Условия использования сайта Apex Store, личного кабинета, каталога, корзины, заказов и товарных страниц.",
+    "Условия использования сайта Velocity Club, личного кабинета, каталога, корзины, заказов и товарных страниц.",
 });
 
 const termsSections = [

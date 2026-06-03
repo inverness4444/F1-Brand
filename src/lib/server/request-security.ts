@@ -37,6 +37,20 @@ function getRedisRateLimitConfig() {
   };
 }
 
+function getRequestOrigins(request: NextRequest) {
+  const origins = new Set([new URL(request.url).origin]);
+  const forwardedProto = request.headers.get("x-forwarded-proto")?.split(",")[0]?.trim();
+  const forwardedHost = request.headers.get("x-forwarded-host")?.split(",")[0]?.trim();
+  const host = forwardedHost ?? request.headers.get("host");
+
+  if (host) {
+    const protocol = forwardedProto ?? new URL(request.url).protocol.replace(/:$/, "");
+    origins.add(`${protocol}://${host}`);
+  }
+
+  return origins;
+}
+
 async function runRedisPipeline(commands: unknown[][]) {
   const config = getRedisRateLimitConfig();
 
@@ -102,14 +116,14 @@ async function enforceRedisRateLimit(
 
 export function assertSameOrigin(request: NextRequest) {
   const origin = request.headers.get("origin");
-  const expectedOrigin = new URL(request.url).origin;
+  const expectedOrigins = getRequestOrigins(request);
 
-  if (origin && origin !== expectedOrigin) {
+  if (origin && !expectedOrigins.has(origin)) {
     throw new Error("forbidden-origin");
   }
 
   const fetchSite = request.headers.get("sec-fetch-site");
-  if (fetchSite && !["same-origin", "same-site", "none"].includes(fetchSite)) {
+  if (!origin && fetchSite && !["same-origin", "same-site", "none"].includes(fetchSite)) {
     throw new Error("forbidden-origin");
   }
 }

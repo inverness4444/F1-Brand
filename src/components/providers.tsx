@@ -5,6 +5,7 @@ import type { PropsWithChildren } from "react";
 import { AuthProvider } from "@/components/auth-provider";
 import { CartDbSync } from "@/components/cart-db-sync";
 import { CartDrawerMount } from "@/components/cart-drawer-mount";
+import { CookieConsentBanner } from "@/components/cookie-consent-banner";
 import { ToastViewport } from "@/components/toast-viewport";
 
 export function Providers({ children }: PropsWithChildren) {
@@ -14,6 +15,7 @@ export function Providers({ children }: PropsWithChildren) {
       <CartDbSync />
       {children}
       <CartDrawerMount />
+      <CookieConsentBanner />
       <ToastViewport />
     </>
   );

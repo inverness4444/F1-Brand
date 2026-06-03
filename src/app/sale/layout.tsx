@@ -11,7 +11,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: "Распродажа одежды в стиле автоспорта",
     path: "/sale",
     description:
-      "Распродажа Apex Store: одежда и аксессуары в гоночном стиле со скидками, если такие позиции доступны в текущем каталоге.",
+      "Распродажа Velocity Club: одежда и аксессуары в гоночном стиле со скидками, если такие позиции доступны в текущем каталоге.",
     index: saleProducts.length > 0,
   });
 }

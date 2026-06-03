@@ -43,9 +43,6 @@ function buildContentSecurityPolicy() {
 }
 
 const nextConfig: NextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   experimental: {
     middlewareClientMaxBodySize: "64mb",
   },

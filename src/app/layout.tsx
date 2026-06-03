@@ -11,7 +11,7 @@ import { TopAnnouncementBar } from "@/components/top-announcement-bar";
 import { defaultOgImage, getSiteUrl, publicRobots, siteName } from "@/lib/seo";
 
 const siteDescription =
-  "Apex Store — магазин одежды и мерча в гоночном стиле: футболки, худи, аксессуары и motorsport-inspired streetwear для фанатов автоспорта.";
+  "Velocity Club — магазин одежды и мерча в гоночном стиле: футболки, худи, аксессуары и motorsport-inspired streetwear для фанатов автоспорта.";
 
 const headingFont = Archivo({
   subsets: ["latin"],

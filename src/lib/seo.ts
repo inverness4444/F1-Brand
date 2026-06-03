@@ -12,9 +12,9 @@ import {
 import type { Driver, Legend, Product, Team } from "@/lib/types";
 import { formatPrice } from "@/lib/utils";
 
-export const siteName = "Apex Store";
+export const siteName = "Velocity Club";
 export const defaultOgImage = "/og-default.jpg";
-export const siteUrlFallback = "http://localhost:3000";
+export const siteUrlFallback = "https://velocityclub.ru";
 export const priceCurrency = "RUB";
 
 type MetadataInput = {
@@ -351,7 +351,14 @@ export function organizationJsonLd() {
     "@type": "Organization",
     name: siteName,
     url: absoluteUrl("/"),
-    logo: absoluteUrl("/apex-logo.png"),
+    logo: absoluteUrl("/velocity-logo.png"),
+    email: "velocityclub@mail.ru",
+    sameAs: [
+      "https://t.me/f1velocityclub",
+      "https://vk.ru/f1velocityclub",
+      "https://www.tiktok.com/@f1velocityclub",
+      "https://www.instagram.com/f1velocityclub",
+    ],
   };
 }
 

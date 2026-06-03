@@ -1,10 +1,9 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
+import { ROLE_COOKIE_NAME, SESSION_COOKIE_NAME } from "@/lib/cookie-constants";
+import { shouldUseSecureCookies } from "@/lib/cookie-utils";
 import { CSRF_COOKIE_NAME } from "@/lib/security-utils";
-
-const SESSION_COOKIE_NAME = "apex-store-session-v1";
-const ROLE_COOKIE_NAME = "apex-store-role-v1";
 
 function getAuthSecret() {
   return process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET ?? "development-only-auth-secret";
@@ -68,7 +67,6 @@ export async function middleware(request: NextRequest) {
   }
 
   const response = NextResponse.next();
-  const isDevelopment = process.env.NODE_ENV !== "production";
 
   if (!request.cookies.get(CSRF_COOKIE_NAME)?.value) {
     response.cookies.set({
@@ -76,7 +74,7 @@ export async function middleware(request: NextRequest) {
       value: createCsrfToken(),
       httpOnly: false,
       sameSite: "lax",
-      secure: !isDevelopment,
+      secure: shouldUseSecureCookies(request),
       path: "/",
       maxAge: 60 * 60 * 24,
     });

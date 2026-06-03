@@ -18,10 +18,10 @@ type ShopPageProps = {
 export async function generateMetadata({ searchParams }: ShopPageProps): Promise<Metadata> {
   const [products, params] = await Promise.all([readCatalogProductsFromDb(), searchParams]);
   const description = buildCollectionDescription({
-    title: "Каталог Apex Store",
+    title: "Каталог Velocity Club",
     products,
     fallback:
-      "Каталог Apex Store: одежда и мерч в гоночном стиле, футболки, худи, аксессуары, подарочные сертификаты и motorsport-inspired streetwear сезона 2026.",
+      "Каталог Velocity Club: одежда и мерч в гоночном стиле, футболки, худи, аксессуары, подарочные сертификаты и motorsport-inspired streetwear сезона 2026.",
   });
 
   return createPageMetadata({

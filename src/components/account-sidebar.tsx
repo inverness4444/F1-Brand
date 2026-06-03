@@ -48,7 +48,7 @@ export function AccountSidebar() {
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "group rounded-2xl border px-4 py-2.5 text-sm font-medium transition",
+                  "account-mobile-nav-item group rounded-2xl border px-4 py-2.5 text-sm font-medium transition",
                   active
                     ? "border-red-200 bg-red-50 !text-red-700"
                     : "border-slate-200 bg-white text-slate-600 hover:border-slate-300",
@@ -63,7 +63,7 @@ export function AccountSidebar() {
           <button
             type="button"
             onClick={handleLogout}
-            className="rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-600 transition hover:border-slate-300 hover:text-slate-900"
+            className="account-mobile-nav-item rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-600 transition hover:border-slate-300 hover:text-slate-900"
           >
             Выйти
           </button>

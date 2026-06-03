@@ -22,7 +22,7 @@ export async function generateMetadata({ searchParams }: LegendsPageProps): Prom
     title: "Коллекции легенд",
     products: legendProducts,
     fallback:
-      "Архивные коллекции Apex Store: одежда и мерч в стиле автоспорта, футболки, лонгсливы и аксессуары с современной подачей.",
+      "Архивные коллекции Velocity Club: одежда и мерч в стиле автоспорта, футболки, лонгсливы и аксессуары с современной подачей.",
   });
 
   return createPageMetadata({

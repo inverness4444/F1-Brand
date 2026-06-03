@@ -20,7 +20,7 @@ export const SECURITY_LIMITS = {
   maxCartItemQuantity: 10,
 } as const;
 
-export const CSRF_COOKIE_NAME = "apex-store-csrf-v1";
+export const CSRF_COOKIE_NAME = "velocity-club-csrf-v1";
 export const CSRF_HEADER_NAME = "x-csrf-token";
 
 const CONTROL_CHARACTERS_REGEX = /[\u0000-\u0008\u000B-\u001F\u007F]/g;
@@ -154,9 +154,9 @@ export function safeRedirectPath(value?: string | null, fallback = "/account") {
   }
 
   try {
-    const url = new URL(value, "https://apex-store.local");
+    const url = new URL(value, "https://velocityclub.ru");
 
-    if (url.origin !== "https://apex-store.local") {
+    if (url.origin !== "https://velocityclub.ru") {
       return fallback;
     }
 

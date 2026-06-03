@@ -54,7 +54,7 @@ export default function GiftCardsPage() {
             { name: "Подарочные сертификаты", path: "/gift-cards" },
           ]),
           webPageJsonLd({
-            name: "Подарочные сертификаты Apex Store",
+            name: "Подарочные сертификаты Velocity Club",
             description:
               "Цифровые подарочные сертификаты для покупки одежды, аксессуаров и мерча в гоночном стиле.",
             path: "/gift-cards",

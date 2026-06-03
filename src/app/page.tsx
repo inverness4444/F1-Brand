@@ -1,4 +1,3 @@
-import { CategoryTiles } from "@/components/category-tiles";
 import { HeroBanner } from "@/components/hero-banner";
 import { HomeProductsSection } from "@/components/home-products-section";
 import { NewsletterSection } from "@/components/newsletter-section";
@@ -11,11 +10,11 @@ import {
 } from "@/lib/seo";
 
 export const metadata = createPageMetadata({
-  title: "Apex Store — одежда и мерч в гоночном стиле",
+  title: "Velocity Club — одежда и мерч в гоночном стиле",
   absoluteTitle: true,
   path: "/",
   description:
-    "Apex Store — интернет-магазин одежды и мерча в гоночном стиле: футболки, худи, аксессуары, подарочные сертификаты и motorsport-inspired streetwear для фанатов автоспорта.",
+    "Velocity Club — интернет-магазин одежды и мерча в гоночном стиле: футболки, худи, аксессуары, подарочные сертификаты и motorsport-inspired streetwear для фанатов автоспорта.",
   image: "/og-default.jpg",
 });
 
@@ -27,7 +26,7 @@ export default function HomePage() {
           organizationJsonLd(),
           websiteJsonLd(),
           webPageJsonLd({
-            name: "Apex Store — одежда и мерч в гоночном стиле",
+            name: "Velocity Club — одежда и мерч в гоночном стиле",
             description:
               "Интернет-магазин одежды и мерча в стиле автоспорта: футболки, худи, аксессуары и streetwear для фанатов гонок.",
             path: "/",
@@ -35,7 +34,6 @@ export default function HomePage() {
         ]}
       />
       <HeroBanner />
-      <CategoryTiles />
       <HomeProductsSection />
       <NewsletterSection />
     </div>

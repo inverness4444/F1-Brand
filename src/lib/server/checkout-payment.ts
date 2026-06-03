@@ -102,6 +102,10 @@ function getProductDisplayName(variant: CheckoutVariant) {
 function buildCheckoutItem(variant: CheckoutVariant, quantity: number): CheckoutItem {
   const unitPrice = variant.priceOverrideCents ?? variant.product.priceCents;
 
+  if (unitPrice <= 0) {
+    throw new Error(`Некорректная цена товара: ${variant.product.name}.`);
+  }
+
   return {
     productId: variant.productId,
     variantId: variant.id,

@@ -22,7 +22,7 @@ export async function generateMetadata({ searchParams }: TeamsPageProps): Promis
     title: "Командные коллекции",
     products: teamProducts,
     fallback:
-      "Командные коллекции Apex Store: одежда и мерч в гоночном стиле, спортивные силуэты, футболки, худи и аксессуары для фанатов автоспорта.",
+      "Командные коллекции Velocity Club: одежда и мерч в гоночном стиле, спортивные силуэты, футболки, худи и аксессуары для фанатов автоспорта.",
   });
 
   return createPageMetadata({

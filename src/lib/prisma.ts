@@ -4,6 +4,37 @@ const globalForPrisma = globalThis as unknown as {
   prisma?: PrismaClient;
 };
 
+const DEFAULT_RUNTIME_CONNECTION_LIMIT = "5";
+const DEFAULT_POOL_TIMEOUT = "30";
+const DEFAULT_CONNECT_TIMEOUT = "15";
+const DEFAULT_MAX_IDLE_CONNECTION_LIFETIME = "60";
+type PrismaLogLevel = "query" | "info" | "warn" | "error";
+const VALID_PRISMA_LOG_LEVELS = new Set<PrismaLogLevel>(["query", "info", "warn", "error"]);
+
+function getPrismaLogLevels(): PrismaLogLevel[] {
+  const configuredLevels = process.env.PRISMA_LOG_LEVELS;
+
+  if (configuredLevels) {
+    return configuredLevels
+      .split(",")
+      .map((level) => level.trim())
+      .filter((level): level is PrismaLogLevel => VALID_PRISMA_LOG_LEVELS.has(level as PrismaLogLevel));
+  }
+
+  return process.env.NODE_ENV === "development" ? ["warn"] : [];
+}
+
+function setSearchParam(url: URL, name: string, fallbackValue: string, overrideValue?: string) {
+  if (overrideValue) {
+    url.searchParams.set(name, overrideValue);
+    return;
+  }
+
+  if (!url.searchParams.has(name)) {
+    url.searchParams.set(name, fallbackValue);
+  }
+}
+
 function getRuntimeDatabaseUrl() {
   const databaseUrl = process.env.DATABASE_URL;
 
@@ -19,21 +50,20 @@ function getRuntimeDatabaseUrl() {
       return databaseUrl;
     }
 
-    if (!url.searchParams.has("connection_limit")) {
-      url.searchParams.set("connection_limit", process.env.PRISMA_CONNECTION_LIMIT ?? "1");
-    }
-
-    if (!url.searchParams.has("pool_timeout")) {
-      url.searchParams.set("pool_timeout", "20");
-    }
-
-    if (!url.searchParams.has("connect_timeout")) {
-      url.searchParams.set("connect_timeout", "15");
-    }
-
-    if (!url.searchParams.has("max_idle_connection_lifetime")) {
-      url.searchParams.set("max_idle_connection_lifetime", "60");
-    }
+    setSearchParam(
+      url,
+      "connection_limit",
+      DEFAULT_RUNTIME_CONNECTION_LIMIT,
+      process.env.PRISMA_CONNECTION_LIMIT,
+    );
+    setSearchParam(url, "pool_timeout", DEFAULT_POOL_TIMEOUT, process.env.PRISMA_POOL_TIMEOUT);
+    setSearchParam(url, "connect_timeout", DEFAULT_CONNECT_TIMEOUT, process.env.PRISMA_CONNECT_TIMEOUT);
+    setSearchParam(
+      url,
+      "max_idle_connection_lifetime",
+      DEFAULT_MAX_IDLE_CONNECTION_LIFETIME,
+      process.env.PRISMA_MAX_IDLE_CONNECTION_LIFETIME,
+    );
 
     return url.toString();
   } catch {
@@ -51,7 +81,7 @@ export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
     ...(runtimeDatabaseUrl ? { datasources: { db: { url: runtimeDatabaseUrl } } } : {}),
-    log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
+    log: getPrismaLogLevels(),
   });
 
 if (process.env.NODE_ENV !== "production") {

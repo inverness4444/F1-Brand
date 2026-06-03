@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { CheckCircle2, Copy } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import type { Order } from "@/lib/account-types";
 import { orderService } from "@/services/order-service";
@@ -13,6 +13,7 @@ import { formatPrice } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 export default function CheckoutSuccessPage() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const currentUser = useAuthStore((state) => state.currentUser);
   const orderId = searchParams.get("order");
@@ -22,15 +23,22 @@ export default function CheckoutSuccessPage() {
   useEffect(() => {
     let ignore = false;
     void orderService.getCheckoutSuccessOrder(orderId).then((nextOrder) => {
-      if (!ignore) {
-        setOrder(nextOrder);
+      if (ignore) {
+        return;
       }
+
+      if (nextOrder && ["FAILED", "CANCELED"].includes(nextOrder.paymentStatus)) {
+        router.replace(`/checkout/failure?order=${encodeURIComponent(nextOrder.id)}`);
+        return;
+      }
+
+      setOrder(nextOrder);
     });
 
     return () => {
       ignore = true;
     };
-  }, [orderId, currentUser?.id]);
+  }, [currentUser?.id, orderId, router]);
 
   const handleCopyCode = async (code: string) => {
     try {

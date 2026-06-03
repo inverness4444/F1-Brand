@@ -441,8 +441,8 @@ export const orderItemSchema = z.object({
     .int()
     .min(1)
     .max(SECURITY_LIMITS.maxCartItemQuantity),
-  unitPrice: z.number().int().min(0),
-  lineTotal: z.number().int().min(0),
+  unitPrice: z.number().int().min(1),
+  lineTotal: z.number().int().min(1),
 });
 
 export const orderSchema = z.object({
@@ -555,8 +555,8 @@ export const productSchema = z.object({
   legendName: optionalTextSchema(SECURITY_LIMITS.catalogMetadataMaxLength).transform((value) => value || null),
   legendSlug: optionalTextSchema(SECURITY_LIMITS.catalogMetadataMaxLength).transform((value) => value || null),
   gender: productGenderSchema,
-  price: z.number().int().min(0).max(1_000_000),
-  oldPrice: z.number().int().min(0).max(1_000_000).nullable().optional().default(null),
+  price: z.number().int().min(1, "Цена товара должна быть больше 0.").max(1_000_000),
+  oldPrice: z.number().int().min(1).max(1_000_000).nullable().optional().default(null),
   stock: z.number().int().min(0).max(1_000_000).nullable().optional().default(null),
   productType: commerceProductKindSchema.default("standard"),
   requiresShipping: z.boolean().default(true),
@@ -600,7 +600,7 @@ export const productSchema = z.object({
         size: productSizeSchema,
         color: productColorSchema,
         stock: z.number().int().min(0),
-        priceOverride: z.number().int().min(0).nullable(),
+        priceOverride: z.number().int().min(1).nullable(),
       }),
     )
     .optional(),

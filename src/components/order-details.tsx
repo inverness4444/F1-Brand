@@ -65,7 +65,12 @@ export function OrderDetails({
               <RotateCcw className="size-4" />
               Повторить заказ
             </Button>
-            <a href="mailto:support@f1merch.store" className="button-base button-primary rounded-2xl">
+            <a
+              href="https://t.me/VelocityManager"
+              target="_blank"
+              rel="noreferrer"
+              className="button-base button-primary rounded-2xl"
+            >
               <Headset className="size-4" />
               Связаться с поддержкой
             </a>

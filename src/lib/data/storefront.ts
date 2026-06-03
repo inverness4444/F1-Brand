@@ -13,7 +13,6 @@ export const footerColumns = {
     { label: "Пилоты", href: "/pilots" },
     { label: "Легенды", href: "/legends" },
     { label: "Аксессуары", href: "/accessories" },
-    { label: "Распродажа", href: "/sale" },
   ],
   service: [
     { label: "Доставка", href: "/delivery" },
@@ -28,9 +27,12 @@ export const footerColumns = {
     { label: "Договор оферты", href: "/offer" },
   ],
   social: [
-    { label: "Instagram", href: "#" },
-    { label: "Telegram", href: "#" },
-    { label: "TikTok", href: "#" },
-    { label: "YouTube", href: "#" },
+    {
+      label: "Instagram",
+      href: "https://www.instagram.com/f1velocityclub?igsh=MWJ2ZmhoeHBuMHFkeg%3D%3D&utm_source=qr",
+    },
+    { label: "Telegram", href: "https://t.me/f1velocityclub" },
+    { label: "TikTok", href: "https://www.tiktok.com/@f1velocityclub" },
+    { label: "ВКонтакте", href: "https://vk.ru/f1velocityclub" },
   ],
 };

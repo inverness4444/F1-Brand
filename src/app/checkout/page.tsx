@@ -560,6 +560,25 @@ export default function CheckoutPage() {
                 "Подтвердить заказ"
               )}
             </Button>
+            <p className="mt-4 text-xs leading-6 text-slate-500">
+              Подтверждая заказ, вы соглашаетесь с{" "}
+              <Link href="/offer" className="font-semibold text-slate-900 underline underline-offset-4">
+                офертой
+              </Link>
+              ,{" "}
+              <Link href="/privacy" className="font-semibold text-slate-900 underline underline-offset-4">
+                политикой конфиденциальности
+              </Link>
+              , а также условиями{" "}
+              <Link href="/delivery" className="font-semibold text-slate-900 underline underline-offset-4">
+                доставки
+              </Link>{" "}
+              и{" "}
+              <Link href="/returns" className="font-semibold text-slate-900 underline underline-offset-4">
+                возврата
+              </Link>
+              .
+            </p>
           </div>
         </aside>
       </div>

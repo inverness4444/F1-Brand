@@ -8,13 +8,19 @@ import { redirect } from "next/navigation";
 import type { NextResponse } from "next/server";
 
 import type { AuthSession, AuthUser } from "@/lib/account-types";
+import {
+  CHECKOUT_ACCESS_COOKIE_NAME,
+  ROLE_COOKIE_NAME,
+  SESSION_COOKIE_NAME,
+} from "@/lib/cookie-constants";
+import { shouldUseSecureCookies } from "@/lib/cookie-utils";
 import { prisma } from "@/lib/prisma";
 
-export const SESSION_COOKIE_NAME = "apex-store-session-v1";
-export const ROLE_COOKIE_NAME = "apex-store-role-v1";
-export const CHECKOUT_ACCESS_COOKIE_NAME = "apex-store-checkout-order-v1";
-
 const DAY_MS = 24 * 60 * 60 * 1000;
+
+function getCookieMaxAgeSeconds(expiresAt: Date) {
+  return Math.max(0, Math.ceil((expiresAt.getTime() - Date.now()) / 1000));
+}
 
 function getAuthSecret() {
   const secret = process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET;
@@ -127,9 +133,10 @@ export function attachSessionCookie(
     value: token,
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: shouldUseSecureCookies(),
     path: "/",
     expires: expiresAt,
+    maxAge: getCookieMaxAgeSeconds(expiresAt),
   });
 }
 
@@ -144,9 +151,10 @@ export function attachRoleCookie(response: NextResponse, role: UserRole, expires
     value: createRoleCookieValue(role),
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: shouldUseSecureCookies(),
     path: "/",
     expires: expiresAt,
+    maxAge: getCookieMaxAgeSeconds(expiresAt),
   });
 }
 
@@ -156,7 +164,7 @@ export function clearSessionCookie(response: NextResponse) {
     value: "",
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: shouldUseSecureCookies(),
     path: "/",
     maxAge: 0,
   });
@@ -168,7 +176,7 @@ export function clearRoleCookie(response: NextResponse) {
     value: "",
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: shouldUseSecureCookies(),
     path: "/",
     maxAge: 0,
   });
@@ -180,7 +188,7 @@ export function attachCheckoutAccessCookie(response: NextResponse, orderId: stri
     value: createCheckoutAccessCookieValue(orderId),
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: shouldUseSecureCookies(),
     path: "/",
     maxAge: 60 * 60 * 24 * 7,
   });
@@ -192,7 +200,7 @@ export function clearCheckoutAccessCookie(response: NextResponse) {
     value: "",
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: shouldUseSecureCookies(),
     path: "/",
     maxAge: 0,
   });

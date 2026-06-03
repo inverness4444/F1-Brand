@@ -7,7 +7,7 @@ export const metadata: Metadata = createPageMetadata({
   title: "Возврат",
   path: "/returns",
   description:
-    "Условия возврата и обмена товаров Apex Store: сроки, сохранение товарного вида, брак, неправильный товар и оформление возврата.",
+    "Условия возврата и обмена товаров Velocity Club: сроки, сохранение товарного вида, брак, неправильный товар и оформление возврата.",
 });
 
 const returnSections = [

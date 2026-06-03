@@ -63,9 +63,11 @@ Required env:
 
 - `DATABASE_URL` - pooled Neon PostgreSQL URL for the app.
 - `DIRECT_DATABASE_URL` - direct Neon URL for Prisma migrations. Prisma Migrate reads it from `directUrl`; application queries keep using the pooled `DATABASE_URL`.
-- `NEXT_PUBLIC_SITE_URL` and `APP_URL` - public app origin, for example `http://localhost:3000`.
+- `PRISMA_CONNECTION_LIMIT` - optional Prisma runtime connection limit. Defaults to `5`, which avoids catalog read timeouts during parallel Next.js renders.
+- `CATALOG_SOURCE` - optional public catalog source. Use `auto` by default, or `file` to skip database reads while developing without Neon.
+- `NEXT_PUBLIC_SITE_URL` and `APP_URL` - public app origin, for example `https://velocityclub.ru`.
 - `YOOKASSA_SHOP_ID` and `YOOKASSA_SECRET_KEY` - real YooKassa credentials, only for server runtime.
-- `YOOKASSA_RETURN_URL` - return URL, for example `https://example.com/checkout/success`.
+- `YOOKASSA_RETURN_URL` - return URL, for example `https://velocityclub.ru/checkout/success`.
 - `YOOKASSA_WEBHOOK_SECRET` - shared webhook secret. It is required in production; include it in the webhook URL as `?secret=...` or send it in `X-YooKassa-Webhook-Secret`/Bearer auth.
 - `RATE_LIMIT_REDIS_REST_URL` and `RATE_LIMIT_REDIS_REST_TOKEN` - optional Redis/Upstash REST backend for distributed rate limiting in production. `UPSTASH_REDIS_REST_URL`/`UPSTASH_REDIS_REST_TOKEN` are also supported.
 

@@ -8,7 +8,9 @@ import { cn } from "@/lib/utils";
 import { ProductCard } from "@/components/product-card";
 
 const CAROUSEL_COPY_INDICES = [0, 1, 2] as const;
+const CAROUSEL_AUTO_SCROLL_PX_PER_SECOND = 110;
 const CAROUSEL_MANUAL_SCROLL_DURATION = 520;
+const CAROUSEL_MAX_FRAME_DELTA = 80;
 
 export function ProductGrid({
   products,
@@ -38,12 +40,11 @@ export function ProductGrid({
         return;
       }
 
-      if (node.scrollLeft >= loopWidth * 2) {
+      while (node.scrollLeft >= loopWidth * 2) {
         node.scrollLeft -= loopWidth;
-        return;
       }
 
-      if (node.scrollLeft < loopWidth) {
+      while (node.scrollLeft < loopWidth) {
         node.scrollLeft += loopWidth;
       }
     },
@@ -58,7 +59,10 @@ export function ProductGrid({
     }
 
     const firstCard = node.querySelector<HTMLElement>("[data-carousel-card]");
-    return firstCard ? firstCard.offsetWidth + 16 : node.clientWidth * 0.88;
+    const firstLoop = firstCard?.parentElement;
+    const gap = firstLoop ? Number.parseFloat(window.getComputedStyle(firstLoop).columnGap) : 16;
+
+    return firstCard ? firstCard.offsetWidth + (Number.isFinite(gap) ? gap : 16) : node.clientWidth * 0.88;
   }, []);
 
   const scrollCarousel = (direction: -1 | 1) => {
@@ -93,7 +97,7 @@ export function ProductGrid({
       return;
     }
 
-    const frameId = window.requestAnimationFrame(() => {
+    const setInitialOffset = () => {
       const loopWidth = getLoopWidth();
 
       if (!loopWidth) {
@@ -101,12 +105,39 @@ export function ProductGrid({
       }
 
       node.scrollLeft = loopWidth;
-    });
+    };
+
+    let frameId = 0;
+    let previousTimestamp = 0;
+
+    const step = (timestamp: number) => {
+      const loopWidth = getLoopWidth();
+
+      if (!loopWidth) {
+        frameId = window.requestAnimationFrame(step);
+        return;
+      }
+
+      if (!previousTimestamp) {
+        previousTimestamp = timestamp;
+        setInitialOffset();
+      }
+
+      const delta = Math.min(timestamp - previousTimestamp, CAROUSEL_MAX_FRAME_DELTA);
+      previousTimestamp = timestamp;
+
+      node.scrollLeft += (CAROUSEL_AUTO_SCROLL_PX_PER_SECOND * delta) / 1000;
+      normalizeCarouselOffset(node);
+
+      frameId = window.requestAnimationFrame(step);
+    };
+
+    frameId = window.requestAnimationFrame(step);
 
     return () => {
       window.cancelAnimationFrame(frameId);
     };
-  }, [getLoopWidth, layout, products.length]);
+  }, [getLoopWidth, layout, normalizeCarouselOffset, products.length]);
 
   const layoutClassName =
     variant === "showcase"
@@ -125,7 +156,7 @@ export function ProductGrid({
 
     return (
       <div className={cn("space-y-5", className)}>
-        <div className="flex items-center justify-end gap-2">
+        <div className="product-carousel-controls flex items-center justify-end gap-2">
           <button
             type="button"
             onClick={() => scrollCarousel(-1)}
@@ -159,6 +190,7 @@ export function ProductGrid({
                 ref={copyIndex === 0 ? firstLoopRef : undefined}
                 aria-hidden={copyIndex === 1 || !controlsEnabled ? undefined : true}
                 inert={copyIndex === 1 || !controlsEnabled ? undefined : true}
+                data-carousel-loop
                 className="flex shrink-0 gap-4 pr-4"
               >
                 {products.map((product, index) => (

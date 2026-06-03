@@ -24,7 +24,6 @@ const HeaderSearchPanel = dynamic(
 );
 
 const navItems = [
-  { label: "НОВИНКИ", href: "/new" },
   { label: "КОМАНДЫ", href: "/teams" },
   { label: "ПИЛОТЫ", href: "/pilots" },
   { label: "ЛЕГЕНДЫ", href: "/legends" },
@@ -127,6 +126,14 @@ const mobileGroups = [
   },
 ];
 
+const mobilePrimaryGroups = mobileGroups.filter((group) => group.title !== "АКСЕССУАРЫ");
+
+const mobileQuickLinks = [
+  { label: "Доставка и возврат", href: "/delivery" },
+  { label: "Таблица размеров", href: "/about#size-guide" },
+  { label: "Помощь / FAQ", href: "/faq" },
+] as const;
+
 export function Header() {
   const pathname = usePathname();
   const router = useRouter();
@@ -208,11 +215,11 @@ export function Header() {
     ? "text-[0.8rem] font-bold tracking-[0.16em] transition"
     : "text-[0.8rem] font-bold tracking-[0.16em] text-[#3f413f] transition hover:text-[#111111]";
   const accountFavoriteClassName = isHeroOverlay
-    ? "inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/28 bg-white/8 text-white transition hover:border-white/60 hover:bg-white/14"
-    : "inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--line)] bg-white text-[#111111] transition hover:border-[#111111]";
+    ? "inline-flex h-11 w-11 items-center justify-center rounded-full bg-transparent text-white transition hover:bg-white/10"
+    : "inline-flex h-11 w-11 items-center justify-center rounded-full bg-transparent text-[#111111] transition hover:bg-black/5";
   const desktopIconClassName = isHeroOverlay
-    ? "inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/28 bg-white/8 text-white transition hover:border-white/60 hover:bg-white/14"
-    : "inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--line)] bg-white text-[#111111] transition hover:border-[#111111]";
+    ? "inline-flex h-11 w-11 items-center justify-center rounded-full bg-transparent text-white transition hover:bg-white/10"
+    : "inline-flex h-11 w-11 items-center justify-center rounded-full bg-transparent text-[#111111] transition hover:bg-black/5";
   const mobileIconClassName = isHeroOverlay
     ? "inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/28 bg-white/8 text-white"
     : "inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--line)] bg-white text-[#111111]";
@@ -319,7 +326,7 @@ export function Header() {
                 }}
                 placeholder="Search ..."
                 className={cn(
-                  "min-h-[2.85rem] w-[12.5rem] border-[#e3e2dc] pl-4 pr-2 shadow-none",
+                  "min-h-[2.85rem] w-[16rem] border-[#e3e2dc] pl-5 pr-2 shadow-none 2xl:w-[21rem]",
                   isTransparentDesktopSearch
                     ? "border-white/28 bg-transparent"
                     : isHeroOverlay
@@ -468,27 +475,21 @@ export function Header() {
                 onChange={(value) => setQuery(sanitizeSearchQuery(value))}
                 onSubmit={submitSearch}
                 placeholder="Search ..."
-                className="mt-5 min-h-[3.75rem] pl-4 pr-3 sm:min-h-[4rem] sm:pl-5"
-                inputClassName="text-base sm:text-base"
-                iconClassName="h-10 w-10"
+                className="mobile-drawer-search mt-5 min-h-[3.75rem] pl-4 pr-3 sm:min-h-[4rem] sm:pl-5"
+                inputClassName="mobile-drawer-search-input text-base sm:text-base"
+                iconClassName="mobile-drawer-search-icon h-10 w-10"
               />
 
               <div className="mt-6 flex-1 overflow-y-auto overscroll-contain pr-1">
-                <div className="space-y-2 border-t border-[var(--line)] pt-6">
-                  {navItems.map((item) => (
-                    <Link
-                      key={item.label}
-                      href={item.href}
-                      onClick={() => setMobileOpen(false)}
-                      className="block rounded-2xl px-1 py-2.5 text-[0.82rem] font-bold tracking-[0.16em] text-[#111111]"
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
-                </div>
-
-                <div className="mt-5 space-y-3 border-t border-[var(--line)] pt-5">
-                  {mobileGroups.map((group) => (
+                <div className="mobile-clean-menu space-y-3 border-t border-[var(--line)] pt-5">
+                  <Link
+                    href="/shop"
+                    onClick={() => setMobileOpen(false)}
+                    className="block rounded-2xl border border-[var(--line)] px-4 py-3 text-sm font-semibold text-[#111111]"
+                  >
+                    Все товары
+                  </Link>
+                  {mobilePrimaryGroups.map((group) => (
                     <div key={group.title} className="rounded-[1.2rem] border border-[var(--line)]">
                       <button
                         type="button"
@@ -516,10 +517,89 @@ export function Header() {
                       ) : null}
                     </div>
                   ))}
+                  <Link
+                    href="/accessories"
+                    onClick={() => setMobileOpen(false)}
+                    className="block rounded-2xl border border-[var(--line)] px-4 py-3 text-sm font-semibold text-[#111111]"
+                  >
+                    Аксессуары
+                  </Link>
+                </div>
+
+                <div className="tablet-drawer-menu">
+                  <div className="space-y-2 border-t border-[var(--line)] pt-6">
+                    {navItems.map((item) => (
+                      <Link
+                        key={item.label}
+                        href={item.href}
+                        onClick={() => setMobileOpen(false)}
+                        className="block rounded-2xl px-1 py-2.5 text-[0.82rem] font-bold tracking-[0.16em] text-[#111111]"
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
+
+                  <div className="mt-5 space-y-3 border-t border-[var(--line)] pt-5">
+                    {mobileGroups.map((group) => (
+                      <div key={group.title} className="rounded-[1.2rem] border border-[var(--line)]">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setMobileGroup((current) => (current === group.title ? null : group.title))
+                          }
+                          className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-sm font-semibold text-[#111111]"
+                        >
+                          <span>{group.title}</span>
+                          <span>{mobileGroup === group.title ? "−" : "+"}</span>
+                        </button>
+                        {mobileGroup === group.title ? (
+                          <div className="space-y-3 border-t border-[var(--line)] px-4 py-4 text-sm text-[#5f615f]">
+                            {group.links.map((link) => (
+                              <Link
+                                key={link.label}
+                                href={link.href}
+                                onClick={() => setMobileOpen(false)}
+                                className="block break-words"
+                              >
+                                {link.label}
+                              </Link>
+                            ))}
+                          </div>
+                        ) : null}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
 
-              <div className="mt-5 grid gap-2 border-t border-[var(--line)] pt-5">
+              <div className="mobile-quick-links mt-5 grid gap-2 border-t border-[var(--line)] pt-5">
+                <Link
+                  href={currentUser ? "/account" : "/login"}
+                  onClick={() => setMobileOpen(false)}
+                  className="button-base button-secondary mobile-quick-link w-full"
+                >
+                  Аккаунт
+                </Link>
+                <Link
+                  href="/account/favorites"
+                  onClick={() => setMobileOpen(false)}
+                  className="button-base button-secondary mobile-quick-link w-full"
+                >
+                  Избранное
+                </Link>
+                {mobileQuickLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setMobileOpen(false)}
+                    className="button-base button-secondary mobile-quick-link w-full"
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+              <div className="tablet-drawer-actions mt-5 grid gap-2 border-t border-[var(--line)] pt-5">
                 <Link
                   href={currentUser ? "/account" : "/login"}
                   onClick={() => setMobileOpen(false)}

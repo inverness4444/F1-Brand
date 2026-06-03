@@ -13,6 +13,11 @@ import {
   toAuthUser,
 } from "@/lib/server/auth";
 import { apiError } from "@/lib/server/api";
+import {
+  clearGuestCartCookie,
+  getGuestCartTokenFromRequest,
+  mergeGuestCartIntoUserCart,
+} from "@/lib/server/cart";
 import { prisma } from "@/lib/prisma";
 import { assertProtectedMutation, enforceRateLimit } from "@/lib/server/request-security";
 
@@ -77,12 +82,15 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    await mergeGuestCartIntoUserCart(getGuestCartTokenFromRequest(request), user.id);
+
     const response = NextResponse.json({
       user: toAuthUser(user),
       session: toAuthSession(user.sessions[0]),
     });
     attachSessionCookie(response, token, expiresAt);
     attachRoleCookie(response, user.role, expiresAt);
+    clearGuestCartCookie(response);
     return response;
   } catch (error) {
     return apiError(error, "Не удалось создать аккаунт.");

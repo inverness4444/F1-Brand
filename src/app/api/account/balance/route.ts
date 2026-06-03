@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -69,51 +70,58 @@ export async function POST(request: NextRequest) {
     const user = await requireApiUser();
     const input = activateSchema.parse(await request.json());
 
-    const result = await prisma.$transaction(async (tx) => {
-      const certificate = await tx.giftCard.findUnique({
-        where: { code: input.code },
-      });
+    const result = await prisma.$transaction(
+      async (tx) => {
+        const redeemedAt = new Date();
+        const activated = await tx.giftCard.updateMany({
+          where: {
+            code: input.code,
+            status: "ACTIVE",
+            OR: [{ expiresAt: null }, { expiresAt: { gt: redeemedAt } }],
+          },
+          data: {
+            status: "REDEEMED",
+            redeemedByUserId: user.id,
+            redeemedAt,
+          },
+        });
 
-      if (!certificate || certificate.status !== "ACTIVE") {
-        throw new Error("Сертификат не найден или уже активирован.");
-      }
+        if (activated.count !== 1) {
+          throw new Error("Сертификат не найден или уже активирован.");
+        }
 
-      const currentBalance = await tx.userBalance.upsert({
-        where: { userId: user.id },
-        create: { userId: user.id, amountCents: 0 },
-        update: {},
-      });
-      const balanceBefore = currentBalance.amountCents;
-      const balanceAfter = balanceBefore + certificate.amountCents;
+        const certificate = await tx.giftCard.findUniqueOrThrow({
+          where: { code: input.code },
+        });
 
-      const [updatedBalance, transaction, updatedCertificate] = await Promise.all([
-        tx.userBalance.update({
+        await tx.userBalance.upsert({
           where: { userId: user.id },
-          data: { amountCents: balanceAfter },
-        }),
-        tx.balanceTransaction.create({
+          create: { userId: user.id, amountCents: 0 },
+          update: {},
+        });
+        const updatedBalance = await tx.userBalance.update({
+          where: { userId: user.id },
+          data: { amountCents: { increment: certificate.amountCents } },
+        });
+        const balanceBefore = updatedBalance.amountCents - certificate.amountCents;
+        const transaction = await tx.balanceTransaction.create({
           data: {
             userId: user.id,
             type: "gift_certificate_activation",
             amountCents: certificate.amountCents,
             balanceBeforeCents: balanceBefore,
-            balanceAfterCents: balanceAfter,
+            balanceAfterCents: updatedBalance.amountCents,
             certificateCode: certificate.code,
             orderId: certificate.orderId,
           },
-        }),
-        tx.giftCard.update({
-          where: { id: certificate.id },
-          data: {
-            status: "REDEEMED",
-            redeemedByUserId: user.id,
-            redeemedAt: new Date(),
-          },
-        }),
-      ]);
+        });
 
-      return { updatedBalance, transaction, updatedCertificate };
-    });
+        return { updatedBalance, transaction, updatedCertificate: certificate };
+      },
+      {
+        isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
+      },
+    );
 
     return NextResponse.json({
       balance: balanceFromDb(result.updatedBalance),

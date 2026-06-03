@@ -18,8 +18,8 @@ export function BrandLogo({
     <Link href="/" className={cn("flex shrink-0 items-center gap-2 sm:gap-2.5", className)}>
       <span className="block w-11 shrink-0 sm:w-[2.95rem]">
         <Image
-          src="/apex-logo-preview.png"
-          alt="Apex Store"
+          src="/velocity-logo-preview.png"
+          alt="Velocity Club"
           width={405}
           height={240}
           className={cn("h-auto w-full", markClassName)}
@@ -37,7 +37,7 @@ export function BrandLogo({
             titleClassName,
           )}
         >
-          Apex Store
+          Velocity Club
         </p>
       </div>
     </Link>
