@@ -1,10 +1,11 @@
 import crypto from "node:crypto";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 import {
+  CATALOG_CACHE_TAG,
   deleteProductFromDb,
   readAdminCatalogProductsFromDb,
   readCatalogCollectionsFromDb,
@@ -39,6 +40,7 @@ async function requireAdminApi() {
 }
 
 function revalidateCatalogPaths(productSlug?: string) {
+  revalidateTag(CATALOG_CACHE_TAG);
   revalidatePath("/");
   revalidatePath("/shop");
   revalidatePath("/catalog");
@@ -47,6 +49,9 @@ function revalidateCatalogPaths(productSlug?: string) {
   revalidatePath("/men");
   revalidatePath("/women");
   revalidatePath("/accessories");
+  revalidatePath("/teams");
+  revalidatePath("/pilots");
+  revalidatePath("/legends");
 
   if (productSlug) {
     revalidatePath(`/product/${productSlug}`);

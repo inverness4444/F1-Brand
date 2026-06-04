@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 
 const globalForPrisma = globalThis as unknown as {
   prisma?: PrismaClient;
+  prismaDatabaseUrl?: string;
 };
 
 const DEFAULT_RUNTIME_CONNECTION_LIMIT = "5";
@@ -36,7 +37,10 @@ function setSearchParam(url: URL, name: string, fallbackValue: string, overrideV
 }
 
 function getRuntimeDatabaseUrl() {
-  const databaseUrl = process.env.DATABASE_URL;
+  const databaseUrl =
+    process.env.NODE_ENV === "development" && process.env.DIRECT_DATABASE_URL
+      ? process.env.DIRECT_DATABASE_URL
+      : process.env.DATABASE_URL;
 
   if (!databaseUrl) {
     return undefined;
@@ -72,10 +76,18 @@ function getRuntimeDatabaseUrl() {
 }
 
 export function isDatabaseConfigured() {
-  return Boolean(process.env.DATABASE_URL);
+  return Boolean(process.env.DATABASE_URL || process.env.DIRECT_DATABASE_URL);
 }
 
 const runtimeDatabaseUrl = getRuntimeDatabaseUrl();
+const cachedPrisma = globalForPrisma.prisma;
+const cachedPrismaDatabaseUrl = globalForPrisma.prismaDatabaseUrl;
+
+if (process.env.NODE_ENV !== "production" && cachedPrisma && cachedPrismaDatabaseUrl !== runtimeDatabaseUrl) {
+  void cachedPrisma.$disconnect().catch(() => undefined);
+  globalForPrisma.prisma = undefined;
+  globalForPrisma.prismaDatabaseUrl = undefined;
+}
 
 export const prisma =
   globalForPrisma.prisma ??
@@ -86,4 +98,5 @@ export const prisma =
 
 if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = prisma;
+  globalForPrisma.prismaDatabaseUrl = runtimeDatabaseUrl;
 }

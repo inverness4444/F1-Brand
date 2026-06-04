@@ -3,6 +3,7 @@
     "id": "custom-collection-1778238094720",
     "slug": "collection-1778238094719",
     "name": "Silver",
+    "visible": true,
     "productIds": [
       "custom-1778237923034",
       "custom-1777482490798",
@@ -39,6 +40,7 @@
     "id": "custom-collection-1778182276701",
     "slug": "collection-1778182276701",
     "name": "Blackout",
+    "visible": true,
     "productIds": [
       "custom-1778091405277",
       "custom-1778091497744",
@@ -74,7 +76,8 @@
   {
     "id": "custom-collection-1778443076728",
     "slug": "collection-1778443076728",
-    "name": "Racing x Football",
+    "name": "F1 x Football",
+    "visible": true,
     "productIds": [
       "custom-1778443157328",
       "custom-1778443251861",

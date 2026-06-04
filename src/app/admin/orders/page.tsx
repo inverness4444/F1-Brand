@@ -3,10 +3,10 @@ import Link from "next/link";
 import type { FulfillmentStatus, OrderStatus, PaymentStatus, Prisma } from "@prisma/client";
 
 import { AdminPagination } from "@/components/admin-pagination";
+import { AdminOrderStatusSelect } from "@/components/admin-order-forms";
 import {
   adminFulfillmentStatusLabel,
   adminFulfillmentStatusOptions,
-  adminOrderStatusLabel,
   adminOrderStatusOptions,
   adminPaymentStatusLabel,
   adminPaymentStatusOptions,
@@ -272,9 +272,7 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
                     <td className="px-5 py-4 font-semibold text-slate-900">{formatPrice(order.total)}</td>
                     <td className="px-5 py-4">
                       <div className="flex flex-col gap-2">
-                        <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
-                          {adminOrderStatusLabel[order.status]}
-                        </span>
+                        <AdminOrderStatusSelect orderId={order.id} status={order.status} />
                         <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800">
                           {adminPaymentStatusLabel[order.paymentStatus]}
                         </span>

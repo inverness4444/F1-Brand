@@ -16,6 +16,7 @@ export const storageKeys = {
   cart: "f1-brand-cart-v2-empty",
   checkoutOrder: "velocity-club-checkout-order-v1",
   authRateLimit: "velocity-club-auth-rate-limit-v1",
+  analyticsSession: "velocity-club-analytics-session-v1",
 } as const;
 
 export type StorageEntity =

@@ -15,6 +15,8 @@ type TeamsPageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
+export const revalidate = 300;
+
 export async function generateMetadata({ searchParams }: TeamsPageProps): Promise<Metadata> {
   const [products, params] = await Promise.all([readCatalogProductsFromDb(), searchParams]);
   const teamProducts = products.filter((product) => Boolean(product.teamSlug));

@@ -19,6 +19,7 @@ import {
   sizeOptions,
   teams as rosterTeams,
 } from "@/lib/data/roster";
+import { trackAnalyticsEvent } from "@/services/analytics-service";
 import { useShopStore } from "@/store/shop-store";
 
 type FilterSize = Exclude<ProductSize, "One Size">;
@@ -95,6 +96,13 @@ const sectionHeading: Record<ShopSection, string> = {
   pilots: "Коллекции пилотов Velocity Club",
   legends: "Коллекции легенд Velocity Club",
   accessories: "Аксессуары и подарки Velocity Club",
+};
+const sectionAnalyticsName: Record<ShopSection, string> = {
+  all: "Все товары",
+  teams: "Команды",
+  pilots: "Пилоты",
+  legends: "Легенды",
+  accessories: "Аксессуары",
 };
 
 function matchesShopSection(product: Product, section: ShopSection) {
@@ -181,6 +189,10 @@ function appendQueryValues(params: URLSearchParams, key: string, values: string[
   });
 }
 
+function categoryLabel(value: CatalogCategory | "All") {
+  return categoryFilterOptions.find((option) => option.value === value)?.label ?? value;
+}
+
 export function ShopShell({
   section = "all",
   initialParams = {},
@@ -191,6 +203,7 @@ export function ShopShell({
   const pathname = usePathname();
   const router = useRouter();
   const hasInitializedFromParamsRef = useRef(false);
+  const lastCategoryOpenRef = useRef<string | null>(null);
   const { collections: catalogCollections, hasHydrated, products } = useCatalogProducts();
   const {
     category,
@@ -349,6 +362,92 @@ export function ShopShell({
     showPriceFilter;
 
   useEffect(() => {
+    const categoryId = section === "all" ? scopedCategory : section;
+    const entityName = section === "all" ? categoryLabel(scopedCategory) : sectionAnalyticsName[section];
+    const eventKey = `${section}:${categoryId}`;
+
+    if (lastCategoryOpenRef.current === eventKey) {
+      return;
+    }
+
+    lastCategoryOpenRef.current = eventKey;
+    trackAnalyticsEvent({
+      eventType: "category_open",
+      entityType: "category",
+      entityId: categoryId,
+      entityName,
+      metadata: {
+        section,
+        source: "shop_shell",
+      },
+    });
+  }, [scopedCategory, section]);
+
+  const trackFilterClick = (filterType: string, value: string, label = value) => {
+    trackAnalyticsEvent({
+      eventType: "filter_click",
+      entityType: "filter",
+      entityId: `${filterType}-${value}`,
+      entityName: `${filterType}: ${label}`,
+      metadata: {
+        filterType,
+        value,
+        section,
+      },
+    });
+  };
+
+  const handleSetCategory = (value: CatalogCategory | "All") => {
+    trackFilterClick("category", value, categoryLabel(value));
+    setCategory(value);
+  };
+
+  const handleToggleColor = (value: (typeof scopedColors)[number]) => {
+    trackFilterClick("color", value);
+    toggleColor(value);
+  };
+
+  const handleToggleTeam = (value: string) => {
+    trackFilterClick("team", value);
+    toggleTeam(value);
+  };
+
+  const handleToggleDriver = (value: string) => {
+    trackFilterClick("driver", value);
+    toggleDriver(value);
+  };
+
+  const handleToggleLegend = (value: string) => {
+    trackFilterClick("legend", value);
+    toggleLegend(value);
+  };
+
+  const handleToggleCollection = (value: string) => {
+    trackFilterClick("collection", value);
+    toggleCollection(value);
+  };
+
+  const handleToggleType = (value: ProductType) => {
+    trackFilterClick("type", value);
+    toggleType(value);
+  };
+
+  const handleToggleSize = (value: FilterSize) => {
+    trackFilterClick("size", value);
+    toggleSize(value);
+  };
+
+  const handleSetSort = (value: Parameters<typeof setSort>[0]) => {
+    trackFilterClick("sort", value);
+    setSort(value);
+  };
+
+  const handleClearAll = () => {
+    trackFilterClick("clear", "all", "Сбросить фильтры");
+    clearAll();
+  };
+
+  useEffect(() => {
     if (!hasInitializedFromParamsRef.current) {
       return;
     }
@@ -433,16 +532,16 @@ export function ShopShell({
             collections={scopedCollections}
             types={scopedTypes}
             sizes={scopedSizes}
-            setCategory={setCategory}
+            setCategory={handleSetCategory}
             setPriceRange={setPriceRange}
-            toggleColor={toggleColor}
-            toggleTeam={toggleTeam}
-            toggleDriver={toggleDriver}
-            toggleLegend={toggleLegend}
-            toggleCollection={toggleCollection}
-            toggleType={toggleType}
-            toggleSize={toggleSize}
-            clearAll={clearAll}
+            toggleColor={handleToggleColor}
+            toggleTeam={handleToggleTeam}
+            toggleDriver={handleToggleDriver}
+            toggleLegend={handleToggleLegend}
+            toggleCollection={handleToggleCollection}
+            toggleType={handleToggleType}
+            toggleSize={handleToggleSize}
+            clearAll={handleClearAll}
             showCategoryFilter={config.showCategoryFilter}
             showTeamFilter={config.showTeamFilter}
             showDriverFilter={config.showDriverFilter}
@@ -465,11 +564,11 @@ export function ShopShell({
               </div>
 
               <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
-                <SortDropdown value={sort} onChange={setSort} />
+                <SortDropdown value={sort} onChange={handleSetSort} />
                 {hasFiltersOrSearch ? (
                   <button
                     type="button"
-                    onClick={clearAll}
+                    onClick={handleClearAll}
                     className="text-[0.95rem] font-medium text-[#111111] underline underline-offset-4"
                   >
                     Сбросить
@@ -500,16 +599,16 @@ export function ShopShell({
                 types={scopedTypes}
                 sizes={scopedSizes}
                 setOpen={setMobileFiltersOpen}
-                setCategory={setCategory}
+                setCategory={handleSetCategory}
                 setPriceRange={setPriceRange}
-                toggleColor={toggleColor}
-                toggleTeam={toggleTeam}
-                toggleDriver={toggleDriver}
-                toggleLegend={toggleLegend}
-                toggleCollection={toggleCollection}
-                toggleType={toggleType}
-                toggleSize={toggleSize}
-                clearAll={clearAll}
+                toggleColor={handleToggleColor}
+                toggleTeam={handleToggleTeam}
+                toggleDriver={handleToggleDriver}
+                toggleLegend={handleToggleLegend}
+                toggleCollection={handleToggleCollection}
+                toggleType={handleToggleType}
+                toggleSize={handleToggleSize}
+                clearAll={handleClearAll}
                 showCategoryFilter={config.showCategoryFilter}
                 showTeamFilter={config.showTeamFilter}
                 showDriverFilter={config.showDriverFilter}

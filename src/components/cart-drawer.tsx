@@ -15,6 +15,7 @@ import { formatPrice, getProductHref } from "@/lib/utils";
 import { colorLabelRu, getCollectionLabel, getProductDisplayName, sizeLabelRu } from "@/lib/storefront-text";
 import { sanitizePromoCode } from "@/lib/security-utils";
 import { promoCodeSchema } from "@/lib/validation-schemas";
+import { trackAnalyticsEvent } from "@/services/analytics-service";
 import { giftCertificateService } from "@/services/gift-certificate-service";
 import { useCartStore } from "@/store/cart-store";
 import { Button, buttonClassName } from "@/components/ui/button";
@@ -64,6 +65,48 @@ export function CartDrawer() {
   const total = Math.max(0, subtotal - discount + shipping);
   const onlyGiftCertificates =
     enrichedItems.length > 0 && enrichedItems.every((entry) => entry.product.productType === "gift_certificate");
+
+  const handleRemoveItem = (entry: (typeof enrichedItems)[number]) => {
+    removeItem(entry.product.id, entry.color, entry.size);
+    trackAnalyticsEvent({
+      eventType: "remove_from_cart",
+      entityType: "product",
+      entityId: entry.product.id,
+      entityName: getProductDisplayName(entry.product),
+      metadata: {
+        color: entry.color,
+        size: entry.size,
+        quantity: entry.quantity,
+      },
+    });
+  };
+
+  const handleCheckoutStart = () => {
+    trackAnalyticsEvent({
+      eventType: "checkout_start",
+      entityType: "checkout",
+      entityName: "Checkout",
+      metadata: {
+        source: "cart_drawer",
+        itemCount: enrichedItems.reduce((sum, entry) => sum + entry.quantity, 0),
+        total,
+      },
+    });
+    closeCart();
+  };
+
+  const handleClearCart = () => {
+    trackAnalyticsEvent({
+      eventType: "remove_from_cart",
+      entityType: "cart",
+      entityName: "Очистка корзины",
+      metadata: {
+        source: "cart_drawer",
+        itemCount: enrichedItems.reduce((sum, entry) => sum + entry.quantity, 0),
+      },
+    });
+    clearCart();
+  };
 
   const applyPromoCode = () => {
     const parsedPromo = promoCodeSchema.safeParse({ code: promoCode });
@@ -187,7 +230,7 @@ export function CartDrawer() {
                             </div>
                             <button
                               type="button"
-                              onClick={() => removeItem(entry.product.id, entry.color, entry.size)}
+                              onClick={() => handleRemoveItem(entry)}
                               className="text-[#7b7a75] transition hover:text-[#111111]"
                               aria-label="Удалить товар"
                             >
@@ -325,12 +368,12 @@ export function CartDrawer() {
 
               <Link
                 href="/checkout"
-                onClick={closeCart}
+                onClick={handleCheckoutStart}
                 className={buttonClassName({ fullWidth: true, className: "mt-4" })}
               >
                 Оформить заказ
               </Link>
-              <Button fullWidth variant="secondary" className="mt-3" onClick={clearCart}>
+              <Button fullWidth variant="secondary" className="mt-3" onClick={handleClearCart}>
                 Очистить корзину
               </Button>
             </div>

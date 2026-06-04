@@ -3,9 +3,11 @@
 import { LogOut } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import { accountNavigation } from "@/lib/account-constants";
 import { canAccessAdmin } from "@/lib/security-utils";
+import { notificationService } from "@/services/notification-service";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth-store";
 import { useToastStore } from "@/store/toast-store";
@@ -25,9 +27,35 @@ export function AccountSidebar() {
   const currentUser = useAuthStore((state) => state.currentUser);
   const logout = useAuthStore((state) => state.logout);
   const pushToast = useToastStore((state) => state.pushToast);
+  const [unreadCount, setUnreadCount] = useState(0);
   const navigationItems = canAccessAdmin(currentUser)
     ? [...accountNavigation, { href: "/admin", label: "Админка" }]
     : accountNavigation;
+
+  useEffect(() => {
+    if (!currentUser) {
+      setUnreadCount(0);
+      return;
+    }
+
+    let ignore = false;
+    void notificationService
+      .list()
+      .then((result) => {
+        if (!ignore) {
+          setUnreadCount(result.unreadCount);
+        }
+      })
+      .catch(() => {
+        if (!ignore) {
+          setUnreadCount(0);
+        }
+      });
+
+    return () => {
+      ignore = true;
+    };
+  }, [currentUser]);
 
   const handleLogout = async () => {
     await logout();
@@ -54,8 +82,18 @@ export function AccountSidebar() {
                     : "border-slate-200 bg-white text-slate-600 hover:border-slate-300",
                 )}
               >
-                <span className={cn("block text-center", active ? "text-red-700" : "group-hover:text-slate-900")}>
+                <span
+                  className={cn(
+                    "flex items-center justify-center gap-2 text-center",
+                    active ? "text-red-700" : "group-hover:text-slate-900",
+                  )}
+                >
                   {item.label}
+                  {item.href === "/account/notifications" && unreadCount > 0 ? (
+                    <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-red-600 px-1.5 text-xs font-semibold leading-5 text-white">
+                      {unreadCount}
+                    </span>
+                  ) : null}
                 </span>
               </Link>
             );
@@ -97,13 +135,25 @@ export function AccountSidebar() {
                     : "text-slate-600 hover:bg-slate-50",
                 )}
               >
-                <span
-                  className={cn(
-                    "truncate",
-                    active ? "font-semibold text-white" : "text-slate-600 group-hover:text-slate-900",
-                  )}
-                >
-                  {item.label}
+                <span className="flex min-w-0 flex-1 items-center justify-between gap-3">
+                  <span
+                    className={cn(
+                      "truncate",
+                      active ? "font-semibold text-white" : "text-slate-600 group-hover:text-slate-900",
+                    )}
+                  >
+                    {item.label}
+                  </span>
+                  {item.href === "/account/notifications" && unreadCount > 0 ? (
+                    <span
+                      className={cn(
+                        "inline-flex min-w-5 shrink-0 items-center justify-center rounded-full px-1.5 text-xs font-semibold leading-5",
+                        active ? "bg-white text-slate-900" : "bg-red-600 text-white",
+                      )}
+                    >
+                      {unreadCount}
+                    </span>
+                  ) : null}
                 </span>
               </Link>
             );

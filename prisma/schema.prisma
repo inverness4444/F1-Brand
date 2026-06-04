@@ -73,6 +73,18 @@ enum GiftCardStatus {
   CANCELLED
 }
 
+enum SiteNotificationType {
+  ORDER_CREATED
+  ORDER_PAID
+  ORDER_STATUS_UPDATED
+  ADMIN_NEW_ORDER
+}
+
+enum NewsletterSubscriberStatus {
+  ACTIVE
+  UNSUBSCRIBED
+}
+
 enum InventoryMovementType {
   ADJUSTMENT
   SALE
@@ -106,6 +118,9 @@ model User {
   giftCardsRedeemed GiftCard[]           @relation("GiftCardsRedeemed")
   balance           UserBalance?
   balanceEntries    BalanceTransaction[]
+  notifications      SiteNotification[]
+  statusChanges      OrderStatusChangeLog[] @relation("OrderStatusChangedBy")
+  analyticsEvents    AnalyticsEvent[]
 
   @@index([role])
   @@index([status])
@@ -223,6 +238,8 @@ model Product {
   @@index([categoryId])
   @@index([collectionId])
   @@index([createdAt])
+  @@index([status, createdAt])
+  @@index([status, categoryId, createdAt])
 }
 
 model ProductImage {
@@ -274,8 +291,10 @@ model ProductVariant {
 
   @@unique([productId, sizeId, colorId])
   @@index([productId])
+  @@index([productId, active])
   @@index([sizeId])
   @@index([colorId])
+  @@index([stock])
 }
 
 model Cart {
@@ -394,12 +413,17 @@ model Order {
   webhookEvents             WebhookEvent[]
   giftCards                 GiftCard[]
   balanceEntries            BalanceTransaction[]
+  notifications             SiteNotification[]
+  statusChangeLogs          OrderStatusChangeLog[]
 
   @@index([userId])
   @@index([status])
   @@index([paymentStatus])
   @@index([fulfillmentStatus])
   @@index([createdAt])
+  @@index([userId, createdAt])
+  @@index([status, createdAt])
+  @@index([paymentStatus, createdAt])
 }
 
 model OrderItem {
@@ -427,6 +451,55 @@ model OrderItem {
   @@index([orderId])
   @@index([productId])
   @@index([variantId])
+}
+
+model SiteNotification {
+  id        String               @id @default(cuid())
+  userId    String
+  orderId   String?
+  type      SiteNotificationType
+  title     String
+  message   String
+  isRead    Boolean              @default(false)
+  readAt    DateTime?
+  dedupeKey String?              @unique
+  createdAt DateTime             @default(now())
+  user      User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  order     Order?               @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  @@index([userId, isRead, createdAt])
+  @@index([orderId])
+  @@index([type])
+  @@index([createdAt])
+}
+
+model OrderStatusChangeLog {
+  id          String      @id @default(cuid())
+  orderId     String
+  adminUserId String?
+  oldStatus   OrderStatus
+  newStatus   OrderStatus
+  createdAt   DateTime    @default(now())
+  order       Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  admin       User?       @relation("OrderStatusChangedBy", fields: [adminUserId], references: [id], onDelete: SetNull)
+
+  @@index([orderId, createdAt])
+  @@index([adminUserId])
+  @@index([createdAt])
+}
+
+model NewsletterSubscriber {
+  id        String                     @id @default(cuid())
+  email     String                     @unique
+  status    NewsletterSubscriberStatus @default(ACTIVE)
+  source    String?
+  createdAt DateTime                   @default(now())
+  updatedAt DateTime                   @updatedAt
+
+  @@index([status])
+  @@index([source])
+  @@index([createdAt])
+  @@index([status, createdAt])
 }
 
 model Payment {
@@ -504,6 +577,28 @@ model WebhookEvent {
   @@index([paymentId])
   @@index([orderId])
   @@index([processed])
+}
+
+model AnalyticsEvent {
+  id         String   @id @default(cuid())
+  eventType  String
+  entityType String
+  entityId   String?
+  entityName String?
+  userId     String?
+  sessionId  String?
+  path       String
+  referrer   String?
+  deviceType String
+  metadata   Json?
+  createdAt  DateTime @default(now())
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([eventType, createdAt])
+  @@index([entityType, entityId, createdAt])
+  @@index([userId, createdAt])
+  @@index([sessionId, createdAt])
+  @@index([createdAt])
 }
 
 model PromoCode {

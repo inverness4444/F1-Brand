@@ -1,6 +1,7 @@
 import "server-only";
 
 import type { Prisma } from "@prisma/client";
+import { unstable_cache } from "next/cache";
 
 import type {
   CatalogCategory,
@@ -17,8 +18,12 @@ import { prisma, isDatabaseConfigured } from "@/lib/prisma";
 import {
   readCatalogCollectionsFromFile,
   readCatalogProductsFromFile,
+  writeCatalogToFiles,
 } from "@/lib/server/catalog-file";
 import { slugify } from "@/lib/utils";
+
+export const CATALOG_CACHE_TAG = "catalog";
+export const PUBLIC_CATALOG_REVALIDATE_SECONDS = 5 * 60;
 
 export const dbProductInclude = {
   category: true,
@@ -117,6 +122,14 @@ const validColors = new Set<ProductColor>([
   "Pink",
 ]);
 const validSizes = new Set<ProductSize>(["XS", "S", "M", "L", "XL", "XXL", "One Size"]);
+const legacySystemCollectionNames = new Set([
+  "New Arrivals",
+  "Teamwear",
+  "Driver Collection",
+  "Legends",
+  "Essentials",
+  "Sale",
+]);
 
 function unique<T>(values: T[]) {
   return [...new Set(values)];
@@ -300,7 +313,7 @@ export function collectionFromDb(collection: DbCollection): CatalogCollection {
   };
 }
 
-export async function readCatalogProductsFromDb() {
+async function readCatalogProductsFresh() {
   if (!(await canReadCatalogFromDatabase())) {
     return readCatalogProductsFromFile();
   }
@@ -332,8 +345,21 @@ export async function readCatalogProductsFromDb() {
   }
 }
 
+const readCachedCatalogProducts = unstable_cache(readCatalogProductsFresh, ["catalog-products"], {
+  revalidate: PUBLIC_CATALOG_REVALIDATE_SECONDS,
+  tags: [CATALOG_CACHE_TAG],
+});
+
+export async function readCatalogProductsFromDb() {
+  if (process.env.NODE_ENV === "development" || isFileCatalogForced()) {
+    return readCatalogProductsFresh();
+  }
+
+  return readCachedCatalogProducts();
+}
+
 export async function readAdminCatalogProductsFromDb() {
-  if (!isDatabaseConfigured()) {
+  if (!isDatabaseConfigured() || isFileCatalogForced()) {
     return readCatalogProductsFromFile();
   }
 
@@ -371,7 +397,219 @@ function mergeCollectionsByName(collections: CatalogCollection[]) {
   }, []);
 }
 
-export async function readCatalogCollectionsFromDb(options: CollectionReadOptions = {}) {
+function createUniqueCollectionSlugFromList(
+  baseSlug: string,
+  collectionId: string,
+  collections: CatalogCollection[],
+) {
+  const normalizedBase = slugify(baseSlug) || "collection";
+  let candidate = normalizedBase;
+  let index = 2;
+
+  while (collections.some((collection) => collection.slug === candidate && collection.id !== collectionId)) {
+    candidate = `${normalizedBase}-${index}`;
+    index += 1;
+  }
+
+  return candidate;
+}
+
+function firstCustomCollectionName(collectionTags: string[]) {
+  return collectionTags.find((tag) => !legacySystemCollectionNames.has(tag)) ?? "";
+}
+
+function productFileCollectionNames(product: Product) {
+  return unique([product.collection, ...product.collectionTags].filter(Boolean)).filter(
+    (name) => !legacySystemCollectionNames.has(name),
+  );
+}
+
+function ensureFileCollectionsForProducts(collections: CatalogCollection[], products: Product[]) {
+  const nextCollections = [...collections];
+
+  for (const product of products) {
+    for (const collectionName of productFileCollectionNames(product)) {
+      if (nextCollections.some((collection) => collection.name === collectionName)) {
+        continue;
+      }
+
+      const id = createUniqueCollectionSlugFromList(collectionName, slugify(collectionName), nextCollections);
+      nextCollections.push({
+        id,
+        slug: id,
+        name: collectionName,
+        visible: true,
+        productIds: [],
+        createdAt: new Date().toISOString(),
+      });
+    }
+  }
+
+  return nextCollections;
+}
+
+function syncFileCollectionsWithProducts(collections: CatalogCollection[], products: Product[]) {
+  const productIds = new Set(products.map((product) => product.id));
+
+  return mergeCollectionsByName(collections).map((collection) => {
+    const matchingProductIds = products
+      .filter((product) => product.collection === collection.name || product.collectionTags.includes(collection.name))
+      .map((product) => product.id);
+
+    return {
+      ...collection,
+      productIds: unique([
+        ...collection.productIds.filter((productId) => productIds.has(productId)),
+        ...matchingProductIds,
+      ]),
+    };
+  });
+}
+
+async function upsertProductInFileCatalog(product: Product) {
+  const [products, collections] = await Promise.all([
+    readCatalogProductsFromFile(),
+    readCatalogCollectionsFromFile(),
+  ]);
+  const nextProducts = [
+    ...products.filter((item) => item.id !== product.id),
+    product,
+  ];
+  const nextCollections = syncFileCollectionsWithProducts(
+    ensureFileCollectionsForProducts(collections, nextProducts),
+    nextProducts,
+  );
+
+  await writeCatalogToFiles(nextProducts, nextCollections);
+
+  const refreshedProducts = await readCatalogProductsFromFile();
+  return refreshedProducts.find((item) => item.id === product.id) ?? product;
+}
+
+async function upsertCollectionInFileCatalog(
+  collection: CatalogCollection,
+  productIds: string[] = collection.productIds,
+) {
+  const [products, collections] = await Promise.all([
+    readCatalogProductsFromFile(),
+    readCatalogCollectionsFromFile(),
+  ]);
+  const existingCollection =
+    collections.find((item) => item.id === collection.id) ??
+    collections.find((item) => item.slug === collection.slug);
+  const collectionId = existingCollection?.id ?? (collection.id || collection.slug || `collection-${Date.now()}`);
+  const slug = createUniqueCollectionSlugFromList(
+    collection.slug || collection.name || collectionId,
+    collectionId,
+    collections,
+  );
+  const previousName = existingCollection?.name;
+  const selectedProductIds = new Set(productIds.filter((productId) => products.some((product) => product.id === productId)));
+  const savedCollection: CatalogCollection = {
+    ...collection,
+    id: collectionId,
+    slug,
+    visible: collection.visible ?? true,
+    productIds: [...selectedProductIds],
+    createdAt: collection.createdAt || existingCollection?.createdAt || new Date().toISOString(),
+  };
+  const nextProducts = products.map((product) => {
+    const tagsWithoutPrevious = previousName
+      ? product.collectionTags.filter((tag) => tag !== previousName)
+      : product.collectionTags;
+    const tagsWithoutCurrent = tagsWithoutPrevious.filter((tag) => tag !== savedCollection.name);
+    const shouldInclude = selectedProductIds.has(product.id);
+    const collectionTags = shouldInclude
+      ? unique([savedCollection.name, ...tagsWithoutCurrent])
+      : tagsWithoutCurrent;
+    const nextCollection =
+      shouldInclude || product.collection === previousName || product.collection === savedCollection.name
+        ? firstCustomCollectionName(collectionTags)
+        : product.collection;
+
+    return {
+      ...product,
+      collection: nextCollection,
+      collectionTags,
+    };
+  });
+  const nextCollections = syncFileCollectionsWithProducts(
+    [
+      ...collections.filter((item) => item.id !== savedCollection.id),
+      savedCollection,
+    ],
+    nextProducts,
+  );
+
+  await writeCatalogToFiles(nextProducts, nextCollections);
+
+  const refreshedCollections = await readCatalogCollectionsFromFile();
+  return {
+    collection: refreshedCollections.find((item) => item.id === savedCollection.id) ?? savedCollection,
+    previousSlug: existingCollection?.slug,
+  };
+}
+
+async function deleteProductFromFileCatalog(productId: string) {
+  const [products, collections] = await Promise.all([
+    readCatalogProductsFromFile(),
+    readCatalogCollectionsFromFile(),
+  ]);
+  const product = products.find((item) => item.id === productId);
+
+  if (!product) {
+    return null;
+  }
+
+  const nextProducts = products.filter((item) => item.id !== productId);
+  const nextCollections = syncFileCollectionsWithProducts(collections, nextProducts);
+
+  await writeCatalogToFiles(nextProducts, nextCollections);
+
+  return {
+    id: product.id,
+    slug: product.slug,
+  };
+}
+
+async function deleteCollectionFromFileCatalog(collectionId: string) {
+  const [products, collections] = await Promise.all([
+    readCatalogProductsFromFile(),
+    readCatalogCollectionsFromFile(),
+  ]);
+  const collection = collections.find((item) => item.id === collectionId);
+
+  if (!collection) {
+    return null;
+  }
+
+  const nextProducts = products.map((product) => {
+    if (product.collection !== collection.name && !product.collectionTags.includes(collection.name)) {
+      return product;
+    }
+
+    const collectionTags = product.collectionTags.filter((tag) => tag !== collection.name);
+
+    return {
+      ...product,
+      collection: product.collection === collection.name ? firstCustomCollectionName(collectionTags) : product.collection,
+      collectionTags,
+    };
+  });
+  const nextCollections = syncFileCollectionsWithProducts(
+    collections.filter((item) => item.id !== collectionId),
+    nextProducts,
+  );
+
+  await writeCatalogToFiles(nextProducts, nextCollections);
+
+  return {
+    id: collection.id,
+    slug: collection.slug,
+  };
+}
+
+async function readCatalogCollectionsFresh(options: CollectionReadOptions = {}) {
   if (!(await canReadCatalogFromDatabase())) {
     return mergeCollectionsByName(filterVisibleCollections(await readCatalogCollectionsFromFile(), options));
   }
@@ -405,6 +643,23 @@ export async function readCatalogCollectionsFromDb(options: CollectionReadOption
     markCatalogDatabaseUnavailable();
     return mergeCollectionsByName(filterVisibleCollections(await readCatalogCollectionsFromFile(), options));
   }
+}
+
+const readCachedVisibleCatalogCollections = unstable_cache(
+  () => readCatalogCollectionsFresh(),
+  ["catalog-collections-visible"],
+  {
+    revalidate: PUBLIC_CATALOG_REVALIDATE_SECONDS,
+    tags: [CATALOG_CACHE_TAG],
+  },
+);
+
+export async function readCatalogCollectionsFromDb(options: CollectionReadOptions = {}) {
+  if (options.includeHidden || process.env.NODE_ENV === "development" || isFileCatalogForced()) {
+    return readCatalogCollectionsFresh(options);
+  }
+
+  return readCachedVisibleCatalogCollections();
 }
 
 async function ensureCategory(category: CatalogCategory) {
@@ -494,11 +749,35 @@ async function createUniqueProductSlug(baseSlug: string, productId: string) {
   }
 }
 
+async function createUniqueCollectionSlug(baseSlug: string, collectionId: string) {
+  const normalizedBase = slugify(baseSlug) || "collection";
+  let candidate = normalizedBase;
+  let index = 2;
+
+  while (true) {
+    const existing = await prisma.collection.findUnique({
+      where: { slug: candidate },
+      select: { id: true },
+    });
+
+    if (!existing || existing.id === collectionId) {
+      return candidate;
+    }
+
+    candidate = `${normalizedBase}-${index}`;
+    index += 1;
+  }
+}
+
 function variantKey(size: ProductSize, color: ProductColor) {
   return `${size}::${color}`;
 }
 
 export async function upsertProductFromCatalogPayload(product: Product) {
+  if (isFileCatalogForced()) {
+    return upsertProductInFileCatalog(product);
+  }
+
   const category = await ensureCategory(product.category);
   const primaryCollection = product.collection ? await ensureCollection(product.collection) : null;
   const slug = await createUniqueProductSlug(product.slug || product.name, product.id);
@@ -656,7 +935,159 @@ export async function upsertProductFromCatalogPayload(product: Product) {
   return productFromDb(refreshedProduct);
 }
 
+export async function upsertCollectionFromCatalogPayload(
+  collection: CatalogCollection,
+  productIds: string[] = collection.productIds,
+) {
+  if (isFileCatalogForced()) {
+    return upsertCollectionInFileCatalog(collection, productIds);
+  }
+
+  const existingCollection =
+    (collection.id
+      ? await prisma.collection.findUnique({
+          where: { id: collection.id },
+          select: {
+            id: true,
+            slug: true,
+          },
+        })
+      : null) ??
+    (collection.slug
+      ? await prisma.collection.findUnique({
+          where: { slug: collection.slug },
+          select: {
+            id: true,
+            slug: true,
+          },
+        })
+      : null);
+  const targetId = existingCollection?.id ?? (collection.id || collection.slug || `collection-${Date.now()}`);
+  const slug = await createUniqueCollectionSlug(collection.slug || collection.name || targetId, targetId);
+  const uniqueProductIds = unique(productIds.filter(Boolean));
+
+  const { savedCollection, previousSlug } = await prisma.$transaction(async (tx) => {
+    const existingProducts =
+      uniqueProductIds.length > 0
+        ? await tx.product.findMany({
+            where: {
+              id: {
+                in: uniqueProductIds,
+              },
+            },
+            select: {
+              id: true,
+            },
+          })
+        : [];
+    const existingProductIds = existingProducts.map((product) => product.id);
+    const saved = await tx.collection.upsert({
+      where: { id: targetId },
+      create: {
+        id: targetId,
+        slug,
+        name: collection.name,
+        visible: collection.visible,
+        createdAt: new Date(collection.createdAt),
+      },
+      update: {
+        slug,
+        name: collection.name,
+        visible: collection.visible,
+      },
+    });
+
+    await tx.productCollection.deleteMany({
+      where: {
+        collectionId: saved.id,
+      },
+    });
+
+    if (existingProductIds.length > 0) {
+      await tx.productCollection.createMany({
+        data: existingProductIds.map((productId) => ({
+          productId,
+          collectionId: saved.id,
+        })),
+        skipDuplicates: true,
+      });
+
+      await tx.product.updateMany({
+        where: {
+          id: {
+            in: existingProductIds,
+          },
+        },
+        data: {
+          collectionId: saved.id,
+        },
+      });
+    }
+
+    const productsLosingPrimaryCollection = await tx.product.findMany({
+      where: {
+        collectionId: saved.id,
+        ...(existingProductIds.length > 0
+          ? {
+              id: {
+                notIn: existingProductIds,
+              },
+            }
+          : {}),
+      },
+      select: {
+        id: true,
+        collections: {
+          where: {
+            collectionId: {
+              not: saved.id,
+            },
+          },
+          select: {
+            collectionId: true,
+          },
+          take: 1,
+        },
+      },
+    });
+
+    for (const product of productsLosingPrimaryCollection) {
+      await tx.product.update({
+        where: {
+          id: product.id,
+        },
+        data: {
+          collectionId: product.collections[0]?.collectionId ?? null,
+        },
+      });
+    }
+
+    return {
+      savedCollection: saved,
+      previousSlug: existingCollection?.slug,
+    };
+  });
+
+  const refreshedCollection = await prisma.collection.findUniqueOrThrow({
+    where: {
+      id: savedCollection.id,
+    },
+    include: {
+      productRefs: true,
+    },
+  });
+
+  return {
+    collection: collectionFromDb(refreshedCollection),
+    previousSlug,
+  };
+}
+
 export async function deleteProductFromDb(productId: string) {
+  if (isFileCatalogForced()) {
+    return deleteProductFromFileCatalog(productId);
+  }
+
   const product = await prisma.product.findUnique({
     where: { id: productId },
     select: {
@@ -688,6 +1119,10 @@ export async function deleteProductFromDb(productId: string) {
 }
 
 export async function deleteCollectionFromDb(collectionId: string) {
+  if (isFileCatalogForced()) {
+    return deleteCollectionFromFileCatalog(collectionId);
+  }
+
   const collection = await prisma.collection.findUnique({
     where: { id: collectionId },
     select: {
@@ -708,6 +1143,11 @@ export async function deleteCollectionFromDb(collectionId: string) {
 }
 
 export async function replaceCatalogInDb(products: Product[], collections: CatalogCollection[]) {
+  if (isFileCatalogForced()) {
+    await writeCatalogToFiles(products, collections);
+    return;
+  }
+
   const currentIds = new Set(products.map((product) => product.id));
 
   for (const collection of collections) {

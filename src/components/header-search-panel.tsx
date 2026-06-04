@@ -10,6 +10,7 @@ import { sanitizeSearchQuery } from "@/lib/security-utils";
 import { getProductSearchTerms, normalizeSearchText, resolveSmartSearchTarget } from "@/lib/search-utils";
 import { getProductDisplayName } from "@/lib/storefront-text";
 import { formatPrice, getProductHref } from "@/lib/utils";
+import { trackAnalyticsEvent } from "@/services/analytics-service";
 
 const popularSearches = [
   "lewis hamilton",
@@ -98,6 +99,15 @@ export function HeaderSearchPanel({
               key={item.label}
               href={item.href}
               onClick={() => {
+                trackAnalyticsEvent({
+                  eventType: "search_query",
+                  entityType: "search",
+                  entityId: item.label,
+                  entityName: item.label,
+                  metadata: {
+                    source: "header_suggestion",
+                  },
+                });
                 onSuggestionSelect(item.label);
                 onClose();
               }}
@@ -118,7 +128,19 @@ export function HeaderSearchPanel({
             <Link
               key={product.id}
               href={getProductHref(product)}
-              onClick={onClose}
+              onClick={() => {
+                trackAnalyticsEvent({
+                  eventType: "product_click",
+                  entityType: "product",
+                  entityId: product.id,
+                  entityName: getProductDisplayName(product),
+                  metadata: {
+                    source: "header_search",
+                    query: deferredQuery,
+                  },
+                });
+                onClose();
+              }}
               className="flex items-start gap-3 rounded-[1rem] p-2 transition hover:bg-[#f7f6f2]"
             >
               <div className="relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-[0.9rem] bg-[#f5f4f0] p-2">

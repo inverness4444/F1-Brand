@@ -3,6 +3,8 @@ export const adminNavigation = [
   { href: "/admin/users", label: "Пользователи" },
   { href: "/admin/orders", label: "Заказы" },
   { href: "/admin/addresses", label: "Адреса/доставка" },
+  { href: "/admin/newsletter", label: "Рассылка" },
+  { href: "/admin/analytics", label: "Аналитика" },
 ] as const;
 
 export const adminUserRoleOptions = [
@@ -16,14 +18,14 @@ export const adminUserStatusOptions = [
 ] as const;
 
 export const adminOrderStatusOptions = [
-  { value: "PENDING", label: "Новый" },
+  { value: "PENDING", label: "Создан" },
   { value: "AWAITING_PAYMENT", label: "Ожидает оплаты" },
   { value: "PAID", label: "Оплачен" },
   { value: "PROCESSING", label: "В обработке" },
-  { value: "SHIPPED", label: "Отправлен" },
+  { value: "SHIPPED", label: "Передан в доставку" },
   { value: "DELIVERED", label: "Доставлен" },
   { value: "CANCELLED", label: "Отменён" },
-  { value: "REFUNDED", label: "Возвращён" },
+  { value: "REFUNDED", label: "Возврат" },
 ] as const;
 
 export const adminPaymentStatusOptions = [
@@ -38,11 +40,16 @@ export const adminPaymentStatusOptions = [
 
 export const adminFulfillmentStatusOptions = [
   { value: "NOT_FULFILLED", label: "Не собран" },
-  { value: "PROCESSING", label: "В обработке" },
-  { value: "SHIPPED", label: "Отправлен" },
+  { value: "PROCESSING", label: "Собирается" },
+  { value: "SHIPPED", label: "Передан в доставку" },
   { value: "DELIVERED", label: "Доставлен" },
   { value: "RETURNED", label: "Возвращён" },
   { value: "CANCELLED", label: "Отменён" },
+] as const;
+
+export const adminNewsletterSubscriberStatusOptions = [
+  { value: "ACTIVE", label: "Активен" },
+  { value: "UNSUBSCRIBED", label: "Отписан" },
 ] as const;
 
 export const adminUserRoleLabel = Object.fromEntries(
@@ -64,3 +71,7 @@ export const adminPaymentStatusLabel = Object.fromEntries(
 export const adminFulfillmentStatusLabel = Object.fromEntries(
   adminFulfillmentStatusOptions.map((option) => [option.value, option.label]),
 ) as Record<(typeof adminFulfillmentStatusOptions)[number]["value"], string>;
+
+export const adminNewsletterSubscriberStatusLabel = Object.fromEntries(
+  adminNewsletterSubscriberStatusOptions.map((option) => [option.value, option.label]),
+) as Record<(typeof adminNewsletterSubscriberStatusOptions)[number]["value"], string>;

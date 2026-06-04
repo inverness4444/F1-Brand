@@ -11,6 +11,8 @@ import {
   issueGiftCertificatesForPaidOrder,
   refundOrderBalancePayment,
 } from "@/lib/server/order-fulfillment";
+import { recordAnalyticsEvent } from "@/lib/server/analytics";
+import { notifyOrderPaidOnSite } from "@/lib/server/notifications";
 
 const YOOKASSA_API_BASE_URL = "https://api.yookassa.ru/v3";
 const DEFAULT_CURRENCY = "RUB";
@@ -673,6 +675,37 @@ export async function handleYooKassaWebhook(payload: unknown) {
         isolationLevel: PrismaNamespace.TransactionIsolationLevel.Serializable,
       },
     );
+
+    if (result.orderId) {
+      if (result.status === "SUCCEEDED") {
+        await notifyOrderPaidOnSite(result.orderId);
+      }
+
+      const analyticsEventType =
+        result.status === "SUCCEEDED"
+          ? "payment_succeeded"
+          : result.status === "CANCELED"
+            ? "payment_canceled"
+            : result.status === "FAILED"
+              ? "payment_failed"
+              : null;
+
+      if (analyticsEventType) {
+        await recordAnalyticsEvent({
+          eventType: analyticsEventType,
+          entityType: "payment",
+          entityId: result.orderId,
+          entityName: result.orderId,
+          path: "/api/payments/yookassa/webhook",
+          deviceType: "desktop",
+          metadata: {
+            provider: "YOOKASSA",
+            paymentId: result.paymentId,
+            status: result.status,
+          },
+        });
+      }
+    }
 
     return { processed: true, duplicate: false, eventId: webhookEvent.id, ...result };
   } catch (error) {

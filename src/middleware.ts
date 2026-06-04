@@ -67,8 +67,10 @@ export async function middleware(request: NextRequest) {
   }
 
   const response = NextResponse.next();
+  const isPublicCatalogRead =
+    request.nextUrl.pathname === "/api/catalog" && ["GET", "HEAD"].includes(request.method);
 
-  if (!request.cookies.get(CSRF_COOKIE_NAME)?.value) {
+  if (!isPublicCatalogRead && !request.cookies.get(CSRF_COOKIE_NAME)?.value) {
     response.cookies.set({
       name: CSRF_COOKIE_NAME,
       value: createCsrfToken(),

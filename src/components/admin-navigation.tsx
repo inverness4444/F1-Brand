@@ -1,6 +1,6 @@
 "use client";
 
-import { Package, MapPinned, ReceiptText, Users } from "lucide-react";
+import { BarChart3, Mail, Package, MapPinned, ReceiptText, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -12,6 +12,8 @@ const iconMap = {
   "/admin/users": Users,
   "/admin/orders": ReceiptText,
   "/admin/addresses": MapPinned,
+  "/admin/newsletter": Mail,
+  "/admin/analytics": BarChart3,
 } as const;
 
 function isActive(pathname: string, href: string) {

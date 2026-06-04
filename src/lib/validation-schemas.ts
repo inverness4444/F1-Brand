@@ -3,6 +3,11 @@ import { z } from "zod";
 import type {
   StoredUser,
 } from "@/lib/account-types";
+import {
+  analyticsDeviceTypes,
+  analyticsEntityTypes,
+  analyticsEventTypes,
+} from "@/lib/analytics";
 import { isValidEmail, isValidPhone } from "@/lib/account-utils";
 import {
   SECURITY_LIMITS,
@@ -78,14 +83,20 @@ const prismaOrderStatusSchema = z.enum([
   "REFUNDED",
 ]);
 const orderStatusSchema = z.enum([
-  "Новый",
+  "Создан",
   "Ожидает оплаты",
   "Оплачен",
-  "В производстве",
-  "Отправлен",
+  "В обработке",
+  "Передан в доставку",
   "Доставлен",
   "Отменён",
-  "Возвращён",
+  "Возврат",
+]);
+const siteNotificationTypeSchema = z.enum([
+  "ORDER_CREATED",
+  "ORDER_PAID",
+  "ORDER_STATUS_UPDATED",
+  "ADMIN_NEW_ORDER",
 ]);
 const orderPaymentStatusSchema = z.enum([
   "NOT_STARTED",
@@ -283,6 +294,71 @@ export const newsletterSchema = z.object({
     .transform(sanitizeEmail)
     .refine((value) => isValidEmail(value), "Введите корректный email."),
 });
+
+const newsletterSourceSchema = z
+  .string()
+  .optional()
+  .nullable()
+  .transform((value) => sanitizeIdentifier(value ?? "homepage", "homepage").slice(0, 80));
+
+export const newsletterSubscriptionSchema = newsletterSchema
+  .extend({
+    source: newsletterSourceSchema,
+  })
+  .strict();
+
+const analyticsTextSchema = (maxLength: number) =>
+  z
+    .string()
+    .optional()
+    .nullable()
+    .transform((value) => {
+      const sanitizedValue = sanitizeText(value ?? "", { maxLength });
+      return sanitizedValue || null;
+    });
+
+const analyticsMetadataScalarSchema = z.union([
+  z.string().transform((value) => sanitizeText(value, { maxLength: 240 })),
+  z.number().finite(),
+  z.boolean(),
+  z.null(),
+]);
+
+const analyticsMetadataValueSchema = z.union([
+  analyticsMetadataScalarSchema,
+  z.array(analyticsMetadataScalarSchema).max(16),
+]);
+
+export const analyticsEventPayloadSchema = z
+  .object({
+    eventType: z.enum(analyticsEventTypes),
+    entityType: z.enum(analyticsEntityTypes),
+    entityId: analyticsTextSchema(120).transform((value) => (value ? sanitizeIdentifier(value, "") : null)),
+    entityName: analyticsTextSchema(180),
+    sessionId: analyticsTextSchema(120).transform((value) => (value ? sanitizeIdentifier(value, "") : null)),
+    path: analyticsTextSchema(500).transform((value) => value ?? "/"),
+    referrer: analyticsTextSchema(500),
+    deviceType: z.enum(analyticsDeviceTypes).optional(),
+    metadata: z
+      .record(analyticsMetadataValueSchema)
+      .optional()
+      .transform((value) => {
+        if (!value) {
+          return null;
+        }
+
+        return Object.fromEntries(
+          Object.entries(value)
+            .slice(0, 20)
+            .map(([key, entry]) => [
+              sanitizeIdentifier(key, "field").slice(0, 80),
+              entry,
+            ])
+            .filter(([key]) => Boolean(key)),
+        );
+      }),
+  })
+  .strict();
 
 export const promoCodeSchema = z.object({
   code: z
@@ -502,6 +578,22 @@ export const orderSchema = z.object({
     }),
   ),
 });
+
+export const siteNotificationSchema = z.object({
+  id: z.string().transform((value) => sanitizeIdentifier(value, "")),
+  userId: z.string().transform((value) => sanitizeIdentifier(value, "")),
+  orderId: z
+    .string()
+    .nullable()
+    .transform((value) => (value ? sanitizeIdentifier(value, "") : null)),
+  type: siteNotificationTypeSchema,
+  title: z.string().transform((value) => sanitizeText(value, { maxLength: 120 })),
+  message: z.string().transform((value) => sanitizeText(value, { maxLength: 500 })),
+  isRead: z.boolean(),
+  createdAt: isoDateSchema,
+});
+
+export const siteNotificationsSchema = z.array(siteNotificationSchema);
 
 export const checkoutPayloadSchema = z.object({
   userId: z

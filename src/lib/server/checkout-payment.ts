@@ -16,11 +16,16 @@ import {
 import { orderFromDb } from "@/lib/server/account-mappers";
 import { dbOrderInclude } from "@/lib/server/catalog-db";
 import { prisma } from "@/lib/prisma";
+import { recordAnalyticsEvent } from "@/lib/server/analytics";
 import {
   deductStockForPaidOrder,
   issueGiftCertificatesForPaidOrder,
   refundOrderBalancePayment,
 } from "@/lib/server/order-fulfillment";
+import {
+  notifyOrderCreatedOnSite,
+  notifyOrderPaidOnSite,
+} from "@/lib/server/notifications";
 import { checkoutPayloadSchema } from "@/lib/validation-schemas";
 
 const DEFAULT_CURRENCY = "RUB";
@@ -91,6 +96,10 @@ function normalizeSelections(payload: CheckoutPayload) {
   return [...selectionMap.values()];
 }
 
+function selectionKey(selection: { productId: string; color: string; size: string }) {
+  return `${selection.productId}:${selection.color}:${selection.size}`;
+}
+
 function getProductImage(variant: CheckoutVariant) {
   return variant.product.images[0]?.url ?? "/mockups/tshirt.svg";
 }
@@ -130,29 +139,48 @@ async function buildCheckoutItems(
   payload: CheckoutPayload,
 ) {
   const items: CheckoutItem[] = [];
+  const selections = normalizeSelections(payload);
 
-  for (const selection of normalizeSelections(payload)) {
-    const variant = await tx.productVariant.findFirst({
-      where: {
+  if (selections.length === 0) {
+    return items;
+  }
+
+  const variants = await tx.productVariant.findMany({
+    where: {
+      active: true,
+      product: { status: "ACTIVE" },
+      OR: selections.map((selection) => ({
         productId: selection.productId,
-        active: true,
         size: { value: selection.size },
         color: { value: selection.color },
-        product: { status: "ACTIVE" },
-      },
-      include: {
-        size: true,
-        color: true,
-        product: {
-          include: {
-            images: {
-              orderBy: { sortOrder: "asc" },
-              take: 1,
-            },
+      })),
+    },
+    include: {
+      size: true,
+      color: true,
+      product: {
+        include: {
+          images: {
+            orderBy: { sortOrder: "asc" },
+            take: 1,
           },
         },
       },
-    });
+    },
+  });
+  const variantBySelection = new Map(
+    variants.map((variant) => [
+      selectionKey({
+        productId: variant.productId,
+        color: variant.color.value,
+        size: variant.size.value,
+      }),
+      variant,
+    ]),
+  );
+
+  for (const selection of selections) {
+    const variant = variantBySelection.get(selectionKey(selection));
 
     if (!variant) {
       throw new Error("Корзина содержит недоступные товары. Обновите корзину и попробуйте снова.");
@@ -385,6 +413,38 @@ export async function createCheckoutPayment(payloadInput: unknown, requestUrl: s
 
   if (created.amountToPay <= 0) {
     await clearUserCart(currentUser?.id);
+    await notifyOrderCreatedOnSite(created.orderId);
+    await notifyOrderPaidOnSite(created.orderId);
+    await Promise.all([
+      recordAnalyticsEvent({
+        eventType: "order_created",
+        entityType: "order",
+        entityId: created.orderId,
+        entityName: created.orderNumber,
+        userId: currentUser?.id ?? null,
+        path: "/checkout",
+        deviceType: "desktop",
+        metadata: {
+          amountToPay: created.amountToPay,
+          itemCount: created.items.reduce((sum, item) => sum + item.quantity, 0),
+          paymentStatus: "SUCCEEDED",
+          usedInternalBalance: true,
+        },
+      }),
+      recordAnalyticsEvent({
+        eventType: "payment_succeeded",
+        entityType: "payment",
+        entityId: created.orderId,
+        entityName: created.orderNumber,
+        userId: currentUser?.id ?? null,
+        path: "/checkout",
+        deviceType: "desktop",
+        metadata: {
+          provider: "MOCK",
+          amountToPay: created.amountToPay,
+        },
+      }),
+    ]);
     const order = await prisma.order.findUniqueOrThrow({
       where: { id: created.orderId },
       include: dbOrderInclude,
@@ -436,6 +496,22 @@ export async function createCheckoutPayment(payloadInput: unknown, requestUrl: s
     });
 
     await clearUserCart(currentUser?.id);
+    await notifyOrderCreatedOnSite(created.orderId);
+    await recordAnalyticsEvent({
+      eventType: "order_created",
+      entityType: "order",
+      entityId: created.orderId,
+      entityName: created.orderNumber,
+      userId: currentUser?.id ?? null,
+      path: "/checkout",
+      deviceType: "desktop",
+      metadata: {
+        amountToPay: created.amountToPay,
+        itemCount: created.items.reduce((sum, item) => sum + item.quantity, 0),
+        paymentStatus: paymentResult.status,
+        provider: paymentResult.providerPaymentId?.startsWith("mock_") ? "MOCK" : "YOOKASSA",
+      },
+    });
 
     const order = await prisma.order.findUniqueOrThrow({
       where: { id: created.orderId },
@@ -468,6 +544,37 @@ export async function createCheckoutPayment(payloadInput: unknown, requestUrl: s
       });
       await refundOrderBalancePayment(tx, created.orderId);
     });
+
+    await notifyOrderCreatedOnSite(created.orderId);
+    await Promise.all([
+      recordAnalyticsEvent({
+        eventType: "order_created",
+        entityType: "order",
+        entityId: created.orderId,
+        entityName: created.orderNumber,
+        userId: currentUser?.id ?? null,
+        path: "/checkout",
+        deviceType: "desktop",
+        metadata: {
+          amountToPay: created.amountToPay,
+          itemCount: created.items.reduce((sum, item) => sum + item.quantity, 0),
+          paymentStatus: "FAILED",
+        },
+      }),
+      recordAnalyticsEvent({
+        eventType: "payment_failed",
+        entityType: "payment",
+        entityId: created.orderId,
+        entityName: created.orderNumber,
+        userId: currentUser?.id ?? null,
+        path: "/checkout",
+        deviceType: "desktop",
+        metadata: {
+          code: details.code,
+          amountToPay: created.amountToPay,
+        },
+      }),
+    ]);
 
     throw new Error("Заказ создан, но платеж не удалось подготовить. Попробуйте оформить оплату позже.");
   }

@@ -1,16 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
-
 type ErrorPageProps = {
   error: Error & { digest?: string };
   reset: () => void;
 };
 
 export default function ErrorPage({ error, reset }: ErrorPageProps) {
-  useEffect(() => {
-    console.error("Unhandled application error.");
-  }, [error]);
+  void error;
 
   return (
     <section className="container-shell py-12">

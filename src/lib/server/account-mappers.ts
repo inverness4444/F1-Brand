@@ -1,6 +1,6 @@
 import "server-only";
 
-import type { GiftCard, Order, OrderItem, Payment } from "@prisma/client";
+import type { GiftCard, Order, OrderItem, Payment, SiteNotification } from "@prisma/client";
 
 import type {
   BalanceTransaction,
@@ -9,6 +9,7 @@ import type {
   Order as AccountOrder,
   OrderAddressSnapshot,
   OrderItem as AccountOrderItem,
+  SiteNotification as AccountSiteNotification,
   UserAddress,
   UserBalance,
 } from "@/lib/account-types";
@@ -30,18 +31,18 @@ function orderStatusRu(status: Order["status"]) {
     case "PAID":
       return "Оплачен";
     case "PROCESSING":
-      return "В производстве";
+      return "В обработке";
     case "SHIPPED":
-      return "Отправлен";
+      return "Передан в доставку";
     case "DELIVERED":
       return "Доставлен";
     case "CANCELLED":
       return "Отменён";
     case "REFUNDED":
-      return "Возвращён";
+      return "Возврат";
     case "PENDING":
     default:
-      return "Новый";
+      return "Создан";
   }
 }
 
@@ -190,6 +191,19 @@ export function orderFromDb(order: DbOrder): AccountOrder {
     balanceAfter: order.balanceAfterCents,
     usedBalance: order.usedBalance,
     giftCertificatesIssued: order.giftCards.map(issuedGiftCardFromDb),
+  };
+}
+
+export function siteNotificationFromDb(notification: SiteNotification): AccountSiteNotification {
+  return {
+    id: notification.id,
+    userId: notification.userId,
+    orderId: notification.orderId,
+    type: notification.type,
+    title: notification.title,
+    message: notification.message,
+    isRead: notification.isRead,
+    createdAt: toIso(notification.createdAt),
   };
 }
 

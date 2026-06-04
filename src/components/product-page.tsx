@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect } from "react";
 
 import type { Product } from "@/lib/types";
 import { getProductCategoryBreadcrumb, getProductDisplayName } from "@/lib/storefront-text";
 import { ProductGallery } from "@/components/product-gallery";
 import { ProductGrid } from "@/components/product-grid";
 import { ProductInfo } from "@/components/product-info";
+import { trackAnalyticsEvent } from "@/services/analytics-service";
 
 export function ProductPage({
   product,
@@ -19,6 +21,19 @@ export function ProductPage({
   const categoryBreadcrumb = getProductCategoryBreadcrumb(product);
   const completeTheLook = recommendedProducts.slice(0, 4);
   const alsoLike = recommendedProducts.slice(4, 8).length > 0 ? recommendedProducts.slice(4, 8) : recommendedProducts.slice(0, 4);
+
+  useEffect(() => {
+    trackAnalyticsEvent({
+      eventType: "product_view",
+      entityType: "product",
+      entityId: product.id,
+      entityName: getProductDisplayName(product),
+      metadata: {
+        category: product.category,
+        collection: product.collection,
+      },
+    });
+  }, [product]);
 
   return (
     <div className="pb-14">

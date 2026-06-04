@@ -15,6 +15,8 @@ type AccessoriesPageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
+export const revalidate = 300;
+
 export async function generateMetadata({ searchParams }: AccessoriesPageProps): Promise<Metadata> {
   const [products, params] = await Promise.all([readCatalogProductsFromDb(), searchParams]);
   const accessoryProducts = products.filter(

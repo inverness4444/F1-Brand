@@ -15,6 +15,7 @@ import { drivers, legends, teams } from "@/lib/data/roster";
 import { sanitizeSearchQuery } from "@/lib/security-utils";
 import { resolveSmartSearchTarget } from "@/lib/search-utils";
 import { cn } from "@/lib/utils";
+import { trackAnalyticsEvent } from "@/services/analytics-service";
 import { useAuthStore } from "@/store/auth-store";
 import { useCartStore } from "@/store/cart-store";
 
@@ -134,6 +135,30 @@ const mobileQuickLinks = [
   { label: "Помощь / FAQ", href: "/faq" },
 ] as const;
 
+function trackSectionNavigation(label: string, href: string, source: string) {
+  trackAnalyticsEvent({
+    eventType: "section_click",
+    entityType: "section",
+    entityId: href,
+    entityName: label,
+    metadata: {
+      href,
+      source,
+    },
+  });
+}
+
+function trackSearchOpen(source: string) {
+  trackAnalyticsEvent({
+    eventType: "search_click",
+    entityType: "search",
+    entityName: "Поиск",
+    metadata: {
+      source,
+    },
+  });
+}
+
 export function Header() {
   const pathname = usePathname();
   const router = useRouter();
@@ -230,12 +255,23 @@ export function Header() {
     const trimmedQuery = sanitizeSearchQuery(query);
 
     if (!trimmedQuery) {
+      trackSearchOpen("empty_submit");
       router.push("/shop");
       setDesktopSearchOpen(false);
       setSearchOpen(false);
       setMobileOpen(false);
       return;
     }
+
+    trackAnalyticsEvent({
+      eventType: "search_query",
+      entityType: "search",
+      entityId: trimmedQuery,
+      entityName: trimmedQuery,
+      metadata: {
+        source: "header",
+      },
+    });
 
     const smartTarget = resolveSmartSearchTarget(trimmedQuery);
 
@@ -300,6 +336,7 @@ export function Header() {
                 >
                   <Link
                     href={item.href}
+                    onClick={() => trackSectionNavigation(item.label, item.href, "desktop_header")}
                     style={isLightTopBar ? { color: shouldUseDarkHeroNav ? "#111111" : "#ffffff" } : undefined}
                     className={cn(
                       navItemClassName,
@@ -320,6 +357,7 @@ export function Header() {
                 onChange={(value) => setQuery(sanitizeSearchQuery(value))}
                 onSubmit={submitSearch}
                 onFocus={() => {
+                  trackSearchOpen("desktop_header");
                   setDesktopSearchOpen(true);
                   setOpenMenu(null);
                   setHoveredNavLabel(null);
@@ -390,7 +428,15 @@ export function Header() {
           <div className="flex items-center gap-1.5 sm:gap-2 xl:hidden">
             <button
               type="button"
-              onClick={() => setSearchOpen((current) => !current)}
+              onClick={() =>
+                setSearchOpen((current) => {
+                  if (!current) {
+                    trackSearchOpen("mobile_header");
+                  }
+
+                  return !current;
+                })
+              }
               className={mobileIconClassName}
               aria-label={searchOpen ? "Закрыть поиск" : "Открыть поиск"}
             >
@@ -474,6 +520,7 @@ export function Header() {
                 value={query}
                 onChange={(value) => setQuery(sanitizeSearchQuery(value))}
                 onSubmit={submitSearch}
+                onFocus={() => trackSearchOpen("mobile_drawer")}
                 placeholder="Search ..."
                 className="mobile-drawer-search mt-5 min-h-[3.75rem] pl-4 pr-3 sm:min-h-[4rem] sm:pl-5"
                 inputClassName="mobile-drawer-search-input text-base sm:text-base"
@@ -484,7 +531,10 @@ export function Header() {
                 <div className="mobile-clean-menu space-y-3 border-t border-[var(--line)] pt-5">
                   <Link
                     href="/shop"
-                    onClick={() => setMobileOpen(false)}
+                    onClick={() => {
+                      trackSectionNavigation("Все товары", "/shop", "mobile_drawer");
+                      setMobileOpen(false);
+                    }}
                     className="block rounded-2xl border border-[var(--line)] px-4 py-3 text-sm font-semibold text-[#111111]"
                   >
                     Все товары
@@ -507,7 +557,10 @@ export function Header() {
                             <Link
                               key={link.label}
                               href={link.href}
-                              onClick={() => setMobileOpen(false)}
+                              onClick={() => {
+                                trackSectionNavigation(link.label, link.href, "mobile_drawer_group");
+                                setMobileOpen(false);
+                              }}
                               className="block break-words"
                             >
                               {link.label}
@@ -519,7 +572,10 @@ export function Header() {
                   ))}
                   <Link
                     href="/accessories"
-                    onClick={() => setMobileOpen(false)}
+                    onClick={() => {
+                      trackSectionNavigation("Аксессуары", "/accessories", "mobile_drawer");
+                      setMobileOpen(false);
+                    }}
                     className="block rounded-2xl border border-[var(--line)] px-4 py-3 text-sm font-semibold text-[#111111]"
                   >
                     Аксессуары
@@ -532,7 +588,10 @@ export function Header() {
                       <Link
                         key={item.label}
                         href={item.href}
-                        onClick={() => setMobileOpen(false)}
+                        onClick={() => {
+                          trackSectionNavigation(item.label, item.href, "tablet_drawer");
+                          setMobileOpen(false);
+                        }}
                         className="block rounded-2xl px-1 py-2.5 text-[0.82rem] font-bold tracking-[0.16em] text-[#111111]"
                       >
                         {item.label}
@@ -559,7 +618,10 @@ export function Header() {
                               <Link
                                 key={link.label}
                                 href={link.href}
-                                onClick={() => setMobileOpen(false)}
+                                onClick={() => {
+                                  trackSectionNavigation(link.label, link.href, "tablet_drawer_group");
+                                  setMobileOpen(false);
+                                }}
                                 className="block break-words"
                               >
                                 {link.label}

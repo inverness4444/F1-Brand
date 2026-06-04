@@ -1,12 +1,13 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 
 import { useCatalogProducts } from "@/hooks/use-catalog-products";
 import { CollectionHero } from "@/components/collection-hero";
 import { EmptyCatalogState } from "@/components/empty-catalog-state";
 import { NewsletterSection } from "@/components/newsletter-section";
 import { ProductGrid } from "@/components/product-grid";
+import { trackAnalyticsEvent } from "@/services/analytics-service";
 
 type MatchField = "teamSlug" | "driverSlug" | "legendSlug";
 
@@ -28,6 +29,19 @@ export function CollectionPageContent({
     () => products.filter((product) => product[matchField] === matchValue),
     [matchField, matchValue, products],
   );
+
+  useEffect(() => {
+    trackAnalyticsEvent({
+      eventType: "category_open",
+      entityType: "category",
+      entityId: matchValue,
+      entityName: title,
+      metadata: {
+        matchField,
+        source: "collection_page",
+      },
+    });
+  }, [matchField, matchValue, title]);
 
   return (
     <div className="pb-14">

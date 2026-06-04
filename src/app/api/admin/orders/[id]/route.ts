@@ -6,6 +6,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { apiError } from "@/lib/server/api";
 import { requireAdminApiUser } from "@/lib/server/admin-auth";
+import {
+  notifyOrderPaidOnSite,
+  recordOrderStatusChange,
+} from "@/lib/server/notifications";
 import { assertCsrfToken, assertSameOrigin, enforceRateLimit } from "@/lib/server/request-security";
 import { adminOrderUpdateSchema } from "@/lib/validation-schemas";
 
@@ -34,6 +38,10 @@ function revalidateAdminOrderPaths(orderId: string, userId?: string | null) {
   if (userId) {
     revalidatePath(`/admin/users/${userId}`);
   }
+
+  revalidatePath("/account/notifications");
+  revalidatePath("/account/orders");
+  revalidatePath(`/account/orders/${orderId}`);
 }
 
 export async function PATCH(request: NextRequest, context: RouteContext) {
@@ -52,7 +60,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
 
     assertSameOrigin(request);
     assertCsrfToken(request);
-    await requireAdminApiUser();
+    const admin = await requireAdminApiUser();
 
     const { id } = await context.params;
     const input = adminOrderUpdateSchema.parse(await request.json());
@@ -60,7 +68,9 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       where: { id },
       select: {
         id: true,
+        orderNumber: true,
         userId: true,
+        status: true,
       },
     });
 
@@ -99,6 +109,14 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
         },
       });
 
+      if (input.status) {
+        await recordOrderStatusChange(tx, {
+          order: existingOrder,
+          adminUserId: admin.id,
+          newStatus: input.status,
+        });
+      }
+
       if (input.paymentStatus) {
         await tx.payment.updateMany({
           where: { orderId: id },
@@ -111,6 +129,10 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     });
 
     revalidateAdminOrderPaths(id, existingOrder.userId);
+
+    if (input.paymentStatus === "SUCCEEDED") {
+      await notifyOrderPaidOnSite(id);
+    }
 
     return NextResponse.json({ ok: true });
   } catch (error) {

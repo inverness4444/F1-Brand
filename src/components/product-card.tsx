@@ -10,6 +10,7 @@ import { imageByType } from "@/lib/data/products";
 import { getImageDedupeKey } from "@/lib/image-utils";
 import { formatPrice, getProductHref } from "@/lib/utils";
 import { getProductCategoryBreadcrumb, getProductDisplayName } from "@/lib/storefront-text";
+import { trackAnalyticsEvent } from "@/services/analytics-service";
 
 const catalogImageSizes = "(min-width: 1280px) 30vw, (min-width: 640px) 48vw, 100vw";
 const showcaseImageSizes = "(min-width: 1280px) 340px, (min-width: 640px) 320px, 84vw";
@@ -33,6 +34,19 @@ function ProductCardComponent({
   const imageAlt = `${getProductDisplayName(product)} — ${getProductCategoryBreadcrumb(product).label}`;
   const imageBaseClassName =
     "absolute inset-0 h-full w-full transition duration-500 transform-gpu [will-change:transform]";
+  const handleProductClick = () => {
+    trackAnalyticsEvent({
+      eventType: "product_click",
+      entityType: "product",
+      entityId: product.id,
+      entityName: getProductDisplayName(product),
+      metadata: {
+        source: variant,
+        category: product.category,
+        collection: product.collection,
+      },
+    });
+  };
 
   if (variant === "catalog") {
     const shouldRaiseCatalogImage = product.id === "custom-1778090477669";
@@ -56,7 +70,7 @@ function ProductCardComponent({
 
     return (
       <article className="group flex h-full min-w-0 flex-col" data-product-card="catalog">
-        <Link href={productHref} className="flex h-full min-w-0 flex-col gap-2">
+        <Link href={productHref} onClick={handleProductClick} className="flex h-full min-w-0 flex-col gap-2">
           <div className="relative overflow-hidden rounded-[0.95rem] bg-white">
             <div
               className="relative aspect-square overflow-hidden rounded-[0.95rem] bg-white"
@@ -135,7 +149,7 @@ function ProductCardComponent({
 
   return (
     <article className="group flex h-full min-w-0 flex-col" data-product-card="showcase">
-      <Link href={productHref} className="flex h-full min-w-0 flex-col">
+      <Link href={productHref} onClick={handleProductClick} className="flex h-full min-w-0 flex-col">
         <div className="relative overflow-hidden rounded-[1.2rem] bg-white">
           <div
             className="relative aspect-square overflow-hidden bg-white"

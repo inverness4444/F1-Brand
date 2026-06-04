@@ -16,7 +16,7 @@ type PageProps = {
   searchParams: Promise<{ product?: string }>;
 };
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 async function findProduct(slug: string, productId?: string) {
   const products = await readCatalogProductsFromDb();

@@ -100,14 +100,31 @@ export type FavoriteRecord = {
 };
 
 export type OrderStatus =
-  | "Новый"
+  | "Создан"
   | "Ожидает оплаты"
   | "Оплачен"
-  | "В производстве"
-  | "Отправлен"
+  | "В обработке"
+  | "Передан в доставку"
   | "Доставлен"
   | "Отменён"
-  | "Возвращён";
+  | "Возврат";
+
+export type SiteNotificationType =
+  | "ORDER_CREATED"
+  | "ORDER_PAID"
+  | "ORDER_STATUS_UPDATED"
+  | "ADMIN_NEW_ORDER";
+
+export type SiteNotification = {
+  id: string;
+  userId: string;
+  orderId: string | null;
+  type: SiteNotificationType;
+  title: string;
+  message: string;
+  isRead: boolean;
+  createdAt: string;
+};
 
 export type OrderPaymentStatus =
   | "NOT_STARTED"

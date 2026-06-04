@@ -23,6 +23,15 @@ type CartItemLike = {
   quantity: number;
 };
 
+type ResolvedCartItem = CartSelection & {
+  variantId: string;
+  stockLimit: number;
+};
+
+function cartItemKey(item: { productId: string; color: string; size: string }) {
+  return `${item.productId}:${item.color}:${item.size}`;
+}
+
 function createGuestCartToken() {
   return crypto.randomBytes(32).toString("base64url");
 }
@@ -118,6 +127,85 @@ async function resolveAvailableCartItem(tx: Prisma.TransactionClient, item: Cart
   };
 }
 
+async function resolveAvailableCartItems(
+  tx: Prisma.TransactionClient,
+  items: CartSelection[],
+): Promise<ResolvedCartItem[]> {
+  const normalizedItems = normalizeCartSelections(items);
+
+  if (normalizedItems.length === 0) {
+    return [];
+  }
+
+  const variants = await tx.productVariant.findMany({
+    where: {
+      active: true,
+      product: { status: "ACTIVE" },
+      OR: normalizedItems.map((item) => ({
+        productId: item.productId,
+        size: { value: item.size },
+        color: { value: item.color },
+      })),
+    },
+    select: {
+      id: true,
+      productId: true,
+      stock: true,
+      size: {
+        select: {
+          value: true,
+        },
+      },
+      color: {
+        select: {
+          value: true,
+        },
+      },
+      product: {
+        select: {
+          requiresShipping: true,
+        },
+      },
+    },
+  });
+  const variantBySelection = new Map(
+    variants.map((variant) => [
+      cartItemKey({
+        productId: variant.productId,
+        color: variant.color.value,
+        size: variant.size.value,
+      }),
+      variant,
+    ]),
+  );
+  const resolvedItems: ResolvedCartItem[] = [];
+
+  for (const item of normalizedItems) {
+    const variant = variantBySelection.get(cartItemKey(item));
+
+    if (!variant) {
+      continue;
+    }
+
+    if (variant.product.requiresShipping && variant.stock <= 0) {
+      continue;
+    }
+
+    const stockLimit = variant.product.requiresShipping
+      ? Math.min(variant.stock, SECURITY_LIMITS.maxCartItemQuantity)
+      : SECURITY_LIMITS.maxCartItemQuantity;
+
+    resolvedItems.push({
+      ...item,
+      variantId: variant.id,
+      stockLimit,
+      quantity: variant.product.requiresShipping ? Math.min(item.quantity, variant.stock) : item.quantity,
+    });
+  }
+
+  return resolvedItems;
+}
+
 async function replaceCartItems(
   tx: Prisma.TransactionClient,
   cartId: string,
@@ -130,38 +218,27 @@ async function replaceCartItems(
     await tx.guestCartItem.deleteMany({ where: { cartId } });
   }
 
-  for (const item of normalizeCartSelections(items)) {
-    const resolvedItem = await resolveAvailableCartItem(tx, item);
+  const resolvedItems = await resolveAvailableCartItems(tx, items);
 
-    if (!resolvedItem) {
-      continue;
-    }
-
-    if (target === "user") {
-      await tx.cartItem.create({
-        data: {
-          cartId,
-          productId: resolvedItem.productId,
-          variantId: resolvedItem.variantId,
-          color: resolvedItem.color,
-          size: resolvedItem.size,
-          quantity: resolvedItem.quantity,
-        },
-      });
-      continue;
-    }
-
-    await tx.guestCartItem.create({
-      data: {
-        cartId,
-        productId: resolvedItem.productId,
-        variantId: resolvedItem.variantId,
-        color: resolvedItem.color,
-        size: resolvedItem.size,
-        quantity: resolvedItem.quantity,
-      },
-    });
+  if (resolvedItems.length === 0) {
+    return;
   }
+
+  const data = resolvedItems.map((resolvedItem) => ({
+    cartId,
+    productId: resolvedItem.productId,
+    variantId: resolvedItem.variantId,
+    color: resolvedItem.color,
+    size: resolvedItem.size,
+    quantity: resolvedItem.quantity,
+  }));
+
+  if (target === "user") {
+    await tx.cartItem.createMany({ data });
+    return;
+  }
+
+  await tx.guestCartItem.createMany({ data });
 }
 
 export function getGuestCartTokenFromRequest(request: NextRequest) {

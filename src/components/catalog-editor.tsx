@@ -661,9 +661,10 @@ export function CatalogEditor() {
     setIsSavingCollection(true);
 
     try {
-      await saveCollectionProducts(normalizedDraft, normalizedDraft.productIds);
-      setSelectedCollectionId(normalizedDraft.id);
-      showMessage(`Коллекция «${normalizedDraft.name}» сохранена.`, "success");
+      const savedCollection = await saveCollectionProducts(normalizedDraft, normalizedDraft.productIds);
+      setSelectedCollectionId(savedCollection.id);
+      setCollectionDraft(cloneCollection(savedCollection));
+      showMessage(`Коллекция «${savedCollection.name}» сохранена.`, "success");
     } catch (error) {
       showMessage(error instanceof Error ? error.message : "Не удалось сохранить коллекцию.", "error");
     } finally {

@@ -18,6 +18,7 @@ import {
 import { useCartStore } from "@/store/cart-store";
 import { ProductBadgeTag } from "@/components/product-badge";
 import { WishlistButton } from "@/components/wishlist-button";
+import { trackAnalyticsEvent } from "@/services/analytics-service";
 
 function sizeGuideRows(product: Product) {
   if (product.sizes.includes("One Size")) {
@@ -56,13 +57,25 @@ export function ProductInfo({ product }: { product: Product }) {
     setSelectedColor((product.colorways ?? [])[0] ?? product.variants?.[0]?.color ?? product.colors[0] ?? "Black");
   }, [product]);
 
-  const addCurrentItem = () =>
+  const addCurrentItem = () => {
     addItem({
       productId: product.id,
       color: selectedColor,
       size: selectedSize,
       quantity: 1,
     });
+    trackAnalyticsEvent({
+      eventType: "add_to_cart",
+      entityType: "product",
+      entityId: product.id,
+      entityName: getProductDisplayName(product),
+      metadata: {
+        color: selectedColor,
+        size: selectedSize,
+        source: "product_page",
+      },
+    });
+  };
 
   return (
     <aside className="min-w-0 h-fit lg:sticky lg:top-28">

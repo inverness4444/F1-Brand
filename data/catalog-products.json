@@ -4,9 +4,9 @@
     "slug": "ayrton-senna-x-brazil-retro",
     "name": "Ayrton Senna x Brazil Retro",
     "category": "Legends",
-    "collection": "Racing x Football",
+    "collection": "F1 x Football",
     "collectionTags": [
-      "Racing x Football",
+      "F1 x Football",
       "New Arrivals"
     ],
     "driverName": null,
@@ -17,12 +17,15 @@
     "legendSlug": "ayrton-senna",
     "gender": "Unisex",
     "price": 5000,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Yellow",
       "Green"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -33,10 +36,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778545372314-cover-aff198a72457.jpg",
     "gallery": [
-      "/catalog-products/custom-1778545372314-cover-aff198a72457.jpg",
-      "/catalog-products/custom-1778545372314-gallery-1-aff198a72457.jpg"
+      "/catalog-products/custom-1778545372314-cover-aff198a72457.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -54,9 +57,9 @@
     "slug": "carlos-sainz-x-spain",
     "name": "Carlos Sainz x Spain",
     "category": "Pilots",
-    "collection": "Racing x Football",
+    "collection": "F1 x Football",
     "collectionTags": [
-      "Racing x Football",
+      "F1 x Football",
       "New Arrivals"
     ],
     "driverName": "Carlos Sainz",
@@ -67,12 +70,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 5000,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Yellow",
       "Red"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -83,10 +89,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778545194505-cover-633bdabd4047.jpg",
     "gallery": [
-      "/catalog-products/custom-1778545194505-cover-633bdabd4047.jpg",
-      "/catalog-products/custom-1778545194505-gallery-1-633bdabd4047.jpg"
+      "/catalog-products/custom-1778545194505-cover-633bdabd4047.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -104,9 +110,9 @@
     "slug": "fernando-alonso-x-spain",
     "name": "Fernando Alonso x Spain",
     "category": "Pilots",
-    "collection": "Racing x Football",
+    "collection": "F1 x Football",
     "collectionTags": [
-      "Racing x Football",
+      "F1 x Football",
       "New Arrivals"
     ],
     "driverName": "Fernando Alonso",
@@ -117,12 +123,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 5000,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Yellow",
       "Red"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -133,10 +142,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778448223259-cover-20d62e021642.jpg",
     "gallery": [
-      "/catalog-products/custom-1778448223259-cover-20d62e021642.jpg",
-      "/catalog-products/custom-1778448223259-gallery-1-20d62e021642.jpg"
+      "/catalog-products/custom-1778448223259-cover-20d62e021642.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -167,12 +176,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "Silver"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -183,10 +195,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778239133633-cover-ce13c8b5021e.jpg",
     "gallery": [
-      "/catalog-products/custom-1778239133633-cover-ce13c8b5021e.jpg",
-      "/catalog-products/custom-1778239133633-gallery-1-ce13c8b5021e.jpg"
+      "/catalog-products/custom-1778239133633-cover-ce13c8b5021e.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -204,9 +216,9 @@
     "slug": "george-russell-x-england",
     "name": "George Russell x England",
     "category": "Pilots",
-    "collection": "Racing x Football",
+    "collection": "F1 x Football",
     "collectionTags": [
-      "Racing x Football",
+      "F1 x Football",
       "New Arrivals"
     ],
     "driverName": "George Russell",
@@ -217,12 +229,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 5000,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "White",
       "Navy"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -233,10 +248,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778545260330-cover-b674f1637170.jpg",
     "gallery": [
-      "/catalog-products/custom-1778545260330-cover-b674f1637170.jpg",
-      "/catalog-products/custom-1778545260330-gallery-1-b674f1637170.jpg"
+      "/catalog-products/custom-1778545260330-cover-b674f1637170.jpg"
     ],
     "description": "Футболка из коллекции George Russell. Модель выполнена в эстетике фирменного магазина командной одежды: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой автоспорта.",
     "shortDescription": "Футболка из коллекции George Russell в стилистике фирменного магазина спортивной одежды.",
@@ -254,9 +269,9 @@
     "slug": "kimi-antonelli-x-italy",
     "name": "Kimi Antonelli x Italy",
     "category": "Pilots",
-    "collection": "Racing x Football",
+    "collection": "F1 x Football",
     "collectionTags": [
-      "Racing x Football",
+      "F1 x Football",
       "New Arrivals"
     ],
     "driverName": "Kimi Antonelli",
@@ -267,6 +282,8 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 5000,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
@@ -274,6 +291,7 @@
       "White",
       "Red"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -284,10 +302,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778448079731-cover-197ef1bd4705.jpg",
     "gallery": [
-      "/catalog-products/custom-1778448079731-cover-197ef1bd4705.jpg",
-      "/catalog-products/custom-1778448079731-gallery-1-197ef1bd4705.jpg"
+      "/catalog-products/custom-1778448079731-cover-197ef1bd4705.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -305,9 +323,9 @@
     "slug": "max-verstappen-x-netherlands",
     "name": "Max Verstappen x Netherlands",
     "category": "Pilots",
-    "collection": "Racing x Football",
+    "collection": "F1 x Football",
     "collectionTags": [
-      "Racing x Football",
+      "F1 x Football",
       "New Arrivals"
     ],
     "driverName": "Max Verstappen",
@@ -318,12 +336,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 5000,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Orange",
       "Black"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -334,10 +355,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778447822479-cover-56b51eb6792e.jpg",
     "gallery": [
-      "/catalog-products/custom-1778447822479-cover-56b51eb6792e.jpg",
-      "/catalog-products/custom-1778447822479-gallery-1-56b51eb6792e.jpg"
+      "/catalog-products/custom-1778447822479-cover-56b51eb6792e.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -355,9 +376,9 @@
     "slug": "sergio-perez-x-mexico",
     "name": "Sergio Pérez x Mexico",
     "category": "Pilots",
-    "collection": "Racing x Football",
+    "collection": "F1 x Football",
     "collectionTags": [
-      "Racing x Football",
+      "F1 x Football",
       "New Arrivals"
     ],
     "driverName": "Sergio Pérez",
@@ -368,11 +389,14 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 5000,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Green"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -383,10 +407,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778448307927-cover-9132ab7bf97c.jpg",
     "gallery": [
-      "/catalog-products/custom-1778448307927-cover-9132ab7bf97c.jpg",
-      "/catalog-products/custom-1778448307927-gallery-1-9132ab7bf97c.jpg"
+      "/catalog-products/custom-1778448307927-cover-9132ab7bf97c.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -416,16 +440,20 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 5000,
+    "oldPrice": null,
+    "stock": null,
     "productType": "gift_certificate",
     "requiresShipping": false,
     "colors": [
       "Black"
     ],
+    "colorways": [],
     "sizes": [
       "One Size"
     ],
     "type": "Gift Certificate",
     "badge": "New",
+    "status": "ACTIVE",
     "image": "/recovered-products/custom-1777482612047-cover.jpg",
     "gallery": [
       "/recovered-products/custom-1777482612047-cover.jpg"
@@ -457,16 +485,20 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "gift_certificate",
     "requiresShipping": false,
     "colors": [
       "White"
     ],
+    "colorways": [],
     "sizes": [
       "One Size"
     ],
     "type": "Gift Certificate",
     "badge": "New",
+    "status": "ACTIVE",
     "image": "/recovered-products/custom-1777482553731-cover.jpg",
     "gallery": [
       "/recovered-products/custom-1777482553731-cover.jpg"
@@ -498,20 +530,23 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 10000,
+    "oldPrice": null,
+    "stock": null,
     "productType": "gift_certificate",
     "requiresShipping": false,
     "colors": [
       "Black"
     ],
+    "colorways": [],
     "sizes": [
       "One Size"
     ],
     "type": "Gift Certificate",
     "badge": "New",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778545446147-cover-53ef060acd70.png",
     "gallery": [
-      "/catalog-products/custom-1778545446147-cover-53ef060acd70.png",
-      "/catalog-products/custom-1778545446147-gallery-1-53ef060acd70.png"
+      "/catalog-products/custom-1778545446147-cover-53ef060acd70.png"
     ],
     "description": "Подарочный сертификат работает как цифровой товар: после покупки вы получите одноразовый код, который можно активировать в аккаунте и использовать баланс частями для оплаты любых товаров магазина.",
     "shortDescription": "Цифровой подарочный сертификат: активируйте код в личном кабинете и оплачивайте любые товары балансом частями.",
@@ -542,12 +577,15 @@
     "legendSlug": "alain-prost",
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "White",
       "Black"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -558,10 +596,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778372233913-cover-64775c2c88ec.jpg",
     "gallery": [
       "/catalog-products/custom-1778372233913-cover-64775c2c88ec.jpg",
-      "/catalog-products/custom-1778372233913-gallery-1-64775c2c88ec.jpg",
       "/catalog-products/custom-1778372233913-gallery-1-e9055492313c.jpg"
     ],
     "description": "Футболка из коллекции легенд Alain Prost. В основе спокойный, выверенный подход: архивное вдохновение автоспорта, аккуратная типографика и современная спортивная подача.",
@@ -593,12 +631,15 @@
     "legendSlug": "alain-prost",
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "Silver"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -609,10 +650,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778373262298-cover-d5ead0722fa2.jpg",
     "gallery": [
-      "/catalog-products/custom-1778373262298-cover-d5ead0722fa2.jpg",
-      "/catalog-products/custom-1778373262298-gallery-1-d5ead0722fa2.jpg"
+      "/catalog-products/custom-1778373262298-cover-d5ead0722fa2.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -643,12 +684,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "White",
       "Black"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -659,10 +703,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778371214546-cover-2bac10d4c050.jpg",
     "gallery": [
-      "/catalog-products/custom-1778371214546-cover-2bac10d4c050.jpg",
-      "/catalog-products/custom-1778371214546-gallery-1-2bac10d4c050.jpg"
+      "/catalog-products/custom-1778371214546-cover-2bac10d4c050.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -693,12 +737,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "Silver"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -709,10 +756,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778238215834-cover-efd9ef5b0826.jpg",
     "gallery": [
-      "/catalog-products/custom-1778238215834-cover-efd9ef5b0826.jpg",
-      "/catalog-products/custom-1778238215834-gallery-1-efd9ef5b0826.jpg"
+      "/catalog-products/custom-1778238215834-cover-efd9ef5b0826.jpg"
     ],
     "description": "Футболка из коллекции Alex Albon. Модель выполнена в эстетике фирменного магазина командной одежды: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой автоспорта.",
     "shortDescription": "Футболка из коллекции Alex Albon в стилистике фирменного магазина спортивной одежды.",
@@ -743,12 +790,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "White",
       "Black"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -759,10 +809,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778374010229-cover-c8bb342d6464.jpg",
     "gallery": [
-      "/catalog-products/custom-1778374010229-cover-c8bb342d6464.jpg",
-      "/catalog-products/custom-1778374010229-gallery-1-c8bb342d6464.jpg"
+      "/catalog-products/custom-1778374010229-cover-c8bb342d6464.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -793,12 +843,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "Silver"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -809,10 +862,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778238690383-cover-a1503db0452a.jpg",
     "gallery": [
-      "/catalog-products/custom-1778238690383-cover-a1503db0452a.jpg",
-      "/catalog-products/custom-1778238690383-gallery-1-a1503db0452a.jpg"
+      "/catalog-products/custom-1778238690383-cover-a1503db0452a.jpg"
     ],
     "description": "Футболка из коллекции Arvid Lindblad. Модель выполнена в эстетике фирменного магазина командной одежды: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой автоспорта.",
     "shortDescription": "Футболка из коллекции Arvid Lindblad в стилистике фирменного магазина спортивной одежды.",
@@ -843,12 +896,15 @@
     "legendSlug": "ayrton-senna",
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "White"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -859,10 +915,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778372141466-cover-9b50083fc890.jpg",
     "gallery": [
-      "/catalog-products/custom-1778372141466-cover-9b50083fc890.jpg",
-      "/catalog-products/custom-1778372141466-gallery-1-9b50083fc890.jpg"
+      "/catalog-products/custom-1778372141466-cover-9b50083fc890.jpg"
     ],
     "description": "Футболка из коллекции легенд Ayrton Senna. В основе спокойный, выверенный подход: архивное вдохновение автоспорта, аккуратная типографика и современная спортивная подача.",
     "shortDescription": "Футболка из архивной коллекции Ayrton Senna в выверенном стиле.",
@@ -893,12 +949,15 @@
     "legendSlug": "ayrton-senna",
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "Silver"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -909,10 +968,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778373074164-cover-f7dc148e7e1a.jpg",
     "gallery": [
-      "/catalog-products/custom-1778373074164-cover-f7dc148e7e1a.jpg",
-      "/catalog-products/custom-1778373074164-gallery-1-f7dc148e7e1a.jpg"
+      "/catalog-products/custom-1778373074164-cover-f7dc148e7e1a.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -930,9 +989,9 @@
     "slug": "futbolka-ayrton-senna-x-brazil",
     "name": "Футболка Ayrton Senna x Brazil",
     "category": "Legends",
-    "collection": "Racing x Football",
+    "collection": "F1 x Football",
     "collectionTags": [
-      "Racing x Football",
+      "F1 x Football",
       "New Arrivals"
     ],
     "driverName": null,
@@ -943,12 +1002,15 @@
     "legendSlug": "ayrton-senna",
     "gender": "Unisex",
     "price": 5000,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Green",
       "Yellow"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -959,10 +1021,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778443357995-cover-18bc3ab38f81.jpg",
     "gallery": [
-      "/catalog-products/custom-1778443357995-cover-18bc3ab38f81.jpg",
-      "/catalog-products/custom-1778443357995-gallery-1-18bc3ab38f81.jpg"
+      "/catalog-products/custom-1778443357995-cover-18bc3ab38f81.jpg"
     ],
     "description": "Футболка из коллекции легенд Ayrton Senna. В основе спокойный, выверенный подход: архивное вдохновение автоспорта, аккуратная типографика и современная спортивная подача.",
     "shortDescription": "Футболка из архивной коллекции Ayrton Senna в выверенном стиле.",
@@ -993,12 +1055,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "White",
       "Black"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -1009,10 +1074,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778371169612-cover-164ee59ea6e2.jpg",
     "gallery": [
-      "/catalog-products/custom-1778371169612-cover-164ee59ea6e2.jpg",
-      "/catalog-products/custom-1778371169612-gallery-1-164ee59ea6e2.jpg"
+      "/catalog-products/custom-1778371169612-cover-164ee59ea6e2.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -1043,12 +1108,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "Silver"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -1059,10 +1127,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778237923034-cover-cb519b1e80f2.jpg",
     "gallery": [
-      "/catalog-products/custom-1778237923034-cover-cb519b1e80f2.jpg",
-      "/catalog-products/custom-1778237923034-gallery-1-cb519b1e80f2.jpg"
+      "/catalog-products/custom-1778237923034-cover-cb519b1e80f2.jpg"
     ],
     "description": "Футболка из коллекции Carlos Sainz. Модель выполнена в эстетике фирменного магазина командной одежды: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой автоспорта.",
     "shortDescription": "Футболка из коллекции Carlos Sainz в стилистике фирменного магазина спортивной одежды.",
@@ -1093,12 +1161,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "White"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -1109,10 +1180,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778091405277-cover-07ac45bc1856.jpg",
     "gallery": [
-      "/catalog-products/custom-1778091405277-cover-07ac45bc1856.jpg",
-      "/catalog-products/custom-1778091405277-gallery-1-07ac45bc1856.jpg"
+      "/catalog-products/custom-1778091405277-cover-07ac45bc1856.jpg"
     ],
     "description": "Футболка из коллекции Charles Leclerc. Модель выполнена в эстетике фирменного магазина командной одежды: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой автоспорта.",
     "shortDescription": "Футболка из коллекции Charles Leclerc в стилистике фирменного магазина спортивной одежды.",
@@ -1143,12 +1214,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "Silver"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -1159,10 +1233,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778239043849-cover-3c3a183617b4.jpg",
     "gallery": [
-      "/catalog-products/custom-1778239043849-cover-3c3a183617b4.jpg",
-      "/catalog-products/custom-1778239043849-gallery-1-3c3a183617b4.jpg"
+      "/catalog-products/custom-1778239043849-cover-3c3a183617b4.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -1180,9 +1254,9 @@
     "slug": "futbolka-charles-leclerc-x-monaco",
     "name": "Футболка Charles Leclerc x Monaco",
     "category": "Pilots",
-    "collection": "Racing x Football",
+    "collection": "F1 x Football",
     "collectionTags": [
-      "Racing x Football",
+      "F1 x Football",
       "New Arrivals"
     ],
     "driverName": "Charles Leclerc",
@@ -1193,12 +1267,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 5000,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Red",
       "White"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -1209,10 +1286,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778444202778-cover-386962145c5a.jpg",
     "gallery": [
-      "/catalog-products/custom-1778444202778-cover-386962145c5a.jpg",
-      "/catalog-products/custom-1778444202778-gallery-1-386962145c5a.jpg"
+      "/catalog-products/custom-1778444202778-cover-386962145c5a.jpg"
     ],
     "description": "Футболка из коллекции Charles Leclerc. Модель выполнена в эстетике фирменного магазина командной одежды: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой автоспорта.",
     "shortDescription": "Футболка из коллекции Charles Leclerc в стилистике фирменного магазина спортивной одежды.",
@@ -1243,12 +1320,15 @@
     "legendSlug": "daniel-ricciardo",
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "White"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -1259,10 +1339,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778372032248-cover-aa872edc61bd.jpg",
     "gallery": [
-      "/catalog-products/custom-1778372032248-cover-aa872edc61bd.jpg",
-      "/catalog-products/custom-1778372032248-gallery-1-aa872edc61bd.jpg"
+      "/catalog-products/custom-1778372032248-cover-aa872edc61bd.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -1293,12 +1373,15 @@
     "legendSlug": "daniel-ricciardo",
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "Silver"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -1309,10 +1392,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778364421924-cover-b588044ac917.jpg",
     "gallery": [
-      "/catalog-products/custom-1778364421924-cover-b588044ac917.jpg",
-      "/catalog-products/custom-1778364421924-gallery-1-b588044ac917.jpg"
+      "/catalog-products/custom-1778364421924-cover-b588044ac917.jpg"
     ],
     "description": "Футболка из коллекции легенд Daniel Ricciardo. В основе спокойный, выверенный подход: архивное вдохновение автоспорта, аккуратная типографика и современная спортивная подача.",
     "shortDescription": "Футболка из архивной коллекции Daniel Ricciardo в выверенном стиле.",
@@ -1342,12 +1425,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "White",
       "Black"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -1358,10 +1444,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778371870814-cover-ffeb0f6b775b.jpg",
     "gallery": [
-      "/catalog-products/custom-1778371870814-cover-ffeb0f6b775b.jpg",
-      "/catalog-products/custom-1778371870814-gallery-1-ffeb0f6b775b.jpg"
+      "/catalog-products/custom-1778371870814-cover-ffeb0f6b775b.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -1392,12 +1478,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "Silver"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -1408,10 +1497,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778238917299-cover-52741ba74ee0.jpg",
     "gallery": [
-      "/catalog-products/custom-1778238917299-cover-52741ba74ee0.jpg",
-      "/catalog-products/custom-1778238917299-gallery-1-52741ba74ee0.jpg"
+      "/catalog-products/custom-1778238917299-cover-52741ba74ee0.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -1442,12 +1531,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "White"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -1458,10 +1550,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778371727297-cover-7771cdf68d1a.jpg",
     "gallery": [
-      "/catalog-products/custom-1778371727297-cover-7771cdf68d1a.jpg",
-      "/catalog-products/custom-1778371727297-gallery-1-7771cdf68d1a.jpg"
+      "/catalog-products/custom-1778371727297-cover-7771cdf68d1a.jpg"
     ],
     "description": "Футболка из коллекции Fernando Alonso. Модель выполнена в эстетике фирменного магазина командной одежды: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой автоспорта.",
     "shortDescription": "Футболка из коллекции Fernando Alonso в стилистике фирменного магазина спортивной одежды.",
@@ -1492,6 +1584,8 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
@@ -1499,6 +1593,7 @@
       "Silver",
       "White"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -1509,10 +1604,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778238740416-cover-b64553931909.jpg",
     "gallery": [
-      "/catalog-products/custom-1778238740416-cover-b64553931909.jpg",
-      "/catalog-products/custom-1778238740416-gallery-1-b64553931909.jpg"
+      "/catalog-products/custom-1778238740416-cover-b64553931909.jpg"
     ],
     "description": "Футболка из коллекции Fernando Alonso. Модель выполнена в эстетике фирменного магазина командной одежды: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой автоспорта.",
     "shortDescription": "Футболка из коллекции Fernando Alonso в стилистике фирменного магазина спортивной одежды.",
@@ -1543,12 +1638,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 2990,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "White"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -1559,10 +1657,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778371528613-cover-3d4f1df84bad.jpg",
     "gallery": [
-      "/catalog-products/custom-1778371528613-cover-3d4f1df84bad.jpg",
-      "/catalog-products/custom-1778371528613-gallery-1-3d4f1df84bad.jpg"
+      "/catalog-products/custom-1778371528613-cover-3d4f1df84bad.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -1593,12 +1691,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "Silver"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -1609,10 +1710,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778238352887-cover-58856729bc0b.jpg",
     "gallery": [
-      "/catalog-products/custom-1778238352887-cover-58856729bc0b.jpg",
-      "/catalog-products/custom-1778238352887-gallery-1-58856729bc0b.jpg"
+      "/catalog-products/custom-1778238352887-cover-58856729bc0b.jpg"
     ],
     "description": "Футболка из коллекции Franco Colapinto. Модель выполнена в эстетике фирменного магазина командной одежды: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой автоспорта.",
     "shortDescription": "Футболка из коллекции Franco Colapinto в стилистике фирменного магазина спортивной одежды.",
@@ -1643,12 +1744,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "White"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -1659,10 +1763,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778371340597-cover-3576ad4506f7.jpg",
     "gallery": [
-      "/catalog-products/custom-1778371340597-cover-3576ad4506f7.jpg",
-      "/catalog-products/custom-1778371340597-gallery-1-3576ad4506f7.jpg"
+      "/catalog-products/custom-1778371340597-cover-3576ad4506f7.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -1693,12 +1797,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "Silver"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -1709,10 +1816,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778239525731-cover-e5f7a869e932.jpg",
     "gallery": [
-      "/catalog-products/custom-1778239525731-cover-e5f7a869e932.jpg",
-      "/catalog-products/custom-1778239525731-gallery-1-e5f7a869e932.jpg"
+      "/catalog-products/custom-1778239525731-cover-e5f7a869e932.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -1743,6 +1850,8 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
@@ -1750,6 +1859,7 @@
       "Green",
       "White"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -1760,10 +1870,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778371124746-cover-4efa53bd10d6.jpg",
     "gallery": [
-      "/catalog-products/custom-1778371124746-cover-4efa53bd10d6.jpg",
-      "/catalog-products/custom-1778371124746-gallery-1-4efa53bd10d6.jpg"
+      "/catalog-products/custom-1778371124746-cover-4efa53bd10d6.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -1794,12 +1904,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "White"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -1810,10 +1923,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778371258497-cover-78cb3c8634a1.jpg",
     "gallery": [
-      "/catalog-products/custom-1778371258497-cover-78cb3c8634a1.jpg",
-      "/catalog-products/custom-1778371258497-gallery-1-78cb3c8634a1.jpg"
+      "/catalog-products/custom-1778371258497-cover-78cb3c8634a1.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -1844,12 +1957,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "Silver"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -1860,10 +1976,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778239232249-cover-b42fc407cd37.jpg",
     "gallery": [
-      "/catalog-products/custom-1778239232249-cover-b42fc407cd37.jpg",
-      "/catalog-products/custom-1778239232249-gallery-1-b42fc407cd37.jpg"
+      "/catalog-products/custom-1778239232249-cover-b42fc407cd37.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -1894,12 +2010,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "White"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -1910,10 +2029,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778371074746-cover-ddce67d986fa.jpg",
     "gallery": [
-      "/catalog-products/custom-1778371074746-cover-ddce67d986fa.jpg",
-      "/catalog-products/custom-1778371074746-gallery-1-ddce67d986fa.jpg"
+      "/catalog-products/custom-1778371074746-cover-ddce67d986fa.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -1944,12 +2063,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "Silver"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -1960,10 +2082,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778239187583-cover-ce6eac54f962.jpg",
     "gallery": [
-      "/catalog-products/custom-1778239187583-cover-ce6eac54f962.jpg",
-      "/catalog-products/custom-1778239187583-gallery-1-ce6eac54f962.jpg"
+      "/catalog-products/custom-1778239187583-cover-ce6eac54f962.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -1994,12 +2116,15 @@
     "legendSlug": "kimi-raikkonen",
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "White"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -2010,10 +2135,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778372187829-cover-2bf1bfe7c457.jpg",
     "gallery": [
-      "/catalog-products/custom-1778372187829-cover-2bf1bfe7c457.jpg",
-      "/catalog-products/custom-1778372187829-gallery-1-2bf1bfe7c457.jpg"
+      "/catalog-products/custom-1778372187829-cover-2bf1bfe7c457.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -2044,12 +2169,15 @@
     "legendSlug": "kimi-raikkonen",
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "Silver"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -2060,10 +2188,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778373002979-cover-cd10cbe5678b.jpg",
     "gallery": [
-      "/catalog-products/custom-1778373002979-cover-cd10cbe5678b.jpg",
-      "/catalog-products/custom-1778373002979-gallery-1-cd10cbe5678b.jpg"
+      "/catalog-products/custom-1778373002979-cover-cd10cbe5678b.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -2094,12 +2222,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "White"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -2110,10 +2241,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778371781063-cover-1fadcdd7913c.jpg",
     "gallery": [
-      "/catalog-products/custom-1778371781063-cover-1fadcdd7913c.jpg",
-      "/catalog-products/custom-1778371781063-gallery-1-1fadcdd7913c.jpg"
+      "/catalog-products/custom-1778371781063-cover-1fadcdd7913c.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -2144,12 +2275,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "Silver"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -2160,10 +2294,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778238800249-cover-c3f41c1337c2.jpg",
     "gallery": [
-      "/catalog-products/custom-1778238800249-cover-c3f41c1337c2.jpg",
-      "/catalog-products/custom-1778238800249-gallery-1-c3f41c1337c2.jpg"
+      "/catalog-products/custom-1778238800249-cover-c3f41c1337c2.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -2194,12 +2328,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3499,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "White"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -2210,10 +2347,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778371027380-cover-f6c8cd04fd50.jpg",
     "gallery": [
-      "/catalog-products/custom-1778371027380-cover-f6c8cd04fd50.jpg",
-      "/catalog-products/custom-1778371027380-gallery-1-f6c8cd04fd50.jpg"
+      "/catalog-products/custom-1778371027380-cover-f6c8cd04fd50.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -2244,12 +2381,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "Silver"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -2260,10 +2400,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778239288115-cover-a5964be08fcb.jpg",
     "gallery": [
-      "/catalog-products/custom-1778239288115-cover-a5964be08fcb.jpg",
-      "/catalog-products/custom-1778239288115-gallery-1-a5964be08fcb.jpg"
+      "/catalog-products/custom-1778239288115-cover-a5964be08fcb.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -2281,9 +2421,9 @@
     "slug": "futbolka-lando-norris-x-england",
     "name": "Футболка Lando Norris x England",
     "category": "Pilots",
-    "collection": "Racing x Football",
+    "collection": "F1 x Football",
     "collectionTags": [
-      "Racing x Football",
+      "F1 x Football",
       "New Arrivals"
     ],
     "driverName": "Lando Norris",
@@ -2294,12 +2434,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 5000,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "White",
       "Navy"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -2310,10 +2453,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778443157328-cover-0db10b8d969b.jpg",
     "gallery": [
-      "/catalog-products/custom-1778443157328-cover-0db10b8d969b.jpg",
-      "/catalog-products/custom-1778443157328-gallery-1-0db10b8d969b.jpg"
+      "/catalog-products/custom-1778443157328-cover-0db10b8d969b.jpg"
     ],
     "description": "Футболка из коллекции Lando Norris. Модель выполнена в эстетике фирменного магазина командной одежды: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой автоспорта.",
     "shortDescription": "Футболка из коллекции Lando Norris в стилистике фирменного магазина спортивной одежды.",
@@ -2344,12 +2487,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "White"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -2360,6 +2506,7 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/recovered-products/custom-1777416741928-cover.jpg",
     "gallery": [
       "/recovered-products/custom-1777416741928-cover.jpg"
@@ -2393,12 +2540,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "Silver"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -2409,6 +2559,7 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/recovered-products/custom-1777482490798-cover.jpg",
     "gallery": [
       "/recovered-products/custom-1777482490798-cover.jpg",
@@ -2431,9 +2582,9 @@
     "slug": "futbolka-lewis-hamilton-x-england",
     "name": "Футболка Lewis Hamilton x England",
     "category": "Pilots",
-    "collection": "Racing x Football",
+    "collection": "F1 x Football",
     "collectionTags": [
-      "Racing x Football",
+      "F1 x Football",
       "New Arrivals"
     ],
     "driverName": "Lewis Hamilton",
@@ -2444,12 +2595,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 5000,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "White",
       "Navy"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -2460,10 +2614,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778443251861-cover-411b20f3369b.jpg",
     "gallery": [
-      "/catalog-products/custom-1778443251861-cover-411b20f3369b.jpg",
-      "/catalog-products/custom-1778443251861-gallery-1-411b20f3369b.jpg"
+      "/catalog-products/custom-1778443251861-cover-411b20f3369b.jpg"
     ],
     "description": "Футболка из коллекции Lewis Hamilton. Модель выполнена в эстетике фирменного магазина командной одежды: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой автоспорта.",
     "shortDescription": "Футболка из коллекции Lewis Hamilton в стилистике фирменного магазина спортивной одежды.",
@@ -2494,12 +2648,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "White",
       "Black"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -2510,10 +2667,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778373952202-cover-ee113f3865c5.jpg",
     "gallery": [
-      "/catalog-products/custom-1778373952202-cover-ee113f3865c5.jpg",
-      "/catalog-products/custom-1778373952202-gallery-1-ee113f3865c5.jpg"
+      "/catalog-products/custom-1778373952202-cover-ee113f3865c5.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -2544,12 +2701,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "Silver"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -2560,10 +2720,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778238259766-cover-ff46d5a3a906.jpg",
     "gallery": [
-      "/catalog-products/custom-1778238259766-cover-ff46d5a3a906.jpg",
-      "/catalog-products/custom-1778238259766-gallery-1-ff46d5a3a906.jpg"
+      "/catalog-products/custom-1778238259766-cover-ff46d5a3a906.jpg"
     ],
     "description": "Футболка из коллекции Liam Lawson. Модель выполнена в эстетике фирменного магазина командной одежды: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой автоспорта.",
     "shortDescription": "Футболка из коллекции Liam Lawson в стилистике фирменного магазина спортивной одежды.",
@@ -2593,12 +2753,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "White",
       "Blue"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -2609,10 +2772,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778090477669-cover-14293e8cb7fe.jpg",
     "gallery": [
-      "/catalog-products/custom-1778090477669-cover-14293e8cb7fe.jpg",
-      "/catalog-products/custom-1778090477669-gallery-1-14293e8cb7fe.jpg"
+      "/catalog-products/custom-1778090477669-cover-14293e8cb7fe.jpg"
     ],
     "description": "Футболка из коллекции Max Verstappen. Модель выполнена в эстетике фирменного магазина командной одежды: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой автоспорта.",
     "shortDescription": "Футболка из коллекции Max Verstappen в стилистике фирменного магазина спортивной одежды.",
@@ -2643,12 +2806,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "White"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -2659,10 +2825,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778091497744-cover-fde368a7687b.jpg",
     "gallery": [
-      "/catalog-products/custom-1778091497744-cover-fde368a7687b.jpg",
-      "/catalog-products/custom-1778091497744-gallery-1-fde368a7687b.jpg"
+      "/catalog-products/custom-1778091497744-cover-fde368a7687b.jpg"
     ],
     "description": "Футболка из коллекции Max Verstappen. Модель выполнена в эстетике фирменного магазина командной одежды: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой автоспорта.",
     "shortDescription": "Футболка из коллекции Max Verstappen в стилистике фирменного магазина спортивной одежды.",
@@ -2693,12 +2859,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "Silver"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -2709,10 +2878,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778238973833-cover-805af9ff7dfb.jpg",
     "gallery": [
-      "/catalog-products/custom-1778238973833-cover-805af9ff7dfb.jpg",
-      "/catalog-products/custom-1778238973833-gallery-1-805af9ff7dfb.jpg"
+      "/catalog-products/custom-1778238973833-cover-805af9ff7dfb.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -2743,12 +2912,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "White"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -2759,10 +2931,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778371302613-cover-19e308867fab.jpg",
     "gallery": [
-      "/catalog-products/custom-1778371302613-cover-19e308867fab.jpg",
-      "/catalog-products/custom-1778371302613-gallery-1-19e308867fab.jpg"
+      "/catalog-products/custom-1778371302613-cover-19e308867fab.jpg"
     ],
     "description": "Футболка из коллекции Nico Hülkenberg. Модель выполнена в эстетике фирменного магазина командной одежды: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой автоспорта.",
     "shortDescription": "Футболка из коллекции Nico Hülkenberg в стилистике фирменного магазина спортивной одежды.",
@@ -2793,12 +2965,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "Silver"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -2809,10 +2984,10 @@
     ],
     "type": "T-shirt",
     "badge": "New",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778239373949-cover-459612901f06.jpg",
     "gallery": [
-      "/catalog-products/custom-1778239373949-cover-459612901f06.jpg",
-      "/catalog-products/custom-1778239373949-gallery-1-459612901f06.jpg"
+      "/catalog-products/custom-1778239373949-cover-459612901f06.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -2843,12 +3018,15 @@
     "legendSlug": "niki-lauda",
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "White",
       "Black"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -2859,10 +3037,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778371979130-cover-5d022fec0336.jpg",
     "gallery": [
-      "/catalog-products/custom-1778371979130-cover-5d022fec0336.jpg",
-      "/catalog-products/custom-1778371979130-gallery-1-5d022fec0336.jpg"
+      "/catalog-products/custom-1778371979130-cover-5d022fec0336.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -2893,12 +3071,15 @@
     "legendSlug": "niki-lauda",
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "Silver"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -2909,10 +3090,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778372553913-cover-884b1982bf12.jpg",
     "gallery": [
-      "/catalog-products/custom-1778372553913-cover-884b1982bf12.jpg",
-      "/catalog-products/custom-1778372553913-gallery-1-884b1982bf12.jpg"
+      "/catalog-products/custom-1778372553913-cover-884b1982bf12.jpg"
     ],
     "description": "Футболка из коллекции легенд Niki Lauda. В основе спокойный, выверенный подход: архивное вдохновение автоспорта, аккуратная типографика и современная спортивная подача.",
     "shortDescription": "Футболка из архивной коллекции Niki Lauda в выверенном стиле.",
@@ -2943,12 +3124,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "White",
       "Black"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -2959,10 +3143,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778371918097-cover-651ef1d51f92.jpg",
     "gallery": [
-      "/catalog-products/custom-1778371918097-cover-651ef1d51f92.jpg",
-      "/catalog-products/custom-1778371918097-gallery-1-651ef1d51f92.jpg"
+      "/catalog-products/custom-1778371918097-cover-651ef1d51f92.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -2993,12 +3177,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "Silver"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -3009,10 +3196,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778238863083-cover-39dedfde918c.jpg",
     "gallery": [
-      "/catalog-products/custom-1778238863083-cover-39dedfde918c.jpg",
-      "/catalog-products/custom-1778238863083-gallery-1-39dedfde918c.jpg"
+      "/catalog-products/custom-1778238863083-cover-39dedfde918c.jpg"
     ],
     "description": "Футболка из коллекции Oliver Bearman. Модель выполнена в эстетике фирменного магазина командной одежды: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой автоспорта.",
     "shortDescription": "Футболка из коллекции Oliver Bearman в стилистике фирменного магазина спортивной одежды.",
@@ -3043,12 +3230,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "White"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -3059,10 +3249,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778370973181-cover-83ae38d71158.jpg",
     "gallery": [
-      "/catalog-products/custom-1778370973181-cover-83ae38d71158.jpg",
-      "/catalog-products/custom-1778370973181-gallery-1-83ae38d71158.jpg"
+      "/catalog-products/custom-1778370973181-cover-83ae38d71158.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -3093,12 +3283,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "Silver"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -3109,10 +3302,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778239327582-cover-a5964be08fcb.jpg",
     "gallery": [
-      "/catalog-products/custom-1778239327582-cover-a5964be08fcb.jpg",
-      "/catalog-products/custom-1778239327582-gallery-1-a5964be08fcb.jpg"
+      "/catalog-products/custom-1778239327582-cover-a5964be08fcb.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -3143,12 +3336,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "White"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -3159,10 +3355,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778371445364-cover-b641db709892.jpg",
     "gallery": [
-      "/catalog-products/custom-1778371445364-cover-b641db709892.jpg",
-      "/catalog-products/custom-1778371445364-gallery-1-b641db709892.jpg"
+      "/catalog-products/custom-1778371445364-cover-b641db709892.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -3193,12 +3389,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "Silver"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -3209,10 +3408,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778238425184-cover-e518e006d0d2.jpg",
     "gallery": [
-      "/catalog-products/custom-1778238425184-cover-e518e006d0d2.jpg",
-      "/catalog-products/custom-1778238425184-gallery-1-e518e006d0d2.jpg"
+      "/catalog-products/custom-1778238425184-cover-e518e006d0d2.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -3242,6 +3441,8 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 2990,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
@@ -3249,6 +3450,7 @@
       "Green",
       "White"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -3259,10 +3461,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778237860117-cover-3ebd0fa51888.png",
     "gallery": [
-      "/catalog-products/custom-1778237860117-cover-3ebd0fa51888.png",
-      "/catalog-products/custom-1778237860117-gallery-1-3ebd0fa51888.png"
+      "/catalog-products/custom-1778237860117-cover-3ebd0fa51888.png"
     ],
     "description": "Футболка из коллекции Carlos Sainz. Модель выполнена в эстетике фирменного магазина командной одежды: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой автоспорта.",
     "shortDescription": "Футболка из коллекции Carlos Sainz в стилистике фирменного магазина спортивной одежды.",
@@ -3293,12 +3495,15 @@
     "legendSlug": "sebastian-vettel",
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "White"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -3309,10 +3514,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778372640866-cover-f577754cbc04.jpg",
     "gallery": [
-      "/catalog-products/custom-1778372640866-cover-f577754cbc04.jpg",
-      "/catalog-products/custom-1778372640866-gallery-1-f577754cbc04.jpg"
+      "/catalog-products/custom-1778372640866-cover-f577754cbc04.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -3343,12 +3548,15 @@
     "legendSlug": "sebastian-vettel",
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "Silver"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -3359,10 +3567,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778372916714-cover-b17c77dc574a.jpg",
     "gallery": [
-      "/catalog-products/custom-1778372916714-cover-b17c77dc574a.jpg",
-      "/catalog-products/custom-1778372916714-gallery-1-b17c77dc574a.jpg"
+      "/catalog-products/custom-1778372916714-cover-b17c77dc574a.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -3393,12 +3601,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "White"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -3409,10 +3620,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778371591564-cover-42b35c99d93b.jpg",
     "gallery": [
-      "/catalog-products/custom-1778371591564-cover-42b35c99d93b.jpg",
-      "/catalog-products/custom-1778371591564-gallery-1-42b35c99d93b.jpg"
+      "/catalog-products/custom-1778371591564-cover-42b35c99d93b.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -3443,12 +3654,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "Silver"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -3459,10 +3673,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778238542886-cover-45e7bedd33b2.jpg",
     "gallery": [
-      "/catalog-products/custom-1778238542886-cover-45e7bedd33b2.jpg",
-      "/catalog-products/custom-1778238542886-gallery-1-45e7bedd33b2.jpg"
+      "/catalog-products/custom-1778238542886-cover-45e7bedd33b2.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -3493,12 +3707,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "White"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -3509,10 +3726,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778371672365-cover-4b252084f1e8.jpg",
     "gallery": [
-      "/catalog-products/custom-1778371672365-cover-4b252084f1e8.jpg",
-      "/catalog-products/custom-1778371672365-gallery-1-4b252084f1e8.jpg"
+      "/catalog-products/custom-1778371672365-cover-4b252084f1e8.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",
@@ -3543,12 +3760,15 @@
     "legendSlug": null,
     "gender": "Unisex",
     "price": 3500,
+    "oldPrice": null,
+    "stock": null,
     "productType": "standard",
     "requiresShipping": true,
     "colors": [
       "Black",
       "Silver"
     ],
+    "colorways": [],
     "sizes": [
       "XS",
       "S",
@@ -3559,10 +3779,10 @@
     ],
     "type": "T-shirt",
     "badge": "Preorder",
+    "status": "ACTIVE",
     "image": "/catalog-products/custom-1778238619333-cover-2f9dc4fcd180.jpg",
     "gallery": [
-      "/catalog-products/custom-1778238619333-cover-2f9dc4fcd180.jpg",
-      "/catalog-products/custom-1778238619333-gallery-1-2f9dc4fcd180.jpg"
+      "/catalog-products/custom-1778238619333-cover-2f9dc4fcd180.jpg"
     ],
     "description": "Опишите материал, посадку и особенности модели.",
     "shortDescription": "Короткое описание товара для каталога.",

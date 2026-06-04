@@ -15,6 +15,8 @@ type LegendsPageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
+export const revalidate = 300;
+
 export async function generateMetadata({ searchParams }: LegendsPageProps): Promise<Metadata> {
   const [products, params] = await Promise.all([readCatalogProductsFromDb(), searchParams]);
   const legendProducts = products.filter((product) => Boolean(product.legendSlug));

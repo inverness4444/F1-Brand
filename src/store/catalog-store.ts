@@ -433,7 +433,7 @@ type CatalogState = {
   replaceProducts: (products: Product[]) => Promise<void>;
   upsertCollection: (collection: CatalogCollection) => Promise<void>;
   removeCollection: (collectionId: string) => Promise<void>;
-  saveCollectionProducts: (collection: CatalogCollection, productIds: string[]) => Promise<void>;
+  saveCollectionProducts: (collection: CatalogCollection, productIds: string[]) => Promise<CatalogCollection>;
   resetProducts: () => Promise<void>;
 };
 
@@ -460,9 +460,8 @@ let initializeCatalogPromise: { mode: CatalogMode; promise: Promise<void> } | nu
 let saveCatalogQueue: Promise<void> = Promise.resolve();
 
 async function fetchCatalogProductsFromServer(mode: CatalogMode) {
-  const response = await fetch(mode === "admin" ? "/api/admin/products" : "/api/catalog", {
-    cache: "no-store",
-  });
+  const requestInit: RequestInit = mode === "admin" ? { cache: "no-store" } : {};
+  const response = await fetch(mode === "admin" ? "/api/admin/products" : "/api/catalog", requestInit);
 
   if (!response.ok) {
     throw new Error("Не удалось загрузить каталог.");
@@ -532,6 +531,42 @@ async function deleteCollectionFromServer(collectionId: string) {
 
   return {
     collections: payload?.collections ?? [],
+  };
+}
+
+async function saveCollectionToServer(collection: CatalogCollection, productIds: string[]) {
+  const response = await fetch("/api/admin/collections", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...buildCsrfHeaders(),
+    },
+    body: JSON.stringify({
+      collection: {
+        ...collection,
+        productIds,
+      },
+      productIds,
+    }),
+  });
+
+  const payload = (await response.json().catch(() => null)) as
+    | {
+        collection?: CatalogCollection;
+        products?: Product[];
+        collections?: CatalogCollection[];
+        error?: string;
+      }
+    | null;
+
+  if (!response.ok || !payload?.collection || !payload.products || !payload.collections) {
+    throw new Error(payload?.error ?? "Не удалось сохранить коллекцию.");
+  }
+
+  return {
+    collection: payload.collection,
+    products: payload.products,
+    collections: payload.collections,
   };
 }
 
@@ -658,19 +693,20 @@ export const useCatalogStore = create<CatalogState>()((set, get) => ({
     await enqueueCatalogSave(nextProducts, nextCollections);
   },
   upsertCollection: async (collection) => {
-    let nextCollections: CatalogCollection[] = [];
+    const normalizedCollection = normalizeCollection(
+      collection,
+      get().collections.filter((item) => item.id !== collection.id),
+    );
+    const payload = await saveCollectionToServer(normalizedCollection, normalizedCollection.productIds);
+    const nextProducts = resolveCatalogProducts(payload.products);
+    const nextCollections = syncCollectionsWithProducts(payload.collections, nextProducts);
 
-    set((state) => {
-      const otherCollections = state.collections.filter((item) => item.id !== collection.id);
-      nextCollections = syncCollectionsWithProducts([...otherCollections, collection], state.products);
-
-      return {
-        collections: nextCollections,
-        catalogMode: "admin",
-      };
+    set({
+      products: nextProducts,
+      collections: nextCollections,
+      hasHydrated: true,
+      catalogMode: "admin",
     });
-
-    await enqueueCatalogSave(get().products, nextCollections);
   },
   removeCollection: async (collectionId) => {
     const removed = get().collections.find((collection) => collection.id === collectionId);
@@ -708,54 +744,25 @@ export const useCatalogStore = create<CatalogState>()((set, get) => ({
     });
   },
   saveCollectionProducts: async (collection, productIds) => {
-    let nextProducts: Product[] = [];
-    let nextCollections: CatalogCollection[] = [];
+    const normalizedCollection = normalizeCollection(
+      {
+        ...collection,
+        productIds,
+      },
+      get().collections.filter((item) => item.id !== collection.id),
+    );
+    const payload = await saveCollectionToServer(normalizedCollection, normalizedCollection.productIds);
+    const nextProducts = resolveCatalogProducts(payload.products);
+    const nextCollections = syncCollectionsWithProducts(payload.collections, nextProducts);
 
-    set((state) => {
-      const existing = state.collections.find((item) => item.id === collection.id);
-      const previousName = existing?.name;
-      const normalizedCollection = normalizeCollection(
-        {
-          ...collection,
-          productIds,
-        },
-        state.collections.filter((item) => item.id !== collection.id),
-      );
-      const selectedIds = new Set(productIds);
-      nextProducts = state.products.map((product) => {
-        const tagsWithoutPrevious = previousName
-          ? product.collectionTags.filter((tag) => tag !== previousName)
-          : product.collectionTags;
-        const tagsWithoutCurrent = tagsWithoutPrevious.filter((tag) => tag !== normalizedCollection.name);
-        const shouldInclude = selectedIds.has(product.id);
-        const nextTags = shouldInclude
-          ? uniqueValues([normalizedCollection.name, ...tagsWithoutCurrent])
-          : tagsWithoutCurrent;
-        const nextCollection =
-          shouldInclude || product.collection === previousName || product.collection === normalizedCollection.name
-            ? nextTags.find((tag) => !legacySystemCollectionNames.has(tag)) ?? ""
-            : product.collection;
-
-        return {
-          ...product,
-          collection: nextCollection,
-          collectionTags: nextTags,
-        };
-      });
-      nextProducts = normalizeProductCollection(nextProducts);
-      nextCollections = syncCollectionsWithProducts(
-        [...state.collections.filter((item) => item.id !== normalizedCollection.id), normalizedCollection],
-        nextProducts,
-      );
-
-      return {
-        products: nextProducts,
-        collections: nextCollections,
-        catalogMode: "admin",
-      };
+    set({
+      products: nextProducts,
+      collections: nextCollections,
+      hasHydrated: true,
+      catalogMode: "admin",
     });
 
-    await enqueueCatalogSave(nextProducts, nextCollections);
+    return payload.collection;
   },
   resetProducts: async () => {
     set({

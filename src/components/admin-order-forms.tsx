@@ -2,7 +2,7 @@
 
 import { Loader2, Save, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import type {
   AdminFulfillmentStatus,
@@ -168,6 +168,54 @@ export function AdminOrderStatusForm({ order }: { order: AdminOrderDetail }) {
         </div>
       ) : null}
     </form>
+  );
+}
+
+export function AdminOrderStatusSelect({
+  orderId,
+  status,
+}: {
+  orderId: string;
+  status: AdminOrderStatus;
+}) {
+  const router = useRouter();
+  const pushToast = useToastStore((state) => state.pushToast);
+  const [value, setValue] = useState(status);
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    setValue(status);
+  }, [status]);
+
+  const handleChange = async (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const nextStatus = event.target.value as AdminOrderStatus;
+    setValue(nextStatus);
+    setIsSaving(true);
+
+    try {
+      const input = adminOrderUpdateSchema.parse({ status: nextStatus });
+      await patchOrder(orderId, input);
+      pushToast("Статус заказа обновлён", "success");
+      router.refresh();
+    } catch (error) {
+      setValue(status);
+      pushToast(getErrorMessage(error, "Не удалось обновить статус заказа."), "error");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <label className="block">
+      <span className="sr-only">Статус заказа</span>
+      <select value={value} onChange={handleChange} disabled={isSaving} className="field-base min-h-10 text-xs">
+        {adminOrderStatusOptions.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    </label>
   );
 }
 

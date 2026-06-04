@@ -1,7 +1,6 @@
 import Image from "next/image";
-import Link from "next/link";
 
-import { buttonClassName } from "@/components/ui/button";
+import { HeroCtaLink } from "@/components/hero-cta-link";
 
 export function HeroBanner() {
   return (
@@ -29,16 +28,7 @@ export function HeroBanner() {
               Подборка одежды, командных коллекций, капсул пилотов и аксессуаров в одной витрине.
             </p>
             <div className="mt-8">
-              <Link
-                href="/shop"
-                className={buttonClassName({
-                  variant: "secondary",
-                  className:
-                    "w-full justify-center rounded-full border-white/70 bg-white/8 text-white backdrop-blur hover:border-white hover:bg-white/14 hover:text-white sm:w-auto sm:min-w-[220px]",
-                })}
-              >
-                Смотреть все товары
-              </Link>
+              <HeroCtaLink />
             </div>
           </div>
         </div>

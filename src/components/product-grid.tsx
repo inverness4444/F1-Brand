@@ -6,8 +6,10 @@ import { type ReactNode, useCallback, useEffect, useRef } from "react";
 import type { Product } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { ProductCard } from "@/components/product-card";
+import { useMounted } from "@/hooks/use-mounted";
 
 const CAROUSEL_COPY_INDICES = [0, 1, 2] as const;
+const CAROUSEL_SSR_PRODUCT_LIMIT = 12;
 const CAROUSEL_AUTO_SCROLL_PX_PER_SECOND = 110;
 const CAROUSEL_MANUAL_SCROLL_DURATION = 520;
 const CAROUSEL_MAX_FRAME_DELTA = 80;
@@ -27,6 +29,7 @@ export function ProductGrid({
   layout?: "grid" | "carousel";
   priorityFirstImage?: boolean;
 }) {
+  const hasMounted = useMounted();
   const railRef = useRef<HTMLDivElement>(null);
   const firstLoopRef = useRef<HTMLDivElement>(null);
 
@@ -87,7 +90,7 @@ export function ProductGrid({
   };
 
   useEffect(() => {
-    if (layout !== "carousel" || products.length < 2) {
+    if (!hasMounted || layout !== "carousel" || products.length < 2) {
       return;
     }
 
@@ -137,7 +140,7 @@ export function ProductGrid({
     return () => {
       window.cancelAnimationFrame(frameId);
     };
-  }, [getLoopWidth, layout, normalizeCarouselOffset, products.length]);
+  }, [getLoopWidth, hasMounted, layout, normalizeCarouselOffset, products.length]);
 
   const layoutClassName =
     variant === "showcase"
@@ -151,7 +154,8 @@ export function ProductGrid({
   const shouldPrioritizeFirstImage = priorityFirstImage ?? layout === "grid";
 
   if (layout === "carousel") {
-    const controlsEnabled = products.length > 1;
+    const renderedProducts = hasMounted ? products : products.slice(0, CAROUSEL_SSR_PRODUCT_LIMIT);
+    const controlsEnabled = hasMounted && products.length > 1;
     const copyIndices = controlsEnabled ? CAROUSEL_COPY_INDICES : ([0] as const);
 
     return (
@@ -193,7 +197,7 @@ export function ProductGrid({
                 data-carousel-loop
                 className="flex shrink-0 gap-4 pr-4"
               >
-                {products.map((product, index) => (
+                {renderedProducts.map((product, index) => (
                   <div
                     key={`${copyIndex}-${product.id}`}
                     data-carousel-card

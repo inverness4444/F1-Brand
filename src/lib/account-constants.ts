@@ -40,14 +40,14 @@ export const favoriteTeams2026 = [
 ] as const;
 
 export const orderStatuses: OrderStatus[] = [
-  "Новый",
+  "Создан",
   "Ожидает оплаты",
   "Оплачен",
-  "В производстве",
-  "Отправлен",
+  "В обработке",
+  "Передан в доставку",
   "Доставлен",
   "Отменён",
-  "Возвращён",
+  "Возврат",
 ];
 
 export const digitalDeliveryMethod: DeliveryMethod = "Цифровой сертификат";
@@ -64,6 +64,7 @@ export const paymentMethods = [
 
 export const accountNavigation = [
   { href: "/account", label: "Обзор" },
+  { href: "/account/notifications", label: "Уведомления" },
   { href: "/account/orders", label: "Мои заказы" },
   { href: "/account/gift-cards", label: "Баланс и сертификаты" },
   { href: "/account/favorites", label: "Избранное" },

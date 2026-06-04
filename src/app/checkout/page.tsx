@@ -2,7 +2,7 @@
 
 import { Loader2, ShoppingBag, WalletCards } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import type { AddressInput, DeliveryMethod, PaymentMethod, UserAddress } from "@/lib/account-types";
@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button";
 import { imageByType } from "@/lib/data/products";
 import { colorLabelRu, getProductDisplayName, sizeLabelRu } from "@/lib/storefront-text";
 import { formatPrice, getProductHref } from "@/lib/utils";
+import { trackAnalyticsEvent } from "@/services/analytics-service";
 
 type CheckoutErrors = Partial<Record<"name" | "email" | "phone" | "form", string>>;
 
@@ -56,6 +57,7 @@ export default function CheckoutPage() {
   });
   const [errors, setErrors] = useState<CheckoutErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const checkoutStartTrackedRef = useRef(false);
 
   const effectiveSelectedAddressId =
     selectedAddressId ?? addresses.find((address) => address.isDefault)?.id ?? addresses[0]?.id ?? null;
@@ -77,6 +79,24 @@ export default function CheckoutPage() {
     checkoutPreview.total,
     checkoutPreview.balanceUsage.availableBalance,
   );
+
+  useEffect(() => {
+    if (checkoutStartTrackedRef.current || checkoutPreview.items.length === 0) {
+      return;
+    }
+
+    checkoutStartTrackedRef.current = true;
+    trackAnalyticsEvent({
+      eventType: "checkout_start",
+      entityType: "checkout",
+      entityName: "Checkout",
+      metadata: {
+        source: "checkout_page",
+        itemCount: checkoutPreview.items.reduce((sum, entry) => sum + entry.selection.quantity, 0),
+        total: checkoutPreview.total,
+      },
+    });
+  }, [checkoutPreview.items, checkoutPreview.total]);
 
   useEffect(() => {
     if (!currentUser) {

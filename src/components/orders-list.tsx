@@ -7,14 +7,14 @@ import type { Order } from "@/lib/account-types";
 import { formatPrice } from "@/lib/utils";
 
 const statusClassMap: Record<Order["status"], string> = {
-  Новый: "bg-slate-100 text-slate-700",
+  Создан: "bg-slate-100 text-slate-700",
   "Ожидает оплаты": "bg-amber-100 text-amber-800",
   Оплачен: "bg-emerald-100 text-emerald-800",
-  "В производстве": "bg-amber-100 text-amber-800",
-  Отправлен: "bg-blue-100 text-blue-800",
+  "В обработке": "bg-amber-100 text-amber-800",
+  "Передан в доставку": "bg-blue-100 text-blue-800",
   Доставлен: "bg-green-100 text-green-800",
   Отменён: "bg-red-100 text-red-700",
-  Возвращён: "bg-slate-100 text-slate-700",
+  Возврат: "bg-slate-100 text-slate-700",
 };
 
 const paymentStatusLabel: Record<Order["paymentStatus"], string> = {
