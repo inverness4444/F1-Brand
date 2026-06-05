@@ -3,6 +3,7 @@
 import { useEffect, useMemo } from "react";
 
 import type { Product } from "@/lib/types";
+import { filterPublicProducts } from "@/lib/product-visibility";
 import { useCatalogStore } from "@/store/catalog-store";
 
 function uniqueSorted(values: Array<string | null | undefined>) {
@@ -37,28 +38,29 @@ export function useCatalogProducts({ admin = false }: { admin?: boolean } = {}) 
   }, [initializeCatalog, mode]);
 
   return useMemo(() => {
-    const sortedByDate = [...products].sort(
+    const visibleProducts = admin ? products : filterPublicProducts(products);
+    const sortedByDate = [...visibleProducts].sort(
       (left, right) => new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime(),
     );
-    const sortedByPopularity = [...products].sort((left, right) => right.popularity - left.popularity);
+    const sortedByPopularity = [...visibleProducts].sort((left, right) => right.popularity - left.popularity);
 
     return {
-      products,
+      products: visibleProducts,
       collections,
       hasHydrated,
-      productMap: new Map(products.map((product) => [product.id, product] as const)),
+      productMap: new Map(visibleProducts.map((product) => [product.id, product] as const)),
       newArrivals: sortedByDate.filter(
         (product) => product.badge === "New" || product.collectionTags.includes("New Arrivals"),
       ),
       bestsellers: sortedByPopularity.slice(0, 16),
-      teamwearProducts: products.filter((product) => product.category === "Teams"),
-      driverCollectionProducts: products.filter((product) => product.category === "Pilots"),
-      legendsProducts: products.filter((product) => product.category === "Legends"),
-      essentialsProducts: products.filter((product) => product.category === "Accessories" || product.category === "Gifts"),
-      saleProducts: products.filter((product) => product.badge === "Sale" || product.collectionTags.includes("Sale")),
-      teamOptions: uniqueSorted(products.map((product) => product.teamName)),
-      driverOptions: uniqueSorted(products.map((product) => product.driverName)),
-      legendOptions: uniqueSorted(products.map((product) => product.legendName)),
+      teamwearProducts: visibleProducts.filter((product) => product.category === "Teams"),
+      driverCollectionProducts: visibleProducts.filter((product) => product.category === "Pilots"),
+      legendsProducts: visibleProducts.filter((product) => product.category === "Legends"),
+      essentialsProducts: visibleProducts.filter((product) => product.category === "Accessories" || product.category === "Gifts"),
+      saleProducts: visibleProducts.filter((product) => product.badge === "Sale" || product.collectionTags.includes("Sale")),
+      teamOptions: uniqueSorted(visibleProducts.map((product) => product.teamName)),
+      driverOptions: uniqueSorted(visibleProducts.map((product) => product.driverName)),
+      legendOptions: uniqueSorted(visibleProducts.map((product) => product.legendName)),
     };
-  }, [collections, hasHydrated, products]);
+  }, [admin, collections, hasHydrated, products]);
 }

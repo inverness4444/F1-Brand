@@ -7,7 +7,6 @@ export const topBarItems = [
 
 export const footerColumns = {
   shop: [
-    { label: "Новинки", href: "/new" },
     { label: "Каталог", href: "/shop" },
     { label: "Команды", href: "/teams" },
     { label: "Пилоты", href: "/pilots" },

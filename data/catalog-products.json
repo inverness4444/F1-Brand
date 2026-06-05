@@ -2737,58 +2737,6 @@
     ]
   },
   {
-    "id": "custom-1778090477669",
-    "slug": "futbolka-max-verstappen",
-    "name": "Футболка Max Verstappen",
-    "category": "Pilots",
-    "collection": "",
-    "collectionTags": [
-      "New Arrivals"
-    ],
-    "driverName": "Max Verstappen",
-    "driverSlug": "max-verstappen",
-    "teamName": "Red Bull Racing",
-    "teamSlug": "red-bull-racing",
-    "legendName": null,
-    "legendSlug": null,
-    "gender": "Unisex",
-    "price": 3500,
-    "oldPrice": null,
-    "stock": null,
-    "productType": "standard",
-    "requiresShipping": true,
-    "colors": [
-      "White",
-      "Blue"
-    ],
-    "colorways": [],
-    "sizes": [
-      "XS",
-      "S",
-      "M",
-      "L",
-      "XL",
-      "XXL"
-    ],
-    "type": "T-shirt",
-    "badge": "Preorder",
-    "status": "ACTIVE",
-    "image": "/catalog-products/custom-1778090477669-cover-14293e8cb7fe.jpg",
-    "gallery": [
-      "/catalog-products/custom-1778090477669-cover-14293e8cb7fe.jpg"
-    ],
-    "description": "Футболка из коллекции Max Verstappen. Модель выполнена в эстетике фирменного магазина командной одежды: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой автоспорта.",
-    "shortDescription": "Футболка из коллекции Max Verstappen в стилистике фирменного магазина спортивной одежды.",
-    "popularity": 75,
-    "createdAt": "2026-05-06T18:01:17.669Z",
-    "number": 1,
-    "hexPalette": [
-      "#162540",
-      "#D8382E",
-      "#F0C03D"
-    ]
-  },
-  {
     "id": "custom-1778091497744",
     "slug": "futbolka-max-verstappen-blackout",
     "name": "Футболка Max Verstappen",
@@ -3793,6 +3741,58 @@
       "#111111",
       "#D8C7B3",
       "#7B2220"
+    ]
+  },
+  {
+    "id": "custom-1778090477669",
+    "slug": "futbolka-max-verstappen",
+    "name": "Футболка Max Verstappen",
+    "category": "Pilots",
+    "collection": "",
+    "collectionTags": [
+      "New Arrivals"
+    ],
+    "driverName": "Max Verstappen",
+    "driverSlug": "max-verstappen",
+    "teamName": "Red Bull Racing",
+    "teamSlug": "red-bull-racing",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "oldPrice": null,
+    "stock": null,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "White",
+      "Blue"
+    ],
+    "colorways": [],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Preorder",
+    "status": "ARCHIVED",
+    "image": "/catalog-products/custom-1778090477669-cover-14293e8cb7fe.jpg",
+    "gallery": [
+      "/catalog-products/custom-1778090477669-cover-14293e8cb7fe.jpg"
+    ],
+    "description": "Футболка из коллекции Max Verstappen. Модель выполнена в гоночной эстетике: чистый силуэт, спортивная посадка и аккуратные акценты, вдохновлённые культурой автоспорта.",
+    "shortDescription": "Футболка из коллекции Max Verstappen в гоночном стиле с чистой спортивной подачей.",
+    "popularity": 75,
+    "createdAt": "2026-05-06T18:01:17.669Z",
+    "number": 1,
+    "hexPalette": [
+      "#162540",
+      "#D8382E",
+      "#F0C03D"
     ]
   }
 ]

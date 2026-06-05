@@ -93,12 +93,6 @@ export function ProductInfo({ product }: { product: Product }) {
       </div>
       <p className="mt-4 text-[1.7rem] font-semibold tracking-normal text-[#111111] sm:text-[2.05rem]">{formatPrice(product.price)}</p>
 
-      <div className="mt-4 inline-flex max-w-full flex-wrap items-center gap-2 rounded-full border border-[var(--line)] bg-white px-3 py-2 text-sm text-[#111111]">
-        <span className="font-semibold">Motorsport-inspired</span>
-        <span className="text-[#b5b0a8]">/</span>
-        <span className="text-[#7b7a75]">streetwear для фанатов гонок</span>
-      </div>
-
       <p className="mt-5 max-w-full text-[0.95rem] leading-7 text-[#5f615f] sm:max-w-[44ch] sm:text-[0.98rem] sm:leading-8">
         {getProductShortDescription(product)}
       </p>

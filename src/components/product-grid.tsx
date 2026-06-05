@@ -13,6 +13,7 @@ const CAROUSEL_SSR_PRODUCT_LIMIT = 12;
 const CAROUSEL_AUTO_SCROLL_PX_PER_SECOND = 110;
 const CAROUSEL_MANUAL_SCROLL_DURATION = 520;
 const CAROUSEL_MAX_FRAME_DELTA = 80;
+const CAROUSEL_INTERACTION_PAUSE_MS = 1400;
 
 export function ProductGrid({
   products,
@@ -32,8 +33,13 @@ export function ProductGrid({
   const hasMounted = useMounted();
   const railRef = useRef<HTMLDivElement>(null);
   const firstLoopRef = useRef<HTMLDivElement>(null);
+  const pauseAutoplayUntilRef = useRef(0);
 
   const getLoopWidth = useCallback(() => firstLoopRef.current?.scrollWidth ?? 0, []);
+
+  const pauseCarouselAutoplay = useCallback((duration = CAROUSEL_INTERACTION_PAUSE_MS) => {
+    pauseAutoplayUntilRef.current = performance.now() + duration;
+  }, []);
 
   const normalizeCarouselOffset = useCallback(
     (node: HTMLDivElement) => {
@@ -81,6 +87,7 @@ export function ProductGrid({
       return;
     }
 
+    pauseCarouselAutoplay(CAROUSEL_MANUAL_SCROLL_DURATION + CAROUSEL_INTERACTION_PAUSE_MS);
     normalizeCarouselOffset(node);
     node.scrollBy({
       left: direction * scrollAmount,
@@ -128,6 +135,11 @@ export function ProductGrid({
 
       const delta = Math.min(timestamp - previousTimestamp, CAROUSEL_MAX_FRAME_DELTA);
       previousTimestamp = timestamp;
+
+      if (timestamp < pauseAutoplayUntilRef.current) {
+        frameId = window.requestAnimationFrame(step);
+        return;
+      }
 
       node.scrollLeft += (CAROUSEL_AUTO_SCROLL_PX_PER_SECOND * delta) / 1000;
       normalizeCarouselOffset(node);
@@ -185,6 +197,10 @@ export function ProductGrid({
           ref={railRef}
           data-product-carousel-rail
           onScroll={(event) => normalizeCarouselOffset(event.currentTarget)}
+          onPointerDown={() => pauseCarouselAutoplay()}
+          onPointerUp={() => pauseCarouselAutoplay()}
+          onPointerCancel={() => pauseCarouselAutoplay()}
+          onWheel={() => pauseCarouselAutoplay()}
           className="flex gap-4 overflow-x-auto pb-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
         >
           <div className="flex w-max">

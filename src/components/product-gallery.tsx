@@ -144,10 +144,6 @@ export function ProductGallery({ product }: { product: Product }) {
 
       <div className="order-1">
         <div className="relative overflow-hidden rounded-[1.8rem] bg-white">
-          <div className="pointer-events-none absolute left-4 top-4 z-10 inline-flex max-w-[calc(100%-2rem)] rounded-full bg-white/96 px-4 py-2 text-[0.64rem] font-semibold uppercase tracking-[0.14em] text-[#111111] shadow-[0_6px_18px_rgba(17,17,17,0.08)] backdrop-blur-sm sm:left-5 sm:top-5 sm:px-5 sm:text-[0.72rem]">
-            Motorsport-inspired
-          </div>
-
           <div
             className="relative flex aspect-[5/6] min-h-[420px] items-center justify-center sm:min-h-[620px] lg:min-h-[720px] xl:min-h-[780px] 2xl:min-h-[840px]"
           >

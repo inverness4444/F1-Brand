@@ -77,11 +77,11 @@ export function WishlistButton({
       aria-label={isFavorite ? "Удалить из избранного" : "Добавить в избранное"}
       className={cn(
         "inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--line)] bg-white/95 text-[#111111] transition hover:border-[#111111]",
-        isFavorite && "border-[#111111] bg-[#111111] text-white",
         className,
+        isFavorite && "border-[#111111] bg-[#111111] text-white",
       )}
     >
-      <Heart className={cn("size-4.5", isFavorite && "fill-current", iconClassName)} />
+      <Heart className={cn("size-4.5", iconClassName, isFavorite && "fill-current text-white")} />
     </button>
   );
 }

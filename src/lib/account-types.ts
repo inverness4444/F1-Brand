@@ -151,7 +151,7 @@ export type OrderPayment = {
   confirmationUrl: string | null;
 };
 
-export type DeliveryMethod = "СДЭК" | "Почта России" | "Курьер" | "Самовывоз" | "Цифровой сертификат";
+export type DeliveryMethod = "СДЭК" | "Почта России" | "Курьер" | "Цифровой сертификат";
 export type PaymentMethod =
   | "Банковская карта"
   | "СБП"

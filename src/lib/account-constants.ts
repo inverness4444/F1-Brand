@@ -53,7 +53,7 @@ export const orderStatuses: OrderStatus[] = [
 export const digitalDeliveryMethod: DeliveryMethod = "Цифровой сертификат";
 export const balancePaymentMethod: PaymentMethod = "Баланс аккаунта";
 
-export const deliveryMethods = ["СДЭК", "Почта России", "Курьер", "Самовывоз"] as const satisfies readonly DeliveryMethod[];
+export const deliveryMethods = ["СДЭК", "Почта России", "Курьер"] as const satisfies readonly DeliveryMethod[];
 
 export const paymentMethods = [
   "Банковская карта",

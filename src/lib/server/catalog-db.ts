@@ -20,6 +20,7 @@ import {
   readCatalogProductsFromFile,
   writeCatalogToFiles,
 } from "@/lib/server/catalog-file";
+import { filterPublicProducts } from "@/lib/product-visibility";
 import { slugify } from "@/lib/utils";
 
 export const CATALOG_CACHE_TAG = "catalog";
@@ -315,7 +316,7 @@ export function collectionFromDb(collection: DbCollection): CatalogCollection {
 
 async function readCatalogProductsFresh() {
   if (!(await canReadCatalogFromDatabase())) {
-    return readCatalogProductsFromFile();
+    return filterPublicProducts(await readCatalogProductsFromFile());
   }
 
   try {
@@ -341,7 +342,7 @@ async function readCatalogProductsFresh() {
     }
 
     markCatalogDatabaseUnavailable();
-    return readCatalogProductsFromFile();
+    return filterPublicProducts(await readCatalogProductsFromFile());
   }
 }
 

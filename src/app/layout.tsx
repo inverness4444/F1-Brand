@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import { Archivo, Manrope } from "next/font/google";
 
 import "@/app/globals.css";
@@ -41,13 +42,13 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
-      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-      { url: "/icon.png", sizes: "512x512", type: "image/png" },
+      { url: "/favicon-velocity-mark-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-velocity-mark-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-velocity-mark.ico", sizes: "any" },
+      { url: "/icon-transparent.png", sizes: "512x512", type: "image/png" },
     ],
     apple: [
-      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+      { url: "/apple-touch-icon-transparent.png", sizes: "180x180", type: "image/png" },
     ],
   },
   openGraph: {
@@ -84,6 +85,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <main>{children}</main>
           <Footer />
         </Providers>
+        <Analytics />
       </body>
     </html>
   );

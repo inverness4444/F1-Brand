@@ -116,7 +116,7 @@ const orderFulfillmentStatusSchema = z.enum([
   "CANCELLED",
 ]);
 const paymentProviderSchema = z.enum(["YOOKASSA", "MOCK"]);
-const deliveryMethodSchema = z.enum(["СДЭК", "Почта России", "Курьер", "Самовывоз", "Цифровой сертификат"]);
+const deliveryMethodSchema = z.enum(["СДЭК", "Почта России", "Курьер", "Цифровой сертификат"]);
 const paymentMethodSchema = z.enum([
   "Банковская карта",
   "СБП",

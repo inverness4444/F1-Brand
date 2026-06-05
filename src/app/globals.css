@@ -325,8 +325,11 @@ html:hover::-webkit-scrollbar-thumb {
   }
 
   [data-product-carousel-rail] {
+    overscroll-behavior-inline: contain;
     padding-bottom: 0.75rem;
-    scroll-snap-type: x mandatory;
+    scroll-snap-type: none;
+    touch-action: pan-x pan-y;
+    -webkit-overflow-scrolling: touch;
   }
 
   [data-carousel-loop] {
@@ -336,7 +339,6 @@ html:hover::-webkit-scrollbar-thumb {
 
   [data-carousel-card] {
     width: min(78vw, 300px) !important;
-    scroll-snap-align: start;
   }
 
   [data-product-card] [data-product-card-image-frame] {
