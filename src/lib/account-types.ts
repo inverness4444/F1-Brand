@@ -155,8 +155,6 @@ export type DeliveryMethod = "СДЭК" | "Почта России" | "Курь�
 export type PaymentMethod =
   | "Банковская карта"
   | "СБП"
-  | "Telegram Wallet"
-  | "Криптовалюта"
   | "Баланс аккаунта";
 
 export type OrderItem = {

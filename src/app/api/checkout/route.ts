@@ -4,11 +4,7 @@ import { createCheckoutPayment } from "@/lib/server/checkout-payment";
 import { attachCheckoutAccessCookie, getCurrentUser } from "@/lib/server/auth";
 import { apiError } from "@/lib/server/api";
 import {
-  clearGuestCart,
-  clearGuestCartCookie,
-  fetchGuestCartSelections,
   fetchUserCartSelections,
-  getGuestCartTokenFromRequest,
 } from "@/lib/server/cart";
 import { assertProtectedMutation, enforceRateLimit } from "@/lib/server/request-security";
 import type { CartSelection } from "@/lib/account-types";
@@ -42,10 +38,12 @@ export async function POST(request: NextRequest) {
 
     assertProtectedMutation(request);
     const [payload, currentUser] = await Promise.all([request.json(), getCurrentUser()]);
-    const guestCartToken = getGuestCartTokenFromRequest(request);
-    const cartSelections = currentUser
-      ? await fetchUserCartSelections(currentUser.id)
-      : await fetchGuestCartSelections(guestCartToken);
+
+    if (!currentUser) {
+      throw new Error("unauthorized");
+    }
+
+    const cartSelections = await fetchUserCartSelections(currentUser.id);
     const result = await createCheckoutPayment(
       withServerCartSelections(payload, cartSelections),
       request.url,
@@ -54,11 +52,6 @@ export async function POST(request: NextRequest) {
     const response = NextResponse.json(result);
 
     attachCheckoutAccessCookie(response, result.order.id);
-
-    if (!currentUser) {
-      await clearGuestCart(guestCartToken);
-      clearGuestCartCookie(response);
-    }
 
     return response;
   } catch (error) {

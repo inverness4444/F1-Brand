@@ -33,9 +33,7 @@ export const collectionLabelRu: Record<Product["collection"], string> = {
 };
 
 function safeCollectionLabel(value: string) {
-  return value
-    .replace(/\bF1\b/g, "Racing")
-    .replace(/\bFormula\s*1\b/gi, "автоспорт");
+  return value;
 }
 
 export function getCollectionLabel(collection: string) {

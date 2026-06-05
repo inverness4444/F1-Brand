@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { CheckCircle2, Copy } from "lucide-react";
+import { CheckCircle2, Clock3, Copy } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -48,19 +48,34 @@ export default function CheckoutSuccessPage() {
       setCopiedCode(null);
     }
   };
+  const isAwaitingPayment = order
+    ? ["NOT_STARTED", "PENDING", "WAITING_FOR_CAPTURE"].includes(order.paymentStatus)
+    : false;
+  const statusTitle = order
+    ? isAwaitingPayment
+      ? "Заказ ожидает оплаты"
+      : "Заказ оплачен"
+    : "Проверяем заказ";
+  const statusDescription = order
+    ? isAwaitingPayment
+      ? `Заказ ${order.orderNumber} создан, но оплата еще не завершена.`
+      : `Заказ ${order.orderNumber} оплачен и принят в работу.`
+    : "Загружаем данные заказа.";
+  const StatusIcon = isAwaitingPayment ? Clock3 : CheckCircle2;
+  const statusIconClassName = isAwaitingPayment
+    ? "bg-amber-50 text-amber-600"
+    : "bg-emerald-50 text-emerald-600";
 
   return (
     <section className="container-shell py-12">
       <div className="mx-auto max-w-4xl space-y-5">
         <div className="card-panel px-6 py-10 text-center sm:px-10">
-          <span className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
-            <CheckCircle2 className="size-7" />
+          <span className={`inline-flex h-16 w-16 items-center justify-center rounded-full ${statusIconClassName}`}>
+            <StatusIcon className="size-7" />
           </span>
-          <h1 className="mt-5 text-3xl font-semibold text-slate-900">Заказ успешно оформлен</h1>
+          <h1 className="mt-5 text-3xl font-semibold text-slate-900">{statusTitle}</h1>
           <p className="mt-3 text-sm leading-7 text-slate-500">
-            {order
-              ? `Заказ ${order.orderNumber} принят в работу.`
-              : "Мы приняли заказ и отправили его в обработку."}
+            {statusDescription}
           </p>
 
           {order ? (
@@ -93,11 +108,7 @@ export default function CheckoutSuccessPage() {
               <Link href="/account/orders" className="button-base button-primary rounded-2xl">
                 Перейти к заказам
               </Link>
-            ) : (
-              <Link href="/register" className="button-base button-primary rounded-2xl">
-                Создать аккаунт
-              </Link>
-            )}
+            ) : null}
           </div>
         </div>
 

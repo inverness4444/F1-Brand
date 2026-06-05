@@ -36,13 +36,13 @@ function parseMoneyInput(value: string) {
 export default function CheckoutPage() {
   const router = useRouter();
   const currentUser = useAuthStore((state) => state.currentUser);
+  const isAuthHydrated = useAuthStore((state) => state.isHydrated);
   const { productMap } = useCatalogProducts();
   const cartItems = useCartStore((state) => state.items);
   const clearCart = useCartStore((state) => state.clearCart);
   const pushToast = useToastStore((state) => state.pushToast);
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
   const [showNewAddressForm, setShowNewAddressForm] = useState(false);
-  const [guestAddress, setGuestAddress] = useState<AddressInput | null>(null);
   const [addresses, setAddresses] = useState<UserAddress[]>([]);
   const [useBalance, setUseBalance] = useState(false);
   const [availableBalance, setAvailableBalance] = useState(0);
@@ -79,6 +79,14 @@ export default function CheckoutPage() {
     checkoutPreview.total,
     checkoutPreview.balanceUsage.availableBalance,
   );
+
+  useEffect(() => {
+    if (!isAuthHydrated || currentUser) {
+      return;
+    }
+
+    router.replace("/login?redirect=%2Fcheckout");
+  }, [currentUser, isAuthHydrated, router]);
 
   useEffect(() => {
     if (checkoutStartTrackedRef.current || checkoutPreview.items.length === 0) {
@@ -210,6 +218,11 @@ export default function CheckoutPage() {
   };
 
   const handlePlaceOrder = async () => {
+    if (!currentUser) {
+      router.replace("/login?redirect=%2Fcheckout");
+      return;
+    }
+
     const nextErrors: CheckoutErrors = {};
     const customerPayload = checkoutCustomerSchema.safeParse({
       name: values.name,
@@ -221,12 +234,8 @@ export default function CheckoutPage() {
       Object.assign(nextErrors, getZodFieldErrors<"name" | "email" | "phone">(customerPayload.error));
     }
 
-    if (checkoutPreview.requiresShipping && currentUser && !selectedAddress && !showNewAddressForm) {
+    if (checkoutPreview.requiresShipping && !selectedAddress && !showNewAddressForm) {
       nextErrors.form = "Выберите адрес доставки или добавьте новый.";
-    }
-
-    if (checkoutPreview.requiresShipping && !currentUser && !guestAddress) {
-      nextErrors.form = "Для гостевого заказа сохраните адрес доставки.";
     }
 
     if (Object.keys(nextErrors).length > 0) {
@@ -240,9 +249,9 @@ export default function CheckoutPage() {
     try {
       const result = await checkoutService.placeOrder(
         {
-          userId: currentUser?.id ?? null,
+          userId: currentUser.id,
           customer: customerPayload.success ? customerPayload.data : values,
-          shippingAddress: checkoutPreview.requiresShipping ? selectedAddress ?? guestAddress : null,
+          shippingAddress: checkoutPreview.requiresShipping ? selectedAddress : null,
           deliveryMethod: checkoutPreview.requiresShipping ? values.deliveryMethod : null,
           paymentMethod: values.paymentMethod,
           comment: values.comment,
@@ -271,6 +280,22 @@ export default function CheckoutPage() {
     }
   };
 
+  if (!isAuthHydrated || !currentUser) {
+    return (
+      <section className="container-shell py-12">
+        <div className="card-panel flex min-h-[320px] flex-col items-center justify-center gap-4 px-6 py-10 text-center">
+          <Loader2 className="size-8 animate-spin text-red-600" />
+          <div>
+            <h1 className="text-2xl font-semibold text-slate-900">Проверяем вход</h1>
+            <p className="mt-2 max-w-md text-sm leading-7 text-slate-500">
+              Оформление заказа доступно только после входа в аккаунт.
+            </p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="container-shell py-8 sm:py-10">
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
@@ -281,9 +306,7 @@ export default function CheckoutPage() {
             <p className="mt-2 text-sm leading-7 text-slate-500">
               {checkoutPreview.onlyGiftCertificates
                 ? "В корзине только цифровые сертификаты: адрес доставки не нужен, а коды появятся сразу после успешного оформления."
-                : currentUser
-                  ? "Данные аккаунта подтянуты автоматически. Вы можете выбрать сохранённый адрес или добавить новый."
-                  : "Оформляйте заказ как гость или создайте аккаунт после покупки, чтобы сохранить историю."}
+                : "Данные аккаунта подтянуты автоматически. Вы можете выбрать сохранённый адрес или добавить новый."}
             </p>
           </div>
 
@@ -306,80 +329,22 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              {currentUser ? (
-                <div className="mt-5 space-y-5">
-                  <CheckoutAddressSelector
-                    addresses={addresses}
-                    selectedAddressId={effectiveSelectedAddressId}
-                    onSelectAddress={setSelectedAddressId}
-                    onCreateNew={() => setShowNewAddressForm((current) => !current)}
-                  />
+              <div className="mt-5 space-y-5">
+                <CheckoutAddressSelector
+                  addresses={addresses}
+                  selectedAddressId={effectiveSelectedAddressId}
+                  onSelectAddress={setSelectedAddressId}
+                  onCreateNew={() => setShowNewAddressForm((current) => !current)}
+                />
 
-                  {showNewAddressForm ? (
-                    <AddressForm
-                      submitLabel="Сохранить адрес"
-                      onCancel={() => setShowNewAddressForm(false)}
-                      onSubmit={handleCreateAddress}
-                    />
-                  ) : null}
-                </div>
-              ) : (
-                <div className="mt-5 space-y-5">
-                  <p className="helper-text">
-                    Для гостевого заказа заполните адрес вручную. После покупки можно будет создать аккаунт.
-                  </p>
-                  {!guestAddress || showNewAddressForm ? (
-                    <AddressForm
-                      initialAddress={
-                        guestAddress
-                          ? {
-                              ...guestAddress,
-                              id: "guest",
-                              userId: "guest",
-                              isDefault: false,
-                              createdAt: "",
-                              updatedAt: "",
-                            }
-                          : null
-                      }
-                      submitLabel={guestAddress ? "Обновить адрес заказа" : "Сохранить адрес для заказа"}
-                      showDefaultToggle={false}
-                      onCancel={guestAddress ? () => setShowNewAddressForm(false) : undefined}
-                      onSubmit={async (input) => {
-                        setGuestAddress(input);
-                        setShowNewAddressForm(false);
-                        setErrors({});
-                        setValues((current) => ({
-                          ...current,
-                          name: input.recipient || current.name,
-                          phone: input.recipientPhone || current.phone,
-                        }));
-                        pushToast("Адрес добавлен");
-                      }}
-                    />
-                  ) : (
-                    <div className="rounded-[22px] border border-slate-200 bg-white p-5">
-                      <p className="text-sm font-semibold text-slate-900">{guestAddress.recipient}</p>
-                      <div className="mt-2 space-y-1 text-sm leading-6 text-slate-600">
-                        <p>{guestAddress.recipientPhone}</p>
-                        <p>
-                          {guestAddress.country}, {guestAddress.city}, {guestAddress.street}, дом {guestAddress.house}
-                          {guestAddress.apartment ? `, ${guestAddress.apartment}` : ""}
-                        </p>
-                        <p>Индекс: {guestAddress.postalCode}</p>
-                        {guestAddress.courierComment ? <p>Комментарий: {guestAddress.courierComment}</p> : null}
-                      </div>
-                      <Button
-                        variant="secondary"
-                        className="mt-4 rounded-2xl"
-                        onClick={() => setShowNewAddressForm(true)}
-                      >
-                        Изменить адрес
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              )}
+                {showNewAddressForm ? (
+                  <AddressForm
+                    submitLabel="Сохранить адрес"
+                    onCancel={() => setShowNewAddressForm(false)}
+                    onSubmit={handleCreateAddress}
+                  />
+                ) : null}
+              </div>
             </div>
           ) : (
             <div className="card-panel p-5 sm:p-6">
@@ -397,92 +362,80 @@ export default function CheckoutPage() {
         </div>
 
         <aside className="space-y-5 xl:sticky xl:top-28 xl:h-fit">
-          {currentUser ? (
-            <div className="card-panel p-5 sm:p-6">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <h2 className="text-xl font-semibold text-slate-900">Баланс аккаунта</h2>
-                  <p className="mt-2 text-sm leading-7 text-slate-500">
-                    Пополняется через подарочные сертификаты и может списываться частично.
-                  </p>
-                </div>
-                <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-900">
-                  {formatPrice(checkoutPreview.balanceUsage.availableBalance)}
-                </span>
+          <div className="card-panel p-5 sm:p-6">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 className="text-xl font-semibold text-slate-900">Баланс аккаунта</h2>
+                <p className="mt-2 text-sm leading-7 text-slate-500">
+                  Пополняется через подарочные сертификаты и может списываться частично.
+                </p>
               </div>
+              <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-900">
+                {formatPrice(checkoutPreview.balanceUsage.availableBalance)}
+              </span>
+            </div>
 
-              {checkoutPreview.balanceUsage.availableBalance > 0 ? (
-                <div className="mt-5 space-y-4">
-                  <label className="flex items-start gap-3 rounded-[20px] border border-slate-200 bg-slate-50 px-4 py-3">
+            {checkoutPreview.balanceUsage.availableBalance > 0 ? (
+              <div className="mt-5 space-y-4">
+                <label className="flex items-start gap-3 rounded-[20px] border border-slate-200 bg-slate-50 px-4 py-3">
+                  <input
+                    type="checkbox"
+                    checked={useBalance}
+                    onChange={(event) => {
+                      const nextValue = event.target.checked;
+                      setUseBalance(nextValue);
+                      if (nextValue && !requestedBalanceInput) {
+                        setRequestedBalanceInput(String(maxBalanceSpend));
+                      }
+                    }}
+                    className="mt-1 h-4 w-4 rounded border-slate-300 text-slate-900"
+                  />
+                  <span className="text-sm leading-6 text-slate-700">Использовать баланс для оплаты этого заказа</span>
+                </label>
+
+                {useBalance ? (
+                  <label className="label-base">
+                    <span className="label-title">Списать с баланса</span>
                     <input
-                      type="checkbox"
-                      checked={useBalance}
-                      onChange={(event) => {
-                        const nextValue = event.target.checked;
-                        setUseBalance(nextValue);
-                        if (nextValue && !requestedBalanceInput) {
-                          setRequestedBalanceInput(String(maxBalanceSpend));
-                        }
-                      }}
-                      className="mt-1 h-4 w-4 rounded border-slate-300 text-slate-900"
+                      inputMode="numeric"
+                      value={requestedBalanceInput}
+                      onChange={(event) => setRequestedBalanceInput(event.target.value.replace(/[^\d]/g, ""))}
+                      className="field-base"
+                      placeholder={String(maxBalanceSpend)}
                     />
-                    <span className="text-sm leading-6 text-slate-700">Использовать баланс для оплаты этого заказа</span>
+                    <span className="helper-text">
+                      Максимум сейчас: {formatPrice(maxBalanceSpend)}. Баланс нельзя списать больше суммы заказа.
+                    </span>
                   </label>
+                ) : null}
 
-                  {useBalance ? (
-                    <label className="label-base">
-                      <span className="label-title">Списать с баланса</span>
-                      <input
-                        inputMode="numeric"
-                        value={requestedBalanceInput}
-                        onChange={(event) => setRequestedBalanceInput(event.target.value.replace(/[^\d]/g, ""))}
-                        className="field-base"
-                        placeholder={String(maxBalanceSpend)}
-                      />
-                      <span className="helper-text">
-                        Максимум сейчас: {formatPrice(maxBalanceSpend)}. Баланс нельзя списать больше суммы заказа.
-                      </span>
-                    </label>
-                  ) : null}
-
-                  <div className="rounded-[20px] border border-slate-200 bg-white px-4 py-4 text-sm text-slate-600">
-                    <div className="flex items-center justify-between">
-                      <span>Списывается</span>
-                      <span className="font-semibold text-slate-900">
-                        {formatPrice(checkoutPreview.balanceUsage.amountPaidByBalance)}
-                      </span>
-                    </div>
-                    <div className="mt-3 flex items-center justify-between">
-                      <span>Останется после заказа</span>
-                      <span className="font-semibold text-slate-900">
-                        {formatPrice(checkoutPreview.balanceUsage.balanceAfter)}
-                      </span>
-                    </div>
-                    <div className="mt-3 flex items-center justify-between border-t border-slate-200 pt-3">
-                      <span>К оплате другим способом</span>
-                      <span className="font-semibold text-slate-900">
-                        {formatPrice(checkoutPreview.balanceUsage.amountToPay)}
-                      </span>
-                    </div>
+                <div className="rounded-[20px] border border-slate-200 bg-white px-4 py-4 text-sm text-slate-600">
+                  <div className="flex items-center justify-between">
+                    <span>Списывается</span>
+                    <span className="font-semibold text-slate-900">
+                      {formatPrice(checkoutPreview.balanceUsage.amountPaidByBalance)}
+                    </span>
+                  </div>
+                  <div className="mt-3 flex items-center justify-between">
+                    <span>Останется после заказа</span>
+                    <span className="font-semibold text-slate-900">
+                      {formatPrice(checkoutPreview.balanceUsage.balanceAfter)}
+                    </span>
+                  </div>
+                  <div className="mt-3 flex items-center justify-between border-t border-slate-200 pt-3">
+                    <span>К оплате другим способом</span>
+                    <span className="font-semibold text-slate-900">
+                      {formatPrice(checkoutPreview.balanceUsage.amountToPay)}
+                    </span>
                   </div>
                 </div>
-              ) : (
-                <div className="mt-5 rounded-[20px] border border-dashed border-slate-200 bg-slate-50 px-4 py-4 text-sm leading-7 text-slate-500">
-                  Баланс пока пуст. Активируйте подарочный сертификат в кабинете, чтобы использовать его при оплате.
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="card-panel p-5 sm:p-6">
-              <h2 className="text-xl font-semibold text-slate-900">Баланс аккаунта</h2>
-              <p className="mt-2 text-sm leading-7 text-slate-500">
-                Войдите в аккаунт, чтобы активировать сертификаты, хранить баланс и оплачивать заказы частями.
-              </p>
-              <Link href="/login" className="button-base button-secondary mt-4 rounded-2xl">
-                Войти в аккаунт
-              </Link>
-            </div>
-          )}
+              </div>
+            ) : (
+              <div className="mt-5 rounded-[20px] border border-dashed border-slate-200 bg-slate-50 px-4 py-4 text-sm leading-7 text-slate-500">
+                Баланс пока пуст. Активируйте подарочный сертификат в кабинете, чтобы использовать его при оплате.
+              </div>
+            )}
+          </div>
 
           <div className="card-panel p-5 sm:p-6">
             <h2 className="text-xl font-semibold text-slate-900">Ваш заказ</h2>

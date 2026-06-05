@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
       status: "succeeded",
       paid: true,
       amount: {
-        value: (payment.amount / 100).toFixed(2),
+        value: payment.amount.toFixed(2),
         currency: payment.currency,
       },
       metadata: {

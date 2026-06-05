@@ -67,6 +67,14 @@ type CheckoutItem = {
   totalPrice: number;
 };
 
+type YooKassaReceiptLine = {
+  name: string;
+  quantity: number;
+  unitPrice: number;
+  paymentSubject?: string;
+  measure?: string;
+};
+
 function getAppUrlFromRequest(requestUrl: string) {
   return (
     process.env.APP_URL ??
@@ -215,6 +223,25 @@ function calculateCheckoutSummary(items: CheckoutItem[]) {
   };
 }
 
+function buildReceiptItems(items: CheckoutItem[], deliveryAmount: number): YooKassaReceiptLine[] {
+  const receiptItems: YooKassaReceiptLine[] = items.map((item) => ({
+    name: item.variantName ? `${item.productName} (${item.variantName})` : item.productName,
+    quantity: item.quantity,
+    unitPrice: item.unitPrice,
+  }));
+
+  if (deliveryAmount > 0) {
+    receiptItems.push({
+      name: "Доставка",
+      quantity: 1,
+      unitPrice: deliveryAmount,
+      paymentSubject: "service",
+    });
+  }
+
+  return receiptItems;
+}
+
 function buildReturnUrl(requestUrl: string, orderId: string) {
   const configuredReturnUrl = process.env.YOOKASSA_RETURN_URL?.trim();
 
@@ -247,6 +274,10 @@ async function clearUserCart(userId: string | null | undefined) {
 
 export async function createCheckoutPayment(payloadInput: unknown, requestUrl: string, currentUser: User | null) {
   const payload = checkoutPayloadSchema.parse(payloadInput);
+
+  if (!currentUser) {
+    throw new Error("unauthorized");
+  }
 
   if (payload.userId && payload.userId !== currentUser?.id) {
     throw new Error("forbidden");
@@ -303,11 +334,7 @@ export async function createCheckoutPayment(payloadInput: unknown, requestUrl: s
           customerEmail: payload.customer.email,
           customerPhone: payload.customer.phone,
           currency: DEFAULT_CURRENCY,
-          items: items.map((item) => ({
-            name: item.productName,
-            quantity: item.quantity,
-            unitPrice: item.unitPrice,
-          })),
+          items: buildReceiptItems(items, summary.deliveryAmount),
         })
       : null;
 

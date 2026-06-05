@@ -28,7 +28,7 @@ function formatAmount(amount: number, currency: string) {
     style: "currency",
     currency,
     maximumFractionDigits: 0,
-  }).format(amount / 100);
+  }).format(amount);
 }
 
 export function orderStatusLabel(status: OrderStatus) {

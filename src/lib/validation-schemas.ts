@@ -120,8 +120,6 @@ const deliveryMethodSchema = z.enum(["СДЭК", "Почта России", "К�
 const paymentMethodSchema = z.enum([
   "Банковская карта",
   "СБП",
-  "Telegram Wallet",
-  "Криптовалюта",
   "Баланс аккаунта",
 ]);
 const giftCertificateStatusSchema = z.enum(["purchased", "activated", "expired", "cancelled"]);

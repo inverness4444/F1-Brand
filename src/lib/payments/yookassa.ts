@@ -16,6 +16,10 @@ import { notifyOrderPaidOnSite } from "@/lib/server/notifications";
 
 const YOOKASSA_API_BASE_URL = "https://api.yookassa.ru/v3";
 const DEFAULT_CURRENCY = "RUB";
+const DEFAULT_RECEIPT_VAT_CODE = 1;
+const DEFAULT_RECEIPT_PAYMENT_SUBJECT = "commodity";
+const DEFAULT_RECEIPT_PAYMENT_MODE = "full_prepayment";
+const DEFAULT_RECEIPT_MEASURE = "piece";
 
 type JsonRecord = Record<string, unknown>;
 
@@ -26,11 +30,12 @@ type YooKassaAmount = {
 
 export type YooKassaReceiptItem = {
   description: string;
-  quantity: string;
+  quantity: number;
   amount: YooKassaAmount;
   vat_code?: number;
   payment_subject?: string;
   payment_mode?: string;
+  measure?: string;
 };
 
 export type YooKassaReceipt = {
@@ -95,15 +100,25 @@ function toJson(value: unknown): Prisma.InputJsonValue {
 }
 
 function toMoneyValue(amount: number) {
-  return (amount / 100).toFixed(2);
+  return amount.toFixed(2);
 }
 
-function amountToCents(amount: unknown) {
+function parseOptionalInteger(value: string | undefined, min: number, max: number) {
+  if (!value?.trim()) {
+    return null;
+  }
+
+  const parsed = Number.parseInt(value, 10);
+
+  return Number.isInteger(parsed) && parsed >= min && parsed <= max ? parsed : null;
+}
+
+function amountToStoreAmount(amount: unknown) {
   if (!isRecord(amount) || typeof amount.value !== "string") {
     return 0;
   }
 
-  return Math.round(Number.parseFloat(amount.value) * 100);
+  return Math.round(Number.parseFloat(amount.value));
 }
 
 function amountCurrency(amount: unknown) {
@@ -261,15 +276,19 @@ export function buildYooKassaReceipt(input: {
   customerName: string;
   customerEmail: string;
   customerPhone: string;
-  items: Array<{ name: string; quantity: number; unitPrice: number }>;
+  items: Array<{
+    name: string;
+    quantity: number;
+    unitPrice: number;
+    paymentSubject?: string;
+    measure?: string;
+  }>;
   currency?: string;
 }): YooKassaReceipt {
-  const vatCode = process.env.YOOKASSA_VAT_CODE ? Number.parseInt(process.env.YOOKASSA_VAT_CODE, 10) : null;
-  const taxSystemCode = process.env.YOOKASSA_TAX_SYSTEM_CODE
-    ? Number.parseInt(process.env.YOOKASSA_TAX_SYSTEM_CODE, 10)
-    : null;
-  const paymentSubject = process.env.YOOKASSA_PAYMENT_SUBJECT?.trim();
-  const paymentMode = process.env.YOOKASSA_PAYMENT_MODE?.trim();
+  const vatCode = parseOptionalInteger(process.env.YOOKASSA_VAT_CODE, 1, 12) ?? DEFAULT_RECEIPT_VAT_CODE;
+  const taxSystemCode = parseOptionalInteger(process.env.YOOKASSA_TAX_SYSTEM_CODE, 1, 6);
+  const paymentSubject = process.env.YOOKASSA_PAYMENT_SUBJECT?.trim() || DEFAULT_RECEIPT_PAYMENT_SUBJECT;
+  const paymentMode = process.env.YOOKASSA_PAYMENT_MODE?.trim() || DEFAULT_RECEIPT_PAYMENT_MODE;
   const currency = input.currency ?? DEFAULT_CURRENCY;
 
   return {
@@ -280,14 +299,15 @@ export function buildYooKassaReceipt(input: {
     },
     items: input.items.map((item) => ({
       description: item.name.slice(0, 128),
-      quantity: item.quantity.toFixed(3),
+      quantity: Number(item.quantity.toFixed(3)),
       amount: {
         value: toMoneyValue(item.unitPrice),
         currency,
       },
-      ...(vatCode ? { vat_code: vatCode } : {}),
-      ...(paymentSubject ? { payment_subject: paymentSubject } : {}),
-      ...(paymentMode ? { payment_mode: paymentMode } : {}),
+      vat_code: vatCode,
+      payment_subject: item.paymentSubject ?? paymentSubject,
+      payment_mode: paymentMode,
+      measure: item.measure ?? DEFAULT_RECEIPT_MEASURE,
     })),
     ...(taxSystemCode ? { tax_system_code: taxSystemCode } : {}),
   };
@@ -499,7 +519,7 @@ export async function handleYooKassaWebhook(payload: unknown) {
             throw new Error(`Payment ${normalized.objectId} was not found.`);
           }
 
-          const webhookAmount = amountToCents(normalized.object.amount);
+          const webhookAmount = amountToStoreAmount(normalized.object.amount);
           const webhookCurrency = amountCurrency(normalized.object.amount);
           const webhookOrderId = metadataOrderId(normalized.object);
 
@@ -601,7 +621,7 @@ export async function handleYooKassaWebhook(payload: unknown) {
           }
 
           const status = mapRefundStatus(normalized.object.status);
-          const amount = amountToCents(normalized.object.amount);
+          const amount = amountToStoreAmount(normalized.object.amount);
           const currency = amountCurrency(normalized.object.amount);
 
           if (amount <= 0 || amount > payment.amount) {

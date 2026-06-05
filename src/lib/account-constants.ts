@@ -58,8 +58,6 @@ export const deliveryMethods = ["СДЭК", "Почта России", "Курь
 export const paymentMethods = [
   "Банковская карта",
   "СБП",
-  "Telegram Wallet",
-  "Криптовалюта",
 ] as const satisfies readonly PaymentMethod[];
 
 export const accountNavigation = [
