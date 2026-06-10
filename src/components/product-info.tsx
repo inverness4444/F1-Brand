@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { RotateCcw, Ruler, ShieldCheck, Truck } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
@@ -35,13 +34,20 @@ function sizeGuideRows(product: Product) {
   ];
 }
 
-export function ProductInfo({ product }: { product: Product }) {
+export function ProductInfo({
+  product,
+  selectedColor,
+  onSelectedColorChange,
+}: {
+  product: Product;
+  selectedColor: ProductColor;
+  onSelectedColorChange: (color: ProductColor) => void;
+}) {
   const addItem = useCartStore((state) => state.addItem);
   const colorways = product.colorways ?? [];
   const hasColorways = colorways.length > 0;
-  const fallbackColor = product.variants?.[0]?.color ?? product.colors[0] ?? "Black";
   const [selectedSize, setSelectedSize] = useState<ProductSize>(product.sizes[0]);
-  const [selectedColor, setSelectedColor] = useState<ProductColor>(colorways[0] ?? fallbackColor);
+  const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
   const guide = useMemo(() => sizeGuideRows(product), [product]);
   const isGiftCertificate = product.productType === "gift_certificate";
   const isOutOfStock = product.badge === "OutOfStock";
@@ -54,7 +60,7 @@ export function ProductInfo({ product }: { product: Product }) {
 
   useEffect(() => {
     setSelectedSize(product.sizes[0]);
-    setSelectedColor((product.colorways ?? [])[0] ?? product.variants?.[0]?.color ?? product.colors[0] ?? "Black");
+    setIsSizeGuideOpen(false);
   }, [product]);
 
   const addCurrentItem = () => {
@@ -120,10 +126,15 @@ export function ProductInfo({ product }: { product: Product }) {
                 <span className="text-sm font-semibold text-[#111111]">
                   Размер: <span className="font-normal text-[#5f615f]">{sizeLabelRu(selectedSize)}</span>
                 </span>
-                <Link href="#size-guide" className="inline-flex items-center gap-1.5 text-sm text-[#5f615f] underline underline-offset-4">
+                <button
+                  type="button"
+                  aria-expanded={isSizeGuideOpen}
+                  onClick={() => setIsSizeGuideOpen((current) => !current)}
+                  className="inline-flex items-center gap-1.5 text-sm text-[#5f615f] underline underline-offset-4"
+                >
                   <Ruler className="size-4" />
-                  Таблица размеров
-                </Link>
+                  {isSizeGuideOpen ? "Скрыть таблицу" : "Таблица размеров"}
+                </button>
               </div>
               <div className="mt-4 grid grid-cols-3 gap-2 sm:grid-cols-6">
                 {product.sizes.map((size) => {
@@ -150,6 +161,22 @@ export function ProductInfo({ product }: { product: Product }) {
                   );
                 })}
               </div>
+              {isSizeGuideOpen ? (
+                <div className="mt-4 rounded-[1.1rem] border border-[var(--line)] bg-[#faf9f7] p-4">
+                  <p className="text-sm font-semibold text-[#111111]">Размер и обхват груди</p>
+                  <div className="mt-3 grid gap-2 text-sm leading-7 text-[#5f615f]">
+                    {guide.map(([size, value]) => (
+                      <div
+                        key={size}
+                        className="flex items-center justify-between gap-3 border-b border-[var(--line)] pb-2 last:border-b-0 last:pb-0"
+                      >
+                        <span>{size}</span>
+                        <span>{value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
             </div>
 
             {product.colors.length > 0 ? (
@@ -180,7 +207,7 @@ export function ProductInfo({ product }: { product: Product }) {
                       <button
                         key={color}
                         type="button"
-                        onClick={() => setSelectedColor(color)}
+                        onClick={() => onSelectedColorChange(color)}
                         disabled={disabled}
                         className={cn(
                           "rounded-full border px-4 py-2 text-sm font-semibold transition",
@@ -260,23 +287,6 @@ export function ProductInfo({ product }: { product: Product }) {
             <p>Чистая спортивная подача</p>
             <p>Коммерческая подача в стиле премиального спортивного ритейла</p>
           </div>
-        </details>
-        <details id="size-guide" className="border-b border-[var(--line)] py-4" open={isGiftCertificate ? false : undefined}>
-          <summary className="cursor-pointer text-sm font-semibold text-[#111111]">Размер и посадка</summary>
-          {isGiftCertificate ? (
-            <p className="mt-3 text-sm leading-7 text-[#5f615f]">
-              Размер не требуется: это цифровой сертификат, который активируется кодом в личном кабинете.
-            </p>
-          ) : (
-            <div className="mt-3 grid gap-2 text-sm leading-7 text-[#5f615f]">
-              {guide.map(([size, value]) => (
-                <div key={size} className="flex items-center justify-between gap-3 border-b border-[var(--line)] pb-2">
-                  <span>{size}</span>
-                  <span>{value}</span>
-                </div>
-              ))}
-            </div>
-          )}
         </details>
         <details className="border-b border-[var(--line)] py-4">
           <summary className="cursor-pointer text-sm font-semibold text-[#111111]">Доставка и возврат</summary>

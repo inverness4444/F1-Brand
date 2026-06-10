@@ -206,7 +206,7 @@ export function CartDrawer() {
                       <div className="flex gap-3 sm:gap-4 max-[359px]:flex-col">
                         <div className="relative flex h-24 w-20 shrink-0 items-center justify-center rounded-[1rem] bg-[var(--surface-soft)] p-1 sm:h-28 sm:w-24 sm:p-2">
                           <ProductImage
-                            src={entry.product.image}
+                            src={entry.product.colorwayImages?.[entry.color] ?? entry.product.image}
                             fallbackSrc={imageByType[entry.product.type]}
                             alt={entry.product.name}
                             width={96}

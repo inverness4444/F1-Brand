@@ -92,5 +92,18 @@
       "custom-1778545372314"
     ],
     "createdAt": "2026-05-10T19:57:56.728Z"
+  },
+  {
+    "id": "custom-collection-1781048653103",
+    "slug": "teddy-bear-x-f1",
+    "name": "Teddy Bear x F1",
+    "visible": true,
+    "productIds": [
+      "custom-1781049808386",
+      "custom-1781052123600",
+      "custom-1781052816400",
+      "custom-1781053487198"
+    ],
+    "createdAt": "2026-06-09T23:44:13.103Z"
   }
 ]

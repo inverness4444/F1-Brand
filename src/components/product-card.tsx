@@ -14,6 +14,12 @@ import { trackAnalyticsEvent } from "@/services/analytics-service";
 
 const catalogImageSizes = "(min-width: 1280px) 30vw, (min-width: 640px) 48vw, 100vw";
 const showcaseImageSizes = "(min-width: 1280px) 340px, (min-width: 640px) 320px, 84vw";
+const productCardImageOverrides: Partial<Record<string, string>> = {
+  "custom-1781052123600":
+    "/catalog-assets/3daede55-32d6-433a-9844-2f3a2552ee30-872597056b1d0dbc-square.png",
+  "custom-1781053487198":
+    "/catalog-assets/205df1aa-7719-45be-b452-040970deab0c-f154019fe41b141e-square.png",
+};
 
 function ProductCardComponent({
   product,
@@ -26,11 +32,13 @@ function ProductCardComponent({
 }) {
   const productHref = getProductHref(product);
   const fallbackImage = imageByType[product.type];
-  const primaryImageKey = getImageDedupeKey(product.image);
+  const productCardImage = productCardImageOverrides[product.id] ?? product.image;
+  const primaryImageKey = getImageDedupeKey(productCardImage);
   const hoverImage =
-    (product.gallery ?? []).find((image) => image && getImageDedupeKey(image) !== primaryImageKey) ?? product.image;
+    (product.gallery ?? []).find((image) => image && getImageDedupeKey(image) !== primaryImageKey) ?? productCardImage;
   const hasAlternateImage = getImageDedupeKey(hoverImage) !== primaryImageKey;
   const isGiftCertificate = product.productType === "gift_certificate";
+  const shouldShrinkProductImage = product.collection === "Teddy Bear x F1";
   const imageAlt = `${getProductDisplayName(product)} — ${getProductCategoryBreadcrumb(product).label}`;
   const imageBaseClassName =
     "absolute inset-0 h-full w-full transition duration-500 transform-gpu [will-change:transform]";
@@ -50,35 +58,53 @@ function ProductCardComponent({
 
   if (variant === "catalog") {
     const shouldRaiseCatalogImage = product.id === "custom-1778090477669";
-    const imageFitClassName = isGiftCertificate
+    const imageFitClassName = shouldShrinkProductImage
+      ? "object-contain object-center"
+      : isGiftCertificate
       ? "object-contain object-center"
       : "object-cover object-center";
     const catalogImageStyle: CSSProperties | undefined = shouldRaiseCatalogImage
       ? { objectPosition: "center 82%" }
       : undefined;
-    const imagePlacementClassName = isGiftCertificate ? "translate-y-10 scale-[1.05]" : "scale-[1.01]";
-    const primaryHoverClassName = hasAlternateImage
+    const imagePlacementClassName = shouldShrinkProductImage
+      ? "scale-[0.92]"
+      : isGiftCertificate
+        ? "translate-y-10 scale-[1.05]"
+        : "scale-[1.01]";
+    const primaryHoverClassName = shouldShrinkProductImage
+      ? hasAlternateImage
+        ? "group-hover:scale-[0.95] group-hover:opacity-0"
+        : "group-hover:scale-[0.95]"
+      : hasAlternateImage
       ? isGiftCertificate
         ? "group-hover:translate-y-11 group-hover:scale-[1.08] group-hover:opacity-0"
         : "group-hover:scale-[1.03] group-hover:opacity-0"
       : isGiftCertificate
         ? "group-hover:translate-y-11 group-hover:scale-[1.08]"
         : "group-hover:scale-[1.03]";
-    const secondaryHoverClassName = isGiftCertificate
+    const secondaryHoverClassName = shouldShrinkProductImage
+      ? "group-hover:scale-[0.95] group-hover:opacity-100"
+      : isGiftCertificate
       ? "group-hover:translate-y-11 group-hover:scale-[1.08] group-hover:opacity-100"
       : "group-hover:scale-[1.03] group-hover:opacity-100";
 
     return (
       <article className="group flex h-full min-w-0 flex-col" data-product-card="catalog">
         <Link href={productHref} onClick={handleProductClick} className="flex h-full min-w-0 flex-col gap-2">
-          <div className="relative overflow-hidden rounded-[0.95rem] bg-white">
+          <div
+            className={`relative overflow-hidden rounded-[0.95rem] ${
+              shouldShrinkProductImage ? "bg-[#f5f3f3]" : "bg-white"
+            }`}
+          >
             <div
-              className="relative aspect-square overflow-hidden rounded-[0.95rem] bg-white"
+              className={`relative aspect-square overflow-hidden rounded-[0.95rem] ${
+                shouldShrinkProductImage ? "bg-[#f5f3f3]" : "bg-white"
+              }`}
               data-product-card-image-frame
               style={{ aspectRatio: "1 / 1" }}
             >
               <ProductImage
-                src={product.image}
+                src={productCardImage}
                 fallbackSrc={fallbackImage}
                 alt={imageAlt}
                 fill
@@ -131,28 +157,46 @@ function ProductCardComponent({
   }
 
   const shouldRaiseShowcaseImage = product.id === "custom-1778090477669";
-  const imageFitClassName = isGiftCertificate ? "object-contain object-center" : "object-cover object-center";
+  const imageFitClassName = shouldShrinkProductImage || isGiftCertificate
+    ? "object-contain object-center"
+    : "object-cover object-center";
   const showcaseImageStyle: CSSProperties | undefined = shouldRaiseShowcaseImage
     ? { objectPosition: "center 35%" }
     : undefined;
-  const imagePlacementClassName = isGiftCertificate ? "scale-[0.92]" : "scale-[1.01]";
-  const primaryHoverClassName = hasAlternateImage
+  const imagePlacementClassName = shouldShrinkProductImage
+    ? "scale-[0.92]"
+    : isGiftCertificate
+      ? "scale-[0.92]"
+      : "scale-[1.01]";
+  const primaryHoverClassName = shouldShrinkProductImage
+    ? hasAlternateImage
+      ? "group-hover:scale-[0.95] group-hover:opacity-0"
+      : "group-hover:scale-[0.95]"
+    : hasAlternateImage
     ? isGiftCertificate
       ? "group-hover:scale-[0.95] group-hover:opacity-0"
       : "group-hover:scale-[1.04] group-hover:opacity-0"
     : isGiftCertificate
       ? "group-hover:scale-[0.95]"
       : "group-hover:scale-[1.04]";
-  const secondaryHoverClassName = isGiftCertificate
+  const secondaryHoverClassName = shouldShrinkProductImage
+    ? "group-hover:scale-[0.95] group-hover:opacity-100"
+    : isGiftCertificate
     ? "group-hover:scale-[0.95] group-hover:opacity-100"
     : "group-hover:scale-[1.04] group-hover:opacity-100";
 
   return (
     <article className="group flex h-full min-w-0 flex-col" data-product-card="showcase">
       <Link href={productHref} onClick={handleProductClick} className="flex h-full min-w-0 flex-col">
-        <div className="relative overflow-hidden rounded-[1.2rem] bg-white">
+        <div
+          className={`relative overflow-hidden rounded-[1.2rem] ${
+            shouldShrinkProductImage ? "bg-[#f5f3f3]" : "bg-white"
+          }`}
+        >
           <div
-            className="relative aspect-square overflow-hidden bg-white"
+            className={`relative aspect-square overflow-hidden rounded-[1.2rem] ${
+              shouldShrinkProductImage ? "bg-[#f5f3f3]" : "bg-white"
+            }`}
             data-product-card-image-frame
             style={{ aspectRatio: "1 / 1" }}
           >
@@ -165,7 +209,7 @@ function ProductCardComponent({
               ) : null}
             </div>
             <ProductImage
-              src={product.image}
+              src={productCardImage}
               fallbackSrc={fallbackImage}
               alt={imageAlt}
               fill

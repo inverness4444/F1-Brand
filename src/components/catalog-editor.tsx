@@ -33,7 +33,8 @@ import {
   getProductDisplayName,
   getProductShortDescription,
 } from "@/lib/storefront-text";
-import { sanitizeSearchQuery } from "@/lib/security-utils";
+import { buildCsrfHeaders, sanitizeSearchQuery } from "@/lib/security-utils";
+import { uniqueImageSources } from "@/lib/image-utils";
 import { cn, formatPrice, getProductHref, slugify } from "@/lib/utils";
 import { useCatalogProducts } from "@/hooks/use-catalog-products";
 import { createProductDraft, useCatalogStore } from "@/store/catalog-store";
@@ -62,6 +63,7 @@ const accessoryTypeValues = new Set<ProductType>([
   "Poster",
 ]);
 const MAX_IMPORT_FILE_BYTES = 2 * 1024 * 1024;
+const MAX_IMAGE_FILE_BYTES = 8 * 1024 * 1024;
 
 const colorHexMap: Record<ProductColor, string> = {
   Black: "#111111",
@@ -223,6 +225,7 @@ export function CatalogEditor() {
   const [isSavingProduct, setIsSavingProduct] = useState(false);
   const [isSavingCollection, setIsSavingCollection] = useState(false);
   const [isDeletingProduct, setIsDeletingProduct] = useState(false);
+  const [uploadingImageTarget, setUploadingImageTarget] = useState<string | null>(null);
   const importInputRef = useRef<HTMLInputElement>(null);
   const mainImageInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
@@ -505,7 +508,7 @@ export function CatalogEditor() {
       ...draft,
       type,
       image: shouldReplaceMainImage ? nextDefaultImage : draft.image,
-      gallery: shouldReplaceGallery ? [shouldReplaceMainImage ? nextDefaultImage : draft.image] : draft.gallery,
+      gallery: shouldReplaceGallery ? [] : draft.gallery,
       sizes: [...sizesByType[type]],
       category: type === "Gift Certificate" ? "Gifts" : draft.category === "Gifts" ? "Accessories" : draft.category,
       productType: type === "Gift Certificate" ? "gift_certificate" : "standard",
@@ -610,10 +613,16 @@ export function CatalogEditor() {
     const nextColorways = currentColorways.includes(color)
       ? currentColorways.filter((item) => item !== color)
       : [...currentColorways, color];
+    const nextColorwayImages = { ...(draft.colorwayImages ?? {}) };
+
+    if (currentColorways.includes(color)) {
+      delete nextColorwayImages[color];
+    }
 
     setDraft({
       ...draft,
       colorways: nextColorways,
+      colorwayImages: nextColorwayImages,
     });
   };
 
@@ -711,12 +720,32 @@ export function CatalogEditor() {
       return;
     }
 
+    const missingColorwayImages = (draft.colorways ?? []).filter(
+      (color) => !draft.colorwayImages?.[color],
+    );
+
+    if (missingColorwayImages.length > 0) {
+      showMessage(
+        `Добавьте главное фото для расцветок: ${missingColorwayImages.map((color) => colorLabelRu[color]).join(", ")}.`,
+        "error",
+      );
+      return;
+    }
+
+    const firstColorwayImage = draft.colorways?.[0]
+      ? draft.colorwayImages?.[draft.colorways[0]]
+      : null;
+    const colorwayImageUrls = new Set(Object.values(draft.colorwayImages ?? {}).filter(Boolean));
+    const normalizedImage = firstColorwayImage ?? draft.image;
     const normalizedDraft: Product = {
       ...draft,
       ...collectionFieldsFor(draft),
       id: draft.id.trim() || slugify(draft.name) || `custom-${Date.now()}`,
       slug: draft.slug.trim() || slugify(draft.name) || draft.id,
-      gallery: draft.gallery.length > 0 ? draft.gallery : [draft.image],
+      image: normalizedImage,
+      gallery: uniqueImageSources(draft.gallery).filter(
+        (galleryImage) => galleryImage !== normalizedImage && !colorwayImageUrls.has(galleryImage),
+      ),
     };
 
     setIsSavingProduct(true);
@@ -819,14 +848,116 @@ export function CatalogEditor() {
     }
   };
 
+  const uploadCatalogImage = async (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      throw new Error("Выберите изображение.");
+    }
+
+    if (file.size > MAX_IMAGE_FILE_BYTES) {
+      throw new Error("Размер изображения должен быть не больше 8 МБ.");
+    }
+
+    const formData = new FormData();
+    formData.set("file", file);
+    const response = await fetch("/api/admin/assets", {
+      method: "POST",
+      headers: buildCsrfHeaders(),
+      body: formData,
+    });
+    const payload = (await response.json().catch(() => null)) as { url?: string; error?: string } | null;
+
+    if (!response.ok || !payload?.url) {
+      throw new Error(payload?.error ?? "Не удалось загрузить изображение.");
+    }
+
+    return payload.url;
+  };
+
   const handleMainImageUpload = async (event: ChangeEvent<HTMLInputElement>) => {
-    showMessage("Загрузка файлов будет подключена после настройки storage. Сейчас вставьте URL изображения.", "error");
-    event.target.value = "";
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    setUploadingImageTarget("main");
+
+    try {
+      const url = await uploadCatalogImage(file);
+      setDraft((current) => current ? { ...current, image: url } : current);
+      showMessage("Главное фото загружено.", "success");
+    } catch (error) {
+      showMessage(error instanceof Error ? error.message : "Не удалось загрузить изображение.", "error");
+    } finally {
+      setUploadingImageTarget(null);
+      event.target.value = "";
+    }
   };
 
   const handleGalleryUpload = async (event: ChangeEvent<HTMLInputElement>) => {
-    showMessage("Загрузка файлов будет подключена после настройки storage. Сейчас добавьте URL в галерею.", "error");
-    event.target.value = "";
+    const files = [...(event.target.files ?? [])];
+
+    if (files.length === 0) {
+      return;
+    }
+
+    setUploadingImageTarget("gallery");
+
+    try {
+      const urls = await Promise.all(files.map(uploadCatalogImage));
+      setDraft((current) =>
+        current
+          ? {
+              ...current,
+              gallery: uniqueImageSources([...current.gallery, ...urls]),
+            }
+          : current,
+      );
+      showMessage(`Добавлено изображений: ${urls.length}.`, "success");
+    } catch (error) {
+      showMessage(error instanceof Error ? error.message : "Не удалось загрузить изображения.", "error");
+    } finally {
+      setUploadingImageTarget(null);
+      event.target.value = "";
+    }
+  };
+
+  const handleColorwayImageUpload = async (
+    color: ProductColor,
+    event: ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    setUploadingImageTarget(`colorway-${color}`);
+
+    try {
+      const url = await uploadCatalogImage(file);
+      setDraft((current) => {
+        if (!current) {
+          return current;
+        }
+
+        const isFirstColorway = current.colorways?.[0] === color;
+        return {
+          ...current,
+          image: isFirstColorway ? url : current.image,
+          colorwayImages: {
+            ...(current.colorwayImages ?? {}),
+            [color]: url,
+          },
+        };
+      });
+      showMessage(`Главное фото расцветки «${colorLabelRu[color]}» загружено.`, "success");
+    } catch (error) {
+      showMessage(error instanceof Error ? error.message : "Не удалось загрузить изображение.", "error");
+    } finally {
+      setUploadingImageTarget(null);
+      event.target.value = "";
+    }
   };
 
   const previewTitle = draft?.name || "Новый товар";
@@ -1429,13 +1560,29 @@ export function CatalogEditor() {
                   <div className="space-y-2">
                     <span className="text-sm font-medium text-slate-900">Загрузка фото</span>
                     <div className="flex flex-wrap gap-3">
-                      <Button variant="secondary" onClick={() => mainImageInputRef.current?.click()}>
-                        <ImagePlus className="size-4" />
-                        Загрузить главное фото
+                      <Button
+                        variant="secondary"
+                        disabled={Boolean(uploadingImageTarget)}
+                        onClick={() => mainImageInputRef.current?.click()}
+                      >
+                        {uploadingImageTarget === "main" ? (
+                          <Loader2 className="size-4 animate-spin" />
+                        ) : (
+                          <ImagePlus className="size-4" />
+                        )}
+                        {uploadingImageTarget === "main" ? "Загрузка" : "Загрузить главное фото"}
                       </Button>
-                      <Button variant="secondary" onClick={() => galleryInputRef.current?.click()}>
-                        <Upload className="size-4" />
-                        Добавить в галерею
+                      <Button
+                        variant="secondary"
+                        disabled={Boolean(uploadingImageTarget)}
+                        onClick={() => galleryInputRef.current?.click()}
+                      >
+                        {uploadingImageTarget === "gallery" ? (
+                          <Loader2 className="size-4 animate-spin" />
+                        ) : (
+                          <Upload className="size-4" />
+                        )}
+                        {uploadingImageTarget === "gallery" ? "Загрузка" : "Добавить в галерею"}
                       </Button>
                     </div>
                     <input
@@ -1499,7 +1646,7 @@ export function CatalogEditor() {
                 <div>
                   <p className="text-sm font-medium text-slate-900">Расцветка</p>
                   <p className="mt-1 text-xs leading-6 text-slate-500">
-                    Это варианты самой вещи для выбора в карточке товара: чёрная, белая и так далее. Если ничего не выбрать, блок расцветки на сайте не показывается.
+                    Это варианты самой вещи для выбора в карточке товара: чёрная, белая и так далее. Для каждой выбранной расцветки добавьте отдельное главное фото.
                   </p>
                   <div className="mt-3 flex flex-wrap gap-2">
                     {colorOptions.map((color) => {
@@ -1523,6 +1670,86 @@ export function CatalogEditor() {
                       );
                     })}
                   </div>
+                  {draft.colorways?.length ? (
+                    <div className="mt-4 grid gap-3 md:grid-cols-2">
+                      {draft.colorways.map((color) => {
+                        const image = draft.colorwayImages?.[color] ?? "";
+                        const uploadTarget = `colorway-${color}`;
+
+                        return (
+                          <div key={color} className="rounded-2xl border border-slate-200 bg-slate-50 p-3">
+                            <div className="flex items-center gap-3">
+                              <div className="relative size-20 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-white">
+                                {image ? (
+                                  <ProductImage
+                                    src={image}
+                                    fallbackSrc={imageByType[draft.type]}
+                                    alt={`${draft.name} — ${colorLabelRu[color]}`}
+                                    fill
+                                    sizes="80px"
+                                    className="object-cover"
+                                  />
+                                ) : (
+                                  <div className="flex h-full items-center justify-center text-slate-300">
+                                    <ImagePlus className="size-6" />
+                                  </div>
+                                )}
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="text-sm font-semibold text-slate-900">{colorLabelRu[color]}</p>
+                                <p className="mt-1 text-xs text-slate-500">
+                                  {image ? "Главное фото назначено" : "Фото обязательно"}
+                                </p>
+                                <label
+                                  className={buttonClassName({
+                                    variant: "secondary",
+                                    className: cn(
+                                      "mt-2 cursor-pointer px-3 py-2 text-xs",
+                                      uploadingImageTarget && "pointer-events-none opacity-60",
+                                    ),
+                                  })}
+                                >
+                                  {uploadingImageTarget === uploadTarget ? (
+                                    <Loader2 className="size-4 animate-spin" />
+                                  ) : (
+                                    <Upload className="size-4" />
+                                  )}
+                                  {image ? "Заменить фото" : "Загрузить фото"}
+                                  <input
+                                    type="file"
+                                    accept="image/jpeg,image/png,image/webp,image/gif"
+                                    className="hidden"
+                                    disabled={Boolean(uploadingImageTarget)}
+                                    onChange={(event) => handleColorwayImageUpload(color, event)}
+                                  />
+                                </label>
+                              </div>
+                            </div>
+                            <input
+                              value={image}
+                              onChange={(event) => {
+                                const url = event.target.value;
+                                setDraft((current) =>
+                                  current
+                                    ? {
+                                        ...current,
+                                        image: current.colorways?.[0] === color && url ? url : current.image,
+                                        colorwayImages: {
+                                          ...(current.colorwayImages ?? {}),
+                                          [color]: url,
+                                        },
+                                      }
+                                    : current,
+                                );
+                              }}
+                              placeholder="Или вставьте URL"
+                              className="input-base mt-3 rounded-xl text-xs"
+                            />
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : null}
                 </div>
 
                 <div>

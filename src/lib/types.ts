@@ -72,6 +72,7 @@ export type Product = {
   requiresShipping: boolean;
   colors: ProductColor[];
   colorways?: ProductColor[];
+  colorwayImages?: Partial<Record<ProductColor, string>>;
   sizes: ProductSize[];
   type: ProductType;
   badge: ProductBadge;

@@ -408,7 +408,7 @@ export function productJsonLd(product: Product) {
         ? "https://schema.org/PreOrder"
         : "https://schema.org/InStock";
 
-  const schemaImages = uniqueImageSources(product.gallery.length ? product.gallery : [productSeoImage(product)])
+  const schemaImages = uniqueImageSources([productSeoImage(product), ...product.gallery])
     .filter((image) => image && (image.startsWith("/") || /^https?:\/\//i.test(image)))
     .map((image) => absoluteUrl(image));
 

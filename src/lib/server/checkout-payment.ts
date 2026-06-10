@@ -42,7 +42,6 @@ type CheckoutVariant = Prisma.ProductVariantGetPayload<{
           orderBy: {
             sortOrder: "asc";
           };
-          take: 1;
         };
       };
     };
@@ -109,7 +108,14 @@ function selectionKey(selection: { productId: string; color: string; size: strin
 }
 
 function getProductImage(variant: CheckoutVariant) {
-  return variant.product.images[0]?.url ?? "/mockups/tshirt.svg";
+  return (
+    variant.product.images.find(
+      (image) => image.isPrimary && image.color === variant.color.value,
+    )?.url ??
+    variant.product.images.find((image) => image.isPrimary && !image.color)?.url ??
+    variant.product.images[0]?.url ??
+    "/mockups/tshirt.svg"
+  );
 }
 
 function getProductDisplayName(variant: CheckoutVariant) {
@@ -170,7 +176,6 @@ async function buildCheckoutItems(
         include: {
           images: {
             orderBy: { sortOrder: "asc" },
-            take: 1,
           },
         },
       },

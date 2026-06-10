@@ -450,7 +450,7 @@ export default function CheckoutPage() {
                     className="relative flex h-20 w-20 shrink-0 items-center justify-center rounded-[18px] bg-slate-50 p-1.5"
                   >
                     <ProductImage
-                      src={product.image}
+                      src={product.colorwayImages?.[selection.color] ?? product.image}
                       fallbackSrc={imageByType[product.type]}
                       alt={product.name}
                       width={80}

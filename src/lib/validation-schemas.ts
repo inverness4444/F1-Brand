@@ -652,6 +652,17 @@ export const productSchema = z.object({
   requiresShipping: z.boolean().default(true),
   colors: z.array(productColorSchema).min(1).max(12),
   colorways: z.array(productColorSchema).max(12).optional().default([]),
+  colorwayImages: z
+    .record(
+      productColorSchema,
+      z
+        .string()
+        .transform(sanitizeAssetUrl)
+        .refine((value) => value.length > 0, "Укажите URL изображения.")
+        .refine((value) => !value.startsWith("data:") && !value.startsWith("blob:"), "Загрузите постоянное изображение."),
+    )
+    .optional()
+    .default({}),
   sizes: z.array(productSizeSchema).min(1).max(7),
   type: productTypeSchema,
   badge: productBadgeSchema,
@@ -660,14 +671,14 @@ export const productSchema = z.object({
     .string()
     .transform(sanitizeAssetUrl)
     .refine((value) => value.length > 0, "Укажите URL изображения.")
-    .refine((value) => !value.startsWith("data:") && !value.startsWith("blob:"), "Вставьте постоянный URL изображения."),
+    .refine((value) => !value.startsWith("data:") && !value.startsWith("blob:"), "Загрузите постоянное изображение."),
   gallery: z
     .array(
       z
         .string()
         .transform(sanitizeAssetUrl)
         .refine((value) => value.length > 0, "Укажите URL изображения.")
-        .refine((value) => !value.startsWith("data:") && !value.startsWith("blob:"), "Вставьте постоянный URL изображения."),
+        .refine((value) => !value.startsWith("data:") && !value.startsWith("blob:"), "Загрузите постоянное изображение."),
     )
     .max(16),
   description: z

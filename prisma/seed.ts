@@ -205,6 +205,7 @@ async function seedCatalog() {
       productId: product.id,
       url,
       alt: product.name,
+      isPrimary: sortOrder === 0,
       sortOrder,
     })),
   );

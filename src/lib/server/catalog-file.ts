@@ -67,13 +67,20 @@ async function materializeProductImages(product: Product, index: number) {
       materializeDataImage(galleryImage, baseName, `gallery-${galleryIndex + 1}`),
     ),
   );
-  const normalizedGallery =
-    typeof image === "string" && image ? [image, ...gallery] : gallery;
+  const colorwayImages = Object.fromEntries(
+    await Promise.all(
+      Object.entries(product.colorwayImages ?? {}).map(async ([color, colorwayImage]) => [
+        color,
+        await materializeDataImage(colorwayImage, baseName, `color-${toAssetFileName(color, "variant")}`),
+      ]),
+    ),
+  );
 
   return {
     ...product,
     image,
-    gallery: uniqueImageSources(normalizedGallery),
+    gallery: uniqueImageSources(gallery).filter((galleryImage) => galleryImage !== image),
+    colorwayImages,
   };
 }
 

@@ -1,14 +1,24 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
-import type { Product } from "@/lib/types";
+import type { Product, ProductColor } from "@/lib/types";
 import { getProductCategoryBreadcrumb, getProductDisplayName } from "@/lib/storefront-text";
 import { ProductGallery } from "@/components/product-gallery";
 import { ProductGrid } from "@/components/product-grid";
 import { ProductInfo } from "@/components/product-info";
 import { trackAnalyticsEvent } from "@/services/analytics-service";
+
+function initialProductColor(product: Product): ProductColor {
+  return (
+    product.colorways?.[1] ??
+    product.colorways?.[0] ??
+    product.variants?.[0]?.color ??
+    product.colors[0] ??
+    "Black"
+  );
+}
 
 export function ProductPage({
   product,
@@ -21,6 +31,7 @@ export function ProductPage({
   const categoryBreadcrumb = getProductCategoryBreadcrumb(product);
   const completeTheLook = recommendedProducts.slice(0, 4);
   const alsoLike = recommendedProducts.slice(4, 8).length > 0 ? recommendedProducts.slice(4, 8) : recommendedProducts.slice(0, 4);
+  const [selectedColor, setSelectedColor] = useState<ProductColor>(() => initialProductColor(product));
 
   useEffect(() => {
     trackAnalyticsEvent({
@@ -33,6 +44,10 @@ export function ProductPage({
         collection: product.collection,
       },
     });
+  }, [product]);
+
+  useEffect(() => {
+    setSelectedColor(initialProductColor(product));
   }, [product]);
 
   return (
@@ -51,8 +66,12 @@ export function ProductPage({
         </nav>
 
         <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1.18fr)_minmax(430px,0.82fr)] xl:gap-9 2xl:grid-cols-[minmax(0,1.28fr)_minmax(460px,0.72fr)] 2xl:gap-10">
-          <ProductGallery product={product} />
-          <ProductInfo product={product} />
+          <ProductGallery product={product} selectedColor={selectedColor} />
+          <ProductInfo
+            product={product}
+            selectedColor={selectedColor}
+            onSelectedColorChange={setSelectedColor}
+          />
         </div>
       </section>
 

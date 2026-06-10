@@ -113,7 +113,6 @@ export async function POST(request: NextRequest) {
     const productWithId = {
       ...product,
       id: product.id || `product-${crypto.randomUUID()}`,
-      gallery: product.gallery.length > 0 ? product.gallery : [product.image],
     };
     const savedProduct = await upsertProductFromCatalogPayload(productWithId);
     const collections = await readCatalogCollectionsFromDb({ includeHidden: true });

@@ -4,21 +4,35 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { ProductImage } from "@/components/product-image";
-import type { Product } from "@/lib/types";
+import type { Product, ProductColor } from "@/lib/types";
 import { imageByType } from "@/lib/data/products";
 import { uniqueImageSources } from "@/lib/image-utils";
 import { cn } from "@/lib/utils";
 import { getProductCategoryBreadcrumb, getProductDisplayName } from "@/lib/storefront-text";
 
-export function ProductGallery({ product }: { product: Product }) {
-  const [activeIndex, setActiveIndex] = useState(0);
+export function ProductGallery({
+  product,
+  selectedColor,
+}: {
+  product: Product;
+  selectedColor: ProductColor;
+}) {
   const thumbRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const gallery = useMemo(() => {
-    const images = product.gallery.length > 0 ? product.gallery : [product.image];
-    return uniqueImageSources(images);
-  }, [product.gallery, product.image]);
+    const colorwayImage = product.colorwayImages?.[selectedColor];
+    return uniqueImageSources([colorwayImage ?? product.image, ...product.gallery]);
+  }, [product.colorwayImages, product.gallery, product.image, selectedColor]);
+  const initialActiveIndex = (product.colorways?.length ?? 0) > 1
+    ? 0
+    : gallery.length > 1
+      ? 1
+      : 0;
+  const [activeIndex, setActiveIndex] = useState(initialActiveIndex);
   const activeImage = gallery[activeIndex] ?? gallery[0];
   const isGiftCertificate = product.productType === "gift_certificate";
+  const isTeddyBearCollection =
+    product.collection === "Teddy Bear x F1" || product.collectionTags.includes("Teddy Bear x F1");
+  const shouldContainImage = isGiftCertificate || !isTeddyBearCollection;
   const fallbackImage = imageByType[product.type];
   const imageAlt = `${getProductDisplayName(product)} — ${getProductCategoryBreadcrumb(product).label}`;
 
@@ -32,8 +46,8 @@ export function ProductGallery({ product }: { product: Product }) {
   };
 
   useEffect(() => {
-    setActiveIndex(0);
-  }, [product.id]);
+    setActiveIndex(initialActiveIndex);
+  }, [initialActiveIndex, product.id, selectedColor]);
 
   useEffect(() => {
     const activeThumb = thumbRefs.current[activeIndex];
@@ -49,13 +63,13 @@ export function ProductGallery({ product }: { product: Product }) {
     });
   }, [activeIndex]);
 
-  const thumbnailImageClassName = isGiftCertificate ? "object-contain" : "object-cover";
-  const mainImageClassName = isGiftCertificate ? "object-contain" : "object-cover";
+  const thumbnailImageClassName = shouldContainImage ? "object-contain" : "object-cover";
+  const mainImageClassName = shouldContainImage ? "object-contain" : "object-cover";
   const thumbnailImageStyle = {
     display: "block",
     height: "100%",
     width: "100%",
-    objectFit: isGiftCertificate ? "contain" : "cover",
+    objectFit: shouldContainImage ? "contain" : "cover",
     objectPosition: "center",
   } as const;
 

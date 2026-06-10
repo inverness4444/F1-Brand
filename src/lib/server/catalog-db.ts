@@ -243,7 +243,28 @@ function asSizes(values: string[]) {
 }
 
 export function productFromDb(product: DbProduct, options: CollectionReadOptions = {}): Product {
-  const images = product.images.map((image) => image.url).filter(Boolean);
+  const primaryImage =
+    product.images.find((productImage) => productImage.isPrimary && !productImage.color) ??
+    product.images.find((productImage) => !productImage.color) ??
+    product.images.find((productImage) => productImage.isPrimary) ??
+    product.images[0];
+  const image = primaryImage?.url ?? "/mockups/tshirt.svg";
+  const gallery = unique(
+    product.images
+      .filter(
+        (productImage) =>
+          !productImage.color &&
+          productImage.id !== primaryImage?.id &&
+          !productImage.isPrimary,
+      )
+      .map((productImage) => productImage.url)
+      .filter(Boolean),
+  );
+  const colorwayImages = Object.fromEntries(
+    product.images
+      .filter((productImage) => productImage.color && productImage.isPrimary)
+      .map((productImage) => [productImage.color, productImage.url]),
+  ) as Partial<Record<ProductColor, string>>;
   const variantColors = asColors(product.variants.map((variant) => variant.color.value));
   const colors = product.designColors.length > 0 ? asColors(product.designColors) : variantColors;
   const colorways = asOptionalColors(product.colorways);
@@ -257,8 +278,6 @@ export function productFromDb(product: DbProduct, options: CollectionReadOptions
     ...productCollections.map((item) => item.collection.name),
     product.badge === "Sale" ? "Sale" : null,
   ].filter((value): value is string => Boolean(value)));
-  const image = images[0] ?? "/mockups/tshirt.svg";
-
   return {
     id: product.id,
     slug: product.slug,
@@ -280,12 +299,13 @@ export function productFromDb(product: DbProduct, options: CollectionReadOptions
     requiresShipping: product.requiresShipping,
     colors,
     colorways,
+    colorwayImages,
     sizes,
     type: asType(product.type),
     badge: asBadge(product.badge),
     status: asStatus(product.status),
     image,
-    gallery: images.length > 0 ? images : [image],
+    gallery,
     description: product.description,
     shortDescription: product.shortDescription,
     popularity: product.popularity,
@@ -783,7 +803,9 @@ export async function upsertProductFromCatalogPayload(product: Product) {
   const primaryCollection = product.collection ? await ensureCollection(product.collection) : null;
   const slug = await createUniqueProductSlug(product.slug || product.name, product.id);
   const status = product.status ?? (product.badge === "OutOfStock" ? "ARCHIVED" : "ACTIVE");
-  const images = [...new Set([product.image, ...product.gallery].filter(Boolean))];
+  const gallery = [...new Set(product.gallery.filter((url) => url && url !== product.image))];
+  const colorwayImages = Object.entries(product.colorwayImages ?? {})
+    .filter((entry): entry is [ProductColor, string] => Boolean(entry[1]));
   const variantInputs = new Map(
     (product.variants ?? []).map((variant) => [variantKey(variant.size, variant.color), variant]),
   );
@@ -851,12 +873,32 @@ export async function upsertProductFromCatalogPayload(product: Product) {
 
   await prisma.productImage.deleteMany({ where: { productId: savedProduct.id } });
   await prisma.productImage.createMany({
-    data: images.map((url, index) => ({
-      productId: savedProduct.id,
-      url,
-      alt: product.name,
-      sortOrder: index,
-    })),
+    data: [
+      {
+        productId: savedProduct.id,
+        url: product.image,
+        alt: product.name,
+        color: null,
+        isPrimary: true,
+        sortOrder: 0,
+      },
+      ...gallery.map((url, index) => ({
+        productId: savedProduct.id,
+        url,
+        alt: product.name,
+        color: null,
+        isPrimary: false,
+        sortOrder: index + 1,
+      })),
+      ...colorwayImages.map(([color, url], index) => ({
+        productId: savedProduct.id,
+        url,
+        alt: `${product.name} — ${color}`,
+        color,
+        isPrimary: true,
+        sortOrder: gallery.length + index + 1,
+      })),
+    ],
   });
 
   await prisma.productCollection.deleteMany({ where: { productId: savedProduct.id } });

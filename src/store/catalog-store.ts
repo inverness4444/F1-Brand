@@ -201,10 +201,9 @@ function deriveCollectionTags(
   return [...tags].filter((tag) => internalProductTags.has(tag) || !legacySystemCollectionNames.has(tag));
 }
 
-function normalizeGallery(images: string[], image: string) {
-  const cleaned = uniqueImageSources(images);
-
-  return cleaned.length > 0 ? cleaned : [image];
+function normalizeGallery(images: string[], image: string, colorwayImages: Partial<Record<ProductColor, string>>) {
+  const excludedImages = new Set([image, ...Object.values(colorwayImages)]);
+  return uniqueImageSources(images).filter((galleryImage) => !excludedImages.has(galleryImage));
 }
 
 export function normalizeProduct(product: Product, existingProducts: Product[] = []) {
@@ -291,6 +290,12 @@ export function normalizeProduct(product: Product, existingProducts: Product[] =
       ? product.colors
       : driver?.colors ?? team?.colors ?? legend?.colors ?? (["Black", "Beige"] as ProductColor[]);
   const colorways = uniqueValues((product.colorways ?? []).filter((color): color is ProductColor => validColors.has(color)));
+  const colorwayImages = Object.fromEntries(
+    Object.entries(product.colorwayImages ?? {})
+      .filter(([color]) => colorways.includes(color as ProductColor))
+      .map(([color, value]) => [color, sanitizeAssetUrl(value ?? "")])
+      .filter((entry): entry is [string, string] => Boolean(entry[1])),
+  ) as Partial<Record<ProductColor, string>>;
   const image = sanitizeAssetUrl(product.image ?? "") || imageByType[type];
   const createdAt = isValidDate(product.createdAt) ? new Date(product.createdAt).toISOString() : new Date().toISOString();
   const description =
@@ -330,6 +335,7 @@ export function normalizeProduct(product: Product, existingProducts: Product[] =
     requiresShipping: product.type === "Gift Certificate" ? false : product.requiresShipping ?? true,
     colors,
     colorways,
+    colorwayImages,
     sizes:
       product.sizes.length > 0
         ? uniqueValues(product.sizes.filter((size): size is ProductSize => validSizes.includes(size)))
@@ -337,7 +343,7 @@ export function normalizeProduct(product: Product, existingProducts: Product[] =
     type,
     badge: badgeValue(product.badge),
     image,
-    gallery: normalizeGallery(product.gallery ?? [], image),
+    gallery: normalizeGallery(product.gallery ?? [], image, colorwayImages),
     description,
     shortDescription:
       sanitizeText(product.shortDescription ?? "", {
@@ -384,6 +390,7 @@ export function createProductDraft(existingProducts: Product[] = []) {
       requiresShipping: true,
       colors: [...driver.colors],
       colorways: [],
+      colorwayImages: {},
       sizes: sizesByType["T-shirt"],
       type: "T-shirt",
       badge: "New",
@@ -460,8 +467,9 @@ let initializeCatalogPromise: { mode: CatalogMode; promise: Promise<void> } | nu
 let saveCatalogQueue: Promise<void> = Promise.resolve();
 
 async function fetchCatalogProductsFromServer(mode: CatalogMode) {
-  const requestInit: RequestInit = mode === "admin" ? { cache: "no-store" } : {};
-  const response = await fetch(mode === "admin" ? "/api/admin/products" : "/api/catalog", requestInit);
+  const response = await fetch(mode === "admin" ? "/api/admin/products" : "/api/catalog", {
+    cache: "no-store",
+  });
 
   if (!response.ok) {
     throw new Error("Не удалось загрузить каталог.");

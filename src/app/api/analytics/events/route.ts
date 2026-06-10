@@ -33,6 +33,7 @@ export async function POST(request: NextRequest) {
     const stored = await recordAnalyticsEvent({
       ...input,
       userId: currentUser?.id ?? null,
+      userEmail: currentUser?.email ?? null,
       path: input.path || getRequestPath(request),
       referrer: input.referrer ?? request.headers.get("referer"),
       deviceType: input.deviceType ?? getDeviceTypeFromUserAgent(request.headers.get("user-agent")),

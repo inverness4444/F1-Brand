@@ -3,7 +3,6 @@ import { revalidatePath, revalidateTag } from "next/cache";
 
 import {
   CATALOG_CACHE_TAG,
-  PUBLIC_CATALOG_REVALIDATE_SECONDS,
   readCatalogCollectionsFromDb,
   readCatalogProductsFromDb,
   replaceCatalogInDb,
@@ -13,8 +12,6 @@ import { assertCsrfToken, assertSameOrigin, enforceRateLimit } from "@/lib/serve
 import { catalogPayloadSchema } from "@/lib/validation-schemas";
 
 export const runtime = "nodejs";
-
-const PUBLIC_CATALOG_STALE_SECONDS = 24 * 60 * 60;
 
 export async function GET() {
   try {
@@ -26,12 +23,7 @@ export async function GET() {
       { products, collections },
       {
         headers: {
-          "Cache-Control": [
-            "public",
-            `max-age=${PUBLIC_CATALOG_REVALIDATE_SECONDS}`,
-            `s-maxage=${PUBLIC_CATALOG_REVALIDATE_SECONDS}`,
-            `stale-while-revalidate=${PUBLIC_CATALOG_STALE_SECONDS}`,
-          ].join(", "),
+          "Cache-Control": "no-store, max-age=0",
         },
       },
     );
