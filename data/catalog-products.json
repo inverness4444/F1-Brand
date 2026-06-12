@@ -3963,5 +3963,246 @@
       "#D8C7B3",
       "#7B2220"
     ]
+  },
+  {
+    "id": "custom-1781301161285",
+    "slug": "futbolka-teddy-bear-x-ferarri",
+    "name": "Футболка Teddy Bear x Ferarri",
+    "category": "Teams",
+    "collection": "Teddy Bear x F1",
+    "collectionTags": [
+      "Teddy Bear x F1",
+      "New Arrivals"
+    ],
+    "driverName": null,
+    "driverSlug": null,
+    "teamName": "Ferrari",
+    "teamSlug": "ferrari",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "oldPrice": null,
+    "stock": null,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Red",
+      "White",
+      "Navy"
+    ],
+    "colorways": [
+      "White",
+      "Navy",
+      "Black"
+    ],
+    "colorwayImages": {
+      "White": "/catalog-assets/teddy-ferrari-white-hoodie-bg-v2.png",
+      "Navy": "/catalog-assets/teddy-ferrari-navy-hoodie-bg-v2.png",
+      "Black": "/catalog-assets/teddy-ferrari-black-hoodie-bg-v2.png"
+    },
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Hit",
+    "status": "ACTIVE",
+    "image": "/catalog-assets/teddy-ferrari-white-hoodie-bg-v2.png",
+    "gallery": [],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-06-12T21:52:41.285Z",
+    "hexPalette": [
+      "#D5332C",
+      "#111111",
+      "#F5CF51"
+    ]
+  },
+  {
+    "id": "custom-1781301235020",
+    "slug": "futbolka-teddy-bear-x-redbull",
+    "name": "Футболка Teddy Bear x RedBull",
+    "category": "Teams",
+    "collection": "Teddy Bear x F1",
+    "collectionTags": [
+      "Teddy Bear x F1",
+      "New Arrivals"
+    ],
+    "driverName": null,
+    "driverSlug": null,
+    "teamName": "Red Bull Racing",
+    "teamSlug": "red-bull-racing",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "oldPrice": null,
+    "stock": null,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "White",
+      "Navy"
+    ],
+    "colorways": [
+      "Black",
+      "White",
+      "Navy"
+    ],
+    "colorwayImages": {
+      "Black": "/catalog-assets/teddy-redbull-black-hoodie-bg-v2.png",
+      "White": "/catalog-assets/teddy-redbull-white-hoodie-bg-v2.png",
+      "Navy": "/catalog-assets/teddy-redbull-navy-hoodie-bg-v2.png"
+    },
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Hit",
+    "status": "ACTIVE",
+    "image": "/catalog-assets/teddy-redbull-black-hoodie-bg-v2.png",
+    "gallery": [],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-06-12T21:53:55.020Z",
+    "hexPalette": [
+      "#162540",
+      "#D8382E",
+      "#F0C03D"
+    ]
+  },
+  {
+    "id": "custom-1781301330569",
+    "slug": "futbolka-teddy-bear-x-mclaren",
+    "name": "Футболка Teddy Bear x McLaren",
+    "category": "Teams",
+    "collection": "Teddy Bear x F1",
+    "collectionTags": [
+      "Teddy Bear x F1",
+      "New Arrivals"
+    ],
+    "driverName": null,
+    "driverSlug": null,
+    "teamName": "McLaren",
+    "teamSlug": "mclaren",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "oldPrice": null,
+    "stock": null,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Orange",
+      "Black",
+      "White",
+      "Navy"
+    ],
+    "colorways": [
+      "Black",
+      "White",
+      "Navy"
+    ],
+    "colorwayImages": {
+      "Black": "/catalog-assets/teddy-mclaren-black-hoodie-bg-v2.png",
+      "White": "/catalog-assets/teddy-mclaren-white-hoodie-bg-v2.png",
+      "Navy": "/catalog-assets/teddy-mclaren-navy-hoodie-bg-v2.png"
+    },
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Hit",
+    "status": "ACTIVE",
+    "image": "/catalog-assets/teddy-mclaren-black-hoodie-bg-v2.png",
+    "gallery": [],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-06-12T21:55:30.569Z",
+    "hexPalette": [
+      "#EE6C2F",
+      "#111111",
+      "#F4E9DB"
+    ]
+  },
+  {
+    "id": "custom-1781301406918",
+    "slug": "futbolka-teddy-bear-x-mercedes",
+    "name": "Футболка Teddy Bear x Mercedes",
+    "category": "Teams",
+    "collection": "Teddy Bear x F1",
+    "collectionTags": [
+      "Teddy Bear x F1",
+      "New Arrivals"
+    ],
+    "driverName": null,
+    "driverSlug": null,
+    "teamName": "Mercedes",
+    "teamSlug": "mercedes",
+    "legendName": null,
+    "legendSlug": null,
+    "gender": "Unisex",
+    "price": 3500,
+    "oldPrice": null,
+    "stock": null,
+    "productType": "standard",
+    "requiresShipping": true,
+    "colors": [
+      "Black",
+      "White",
+      "Navy"
+    ],
+    "colorways": [
+      "Black",
+      "Navy",
+      "White"
+    ],
+    "colorwayImages": {
+      "Black": "/catalog-assets/teddy-mercedes-black-hoodie-bg-v2.png",
+      "Navy": "/catalog-assets/teddy-mercedes-navy-hoodie-bg-v2.png",
+      "White": "/catalog-assets/teddy-mercedes-white-hoodie-bg-v2.png"
+    },
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "type": "T-shirt",
+    "badge": "Hit",
+    "status": "ACTIVE",
+    "image": "/catalog-assets/teddy-mercedes-black-hoodie-bg-v2.png",
+    "gallery": [],
+    "description": "Опишите материал, посадку и особенности модели.",
+    "shortDescription": "Короткое описание товара для каталога.",
+    "popularity": 75,
+    "createdAt": "2026-06-12T21:56:46.918Z",
+    "hexPalette": [
+      "#111111",
+      "#CDD3D9",
+      "#27C5A7"
+    ]
   }
 ]
