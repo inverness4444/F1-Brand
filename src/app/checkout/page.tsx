@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
+import { LEGAL_VERSION } from "@/lib/legal";
+import { getDeliveryDeadline, formatDeliveryDeadline, canCheckoutWithDeliveryDeadline } from "@/lib/delivery-promise";
 import type { AddressInput, DeliveryMethod, PaymentMethod, UserAddress } from "@/lib/account-types";
 import { deliveryMethods, paymentMethods } from "@/lib/account-constants";
 import { getErrorMessage, getZodFieldErrors } from "@/lib/form-error-utils";
@@ -75,6 +77,8 @@ export default function CheckoutPage() {
       }),
     [availableBalance, cartItems, currentUser?.id, productMap, requestedBalanceAmount, useBalance],
   );
+  const deliveryDeadline = checkoutPreview.requiresShipping ? getDeliveryDeadline() : null;
+  const checkoutAvailable = canCheckoutWithDeliveryDeadline(checkoutPreview.requiresShipping, deliveryDeadline);
   const maxBalanceSpend = Math.min(
     checkoutPreview.total,
     checkoutPreview.balanceUsage.availableBalance,
@@ -249,6 +253,8 @@ export default function CheckoutPage() {
     try {
       const result = await checkoutService.placeOrder(
         {
+          offerVersion: LEGAL_VERSION,
+          deliveryDeadline,
           userId: currentUser.id,
           customer: customerPayload.success ? customerPayload.data : values,
           shippingAddress: checkoutPreview.requiresShipping ? selectedAddress : null,
@@ -464,7 +470,7 @@ export default function CheckoutPage() {
                     </Link>
                     {product.productType === "gift_certificate" ? (
                       <p className="mt-1 text-xs uppercase tracking-[0.14em] text-[#7b2220]">
-                        Digital Gift Card • {selection.quantity} шт.
+                        Электронный подарочный сертификат • {selection.quantity} шт.
                       </p>
                     ) : (
                       <p className="mt-1 text-xs text-slate-500">
@@ -512,6 +518,11 @@ export default function CheckoutPage() {
               </div>
             </div>
 
+            <div className="mt-5 text-sm leading-6 text-slate-600">
+              {deliveryDeadline ? <p>Передадим заказ не позднее <strong>{formatDeliveryDeadline(deliveryDeadline)}</strong>, включая производство и доставку. Срок отсчитывается от подтверждения заказа.</p> : !checkoutPreview.requiresShipping ? <p>Код сертификата будет доступен в личном кабинете после подтверждения оплаты.</p> : null}
+              {!checkoutAvailable ? <p>Перед покупкой нужно уточнить срок передачи. <Link href="/contacts" className="underline">Связаться с магазином</Link>.</p> : null}
+              {checkoutAvailable && checkoutPreview.requiresShipping && !deliveryDeadline ? <p>Срок передачи пока не указан.</p> : null}
+            </div>
             {errors.form ? (
               <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
                 {errors.form}
@@ -522,7 +533,7 @@ export default function CheckoutPage() {
               fullWidth
               className="mt-5 rounded-2xl"
               onClick={handlePlaceOrder}
-              disabled={isSubmitting}
+              disabled={isSubmitting || !checkoutAvailable}
             >
               {isSubmitting ? (
                 <>
@@ -534,23 +545,7 @@ export default function CheckoutPage() {
               )}
             </Button>
             <p className="mt-4 text-xs leading-6 text-slate-500">
-              Подтверждая заказ, вы соглашаетесь с{" "}
-              <Link href="/offer" className="font-semibold text-slate-900 underline underline-offset-4">
-                офертой
-              </Link>
-              ,{" "}
-              <Link href="/privacy" className="font-semibold text-slate-900 underline underline-offset-4">
-                политикой конфиденциальности
-              </Link>
-              , а также условиями{" "}
-              <Link href="/delivery" className="font-semibold text-slate-900 underline underline-offset-4">
-                доставки
-              </Link>{" "}
-              и{" "}
-              <Link href="/returns" className="font-semibold text-slate-900 underline underline-offset-4">
-                возврата
-              </Link>
-              .
+              Подтверждая заказ, вы принимаете <Link href="/offer" target="_blank" className="underline">оферту</Link>, включая <Link href="/delivery" target="_blank" className="underline">доставку</Link> и <Link href="/returns" target="_blank" className="underline">возврат</Link>. Данные заказа обрабатываются для исполнения договора: <Link href="/privacy" target="_blank" className="underline">политика обработки данных</Link>. Рекламная подписка оформляется отдельно.
             </p>
           </div>
         </aside>

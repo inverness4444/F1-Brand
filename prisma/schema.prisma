@@ -105,6 +105,8 @@ model User {
   favoriteDriver    String?
   favoriteTeam      String?
   acceptedLegalAt   DateTime             @default(now())
+  profileConsentAt  DateTime?
+  profileConsentVersion String?
   createdAt         DateTime             @default(now())
   updatedAt         DateTime             @updatedAt
   accounts          Account[]
@@ -121,6 +123,7 @@ model User {
   notifications      SiteNotification[]
   statusChanges      OrderStatusChangeLog[] @relation("OrderStatusChangedBy")
   analyticsEvents    AnalyticsEvent[]
+  consentRecords     ConsentRecord[]
 
   @@index([role])
   @@index([status])
@@ -199,6 +202,7 @@ model Product {
   name             String
   description      String
   shortDescription String
+  compliance       Json?
   priceCents       Int
   oldPriceCents    Int?
   stock            Int?
@@ -417,6 +421,11 @@ model Order {
   usedBalance               Boolean              @default(false)
   stockDeducted             Boolean              @default(false)
   stockDeductedAt           DateTime?
+  deliveryDeadline          DateTime?
+  offerVersion              String?
+  legalHold                 Boolean @default(false)
+  offerSnapshot             String?
+  returnInstructions        String?
   createdAt                 DateTime             @default(now())
   updatedAt                 DateTime             @updatedAt
   user                      User?                @relation(fields: [userId], references: [id], onDelete: SetNull)
@@ -453,6 +462,7 @@ model OrderItem {
   productType      String
   productKind      String
   requiresShipping Boolean         @default(true)
+  productInfoSnapshot Json?
   color            String
   size             String
   quantity         Int
@@ -507,6 +517,11 @@ model NewsletterSubscriber {
   email     String                     @unique
   status    NewsletterSubscriberStatus @default(ACTIVE)
   source    String?
+  dataConsentAt DateTime?
+  adsConsentAt DateTime?
+  consentVersion String?
+  unsubscribedAt DateTime?
+  consentRecords ConsentRecord[]
   createdAt DateTime                   @default(now())
   updatedAt DateTime                   @updatedAt
 
@@ -514,6 +529,26 @@ model NewsletterSubscriber {
   @@index([source])
   @@index([createdAt])
   @@index([status, createdAt])
+}
+
+model ConsentRecord {
+  id                     String   @id @default(cuid())
+  kind                   String
+  documentVersion        String
+  documentText           String
+  legalHold              Boolean @default(false)
+  source                 String
+  subjectKey             String?
+  grantedAt              DateTime @default(now())
+  revokedAt              DateTime?
+  userId                 String?
+  newsletterSubscriberId String?
+  user                   User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  subscriber             NewsletterSubscriber? @relation(fields: [newsletterSubscriberId], references: [id], onDelete: SetNull)
+
+  @@index([userId, kind, revokedAt])
+  @@index([newsletterSubscriberId, kind, revokedAt])
+  @@index([revokedAt])
 }
 
 model Payment {

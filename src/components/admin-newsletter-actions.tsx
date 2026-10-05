@@ -67,14 +67,14 @@ export function AdminNewsletterBulkActions({ activeCount }: { activeCount: numbe
         cache: "no-store",
       });
       const result = (await response.json().catch(() => null)) as
-        | { error?: string; subscribers?: Array<{ email: string }> }
+        | { error?: string; subscribers?: Array<{ email: string; unsubscribeUrl: string }> }
         | null;
 
       if (!response.ok) {
         throw new Error(result?.error ?? "Не удалось загрузить активных подписчиков.");
       }
 
-      const emails = result?.subscribers?.map((subscriber) => subscriber.email).filter(Boolean) ?? [];
+      const emails = result?.subscribers?.map((subscriber) => `${subscriber.email}\t${subscriber.unsubscribeUrl}`).filter(Boolean) ?? [];
 
       if (emails.length === 0) {
         pushToast("Активных подписчиков пока нет", "info");
@@ -82,7 +82,7 @@ export function AdminNewsletterBulkActions({ activeCount }: { activeCount: numbe
       }
 
       await writeClipboard(emails.join("\n"));
-      pushToast("Активные email скопированы", "success");
+      pushToast("Адреса и ссылки отказа скопированы", "success");
     } catch (error) {
       pushToast(getErrorMessage(error, "Не удалось скопировать активные email."), "error");
     } finally {
@@ -99,7 +99,7 @@ export function AdminNewsletterBulkActions({ activeCount }: { activeCount: numbe
         className="button-base button-secondary rounded-2xl"
       >
         {isCopyingAll ? <Loader2 className="size-4 animate-spin" aria-hidden="true" /> : <Copy className="size-4" />}
-        Скопировать все активные email
+        Скопировать адреса и ссылки отказа
       </button>
       <a
         href="/api/admin/newsletter-subscribers?status=ACTIVE&format=csv"

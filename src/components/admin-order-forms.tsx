@@ -23,6 +23,7 @@ import { AddressForm } from "@/components/address-form";
 import { Button } from "@/components/ui/button";
 
 type StatusValues = {
+  legalHold: boolean;
   status: AdminOrderStatus;
   paymentStatus: AdminPaymentStatus;
   fulfillmentStatus: AdminFulfillmentStatus;
@@ -59,6 +60,7 @@ export function AdminOrderStatusForm({ order }: { order: AdminOrderDetail }) {
   const router = useRouter();
   const pushToast = useToastStore((state) => state.pushToast);
   const [values, setValues] = useState<StatusValues>({
+    legalHold: order.legalHold,
     status: order.status,
     paymentStatus: order.paymentStatus,
     fulfillmentStatus: order.fulfillmentStatus,
@@ -150,6 +152,7 @@ export function AdminOrderStatusForm({ order }: { order: AdminOrderDetail }) {
             ))}
           </select>
         </label>
+        <label className="flex items-start gap-3 text-sm leading-6 text-slate-600 sm:col-span-3"><input type="checkbox" checked={values.legalHold} onChange={(event) => updateField("legalHold", event.target.checked)} className="mt-1 size-4" /><span>Есть спор / требование сохранить документы. Не удалять этот заказ по сроку хранения.</span></label>
         <label className="label-base sm:col-span-3">
           <span className="label-title">Комментарий к заказу</span>
           <textarea

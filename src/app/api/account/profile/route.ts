@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import { LEGAL_VERSION } from "@/lib/legal";
+import { consentRecordData } from "@/lib/server/legal-consents";
 import { normalizeEmail } from "@/lib/account-utils";
 import { profilePayloadSchema } from "@/lib/validation-schemas";
 import { getCurrentUser, toAuthUser } from "@/lib/server/auth";
@@ -44,16 +46,25 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: "Этот email уже используется." }, { status: 409 });
     }
 
-    const updatedUser = await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        name: input.name,
-        email,
-        phone: input.phone,
-        birthday: input.birthday ? new Date(`${input.birthday}T00:00:00.000Z`) : null,
-        favoriteDriver: input.favoriteDriver,
-        favoriteTeam: input.favoriteTeam,
-      },
+    const updatedUser = await prisma.$transaction(async (tx) => {
+      const existingConsent = await tx.consentRecord.findFirst({ where: { userId: user.id, kind: "profile", revokedAt: null, documentVersion: LEGAL_VERSION } });
+      if (!input.profileConsent || !existingConsent) {
+        await tx.consentRecord.updateMany({ where: { userId: user.id, kind: "profile", revokedAt: null }, data: { revokedAt: new Date() } });
+      }
+      if (input.profileConsent && !existingConsent) {
+        await tx.consentRecord.create({ data: { ...consentRecordData("profile", "/account/profile", email), userId: user.id } });
+      }
+      return tx.user.update({
+        where: { id: user.id },
+        data: {
+          name: input.name, email, phone: input.phone,
+          profileConsentAt: input.profileConsent ? existingConsent?.grantedAt ?? new Date() : null,
+          profileConsentVersion: input.profileConsent ? LEGAL_VERSION : null,
+          birthday: input.profileConsent && input.birthday ? new Date(`${input.birthday}T00:00:00.000Z`) : null,
+          favoriteDriver: input.profileConsent ? input.favoriteDriver : null,
+          favoriteTeam: input.profileConsent ? input.favoriteTeam : null,
+        },
+      });
     });
 
     return NextResponse.json({ user: toAuthUser(updatedUser) });

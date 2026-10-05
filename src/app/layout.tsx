@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Analytics } from "@vercel/analytics/next";
 import { Archivo, Manrope } from "next/font/google";
 
 import "@/app/globals.css";
@@ -12,7 +11,7 @@ import { TopAnnouncementBar } from "@/components/top-announcement-bar";
 import { defaultOgImage, getSiteUrl, publicRobots, siteName } from "@/lib/seo";
 
 const siteDescription =
-  "Velocity Club — магазин одежды и мерча в гоночном стиле: футболки, худи, аксессуары и motorsport-inspired streetwear для фанатов автоспорта.";
+  "Velocity Club — магазин одежды и мерча в гоночном стиле: футболки, худи, аксессуары и одежду в стиле автоспорта для фанатов автоспорта.";
 
 const headingFont = Archivo({
   subsets: ["latin"],
@@ -85,7 +84,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <main>{children}</main>
           <Footer />
         </Providers>
-        <Analytics />
       </body>
     </html>
   );

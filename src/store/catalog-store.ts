@@ -345,6 +345,7 @@ export function normalizeProduct(product: Product, existingProducts: Product[] =
     image,
     gallery: normalizeGallery(product.gallery ?? [], image, colorwayImages),
     description,
+    compliance: product.compliance ?? null,
     shortDescription:
       sanitizeText(product.shortDescription ?? "", {
         maxLength: SECURITY_LIMITS.catalogShortDescriptionMaxLength,

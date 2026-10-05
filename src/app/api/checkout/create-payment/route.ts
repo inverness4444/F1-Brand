@@ -8,12 +8,17 @@ import {
 } from "@/lib/server/cart";
 import { assertProtectedMutation, enforceRateLimit } from "@/lib/server/request-security";
 import type { CartSelection } from "@/lib/account-types";
+import { PublicApiError } from "@/lib/server/public-error";
 
 export const runtime = "nodejs";
 
 function withServerCartSelections(payload: unknown, selections: CartSelection[]) {
   if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
     return payload;
+  }
+
+  if (selections.length === 0) {
+    throw new PublicApiError("Корзина пуста. Добавьте товары и повторите оформление.", 409);
   }
 
   return {

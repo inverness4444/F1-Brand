@@ -5,7 +5,7 @@ import type {
   AnalyticsEntityType,
   AnalyticsEventType,
 } from "@/lib/analytics";
-import { storageKeys } from "@/lib/browser-storage";
+import { hasAnalyticsConsent } from "@/lib/analytics-consent";
 import { buildCsrfHeaders } from "@/lib/security-utils";
 
 type AnalyticsMetadata = Record<string, string | number | boolean | null | Array<string | number | boolean | null>>;
@@ -17,26 +17,6 @@ type TrackAnalyticsEventInput = {
   entityName?: string | null;
   metadata?: AnalyticsMetadata | null;
 };
-
-function getSessionId() {
-  if (typeof window === "undefined") {
-    return null;
-  }
-
-  const existingSessionId = window.localStorage.getItem(storageKeys.analyticsSession);
-
-  if (existingSessionId) {
-    return existingSessionId;
-  }
-
-  const nextSessionId =
-    typeof window.crypto?.randomUUID === "function"
-      ? window.crypto.randomUUID()
-      : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-
-  window.localStorage.setItem(storageKeys.analyticsSession, nextSessionId);
-  return nextSessionId;
-}
 
 function getDeviceType(): AnalyticsDeviceType {
   if (typeof window === "undefined") {
@@ -57,19 +37,20 @@ function getDeviceType(): AnalyticsDeviceType {
 }
 
 export function trackAnalyticsEvent(input: TrackAnalyticsEventInput) {
-  if (typeof window === "undefined") {
+  if (typeof window === "undefined" || !hasAnalyticsConsent()) {
     return;
   }
 
   const payload = {
     ...input,
-    sessionId: getSessionId(),
-    path: `${window.location.pathname}${window.location.search}`,
-    referrer: document.referrer || null,
+    sessionId: null,
+    path: window.location.pathname,
+    referrer: document.referrer ? new URL(document.referrer).origin : null,
     deviceType: getDeviceType(),
   };
 
   window.setTimeout(() => {
+    if (!hasAnalyticsConsent()) return;
     void fetch("/api/analytics/events", {
       method: "POST",
       headers: {

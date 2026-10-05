@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 export function SearchField({
   value,
   onChange,
-  placeholder = "Search ...",
+  placeholder = "Поиск…",
   className,
   inputClassName,
   iconClassName,

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
+import { PublicApiError } from "@/lib/server/public-error";
 
 const SENSITIVE_ERROR_PATTERNS = [
   /prisma/i,
@@ -34,6 +35,7 @@ function getSafeErrorMessage(error: Error, fallback: string, status: number) {
 }
 
 export function apiError(error: unknown, fallback = "Не удалось выполнить запрос.", status = 500) {
+  if (error instanceof PublicApiError) return noStoreJson({ error: error.message }, { status: error.status });
   if (error instanceof ZodError) {
     return NextResponse.json({ error: "Переданы некорректные данные.", issues: error.issues }, { status: 400 });
   }

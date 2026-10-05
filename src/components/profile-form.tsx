@@ -1,6 +1,8 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
+import Link from "next/link";
+import { LEGAL_VERSION } from "@/lib/legal";
 import { useState } from "react";
 
 import { favoriteDrivers2026, favoriteTeams2026 } from "@/lib/account-constants";
@@ -28,6 +30,7 @@ export function ProfileForm({ user }: { user: AuthUser }) {
   const [birthday, setBirthday] = useState(user.birthday ?? "");
   const [favoriteDriver, setFavoriteDriver] = useState(user.favoriteDriver ?? "");
   const [favoriteTeam, setFavoriteTeam] = useState(user.favoriteTeam ?? "");
+  const [profileConsent, setProfileConsent] = useState(user.profileConsentGranted ?? false);
   const [isSaving, setIsSaving] = useState(false);
   const [errors, setErrors] = useState<ProfileErrors>({});
 
@@ -40,9 +43,11 @@ export function ProfileForm({ user }: { user: AuthUser }) {
         name,
         email,
         phone,
-        birthday: birthday || null,
-        favoriteDriver: favoriteDriver || null,
-        favoriteTeam: favoriteTeam || null,
+        birthday: profileConsent ? birthday || null : null,
+        favoriteDriver: profileConsent ? favoriteDriver || null : null,
+        favoriteTeam: profileConsent ? favoriteTeam || null : null,
+        profileConsent,
+        consentVersion: LEGAL_VERSION,
       });
       setErrors({});
       await userService.updateProfile(user.id, payload);
@@ -114,6 +119,7 @@ export function ProfileForm({ user }: { user: AuthUser }) {
           <span className="label-title">Дата рождения</span>
           <input
             type="date"
+            disabled={!profileConsent}
             value={birthday}
             onChange={(event) => setBirthday(event.target.value)}
             className="field-base"
@@ -124,6 +130,7 @@ export function ProfileForm({ user }: { user: AuthUser }) {
           <span className="label-title">Любимый пилот</span>
           <select
             value={favoriteDriver}
+            disabled={!profileConsent}
             onChange={(event) => setFavoriteDriver(event.target.value)}
             className="field-base"
           >
@@ -140,6 +147,7 @@ export function ProfileForm({ user }: { user: AuthUser }) {
           <span className="label-title">Любимая команда</span>
           <select
             value={favoriteTeam}
+            disabled={!profileConsent}
             onChange={(event) => setFavoriteTeam(event.target.value)}
             className="field-base"
           >
@@ -153,6 +161,10 @@ export function ProfileForm({ user }: { user: AuthUser }) {
         </label>
       </div>
 
+      <label className="mt-6 flex items-start gap-3 text-sm leading-6 text-slate-600">
+        <input type="checkbox" checked={profileConsent} onChange={(event) => setProfileConsent(event.target.checked)} className="mt-1 size-4 shrink-0" />
+        <span>Даю отдельное <Link href="/consent/profile" target="_blank" className="underline">согласие на персонализацию</Link> с использованием даты рождения, пилота и команды. Необязательно. Чтобы отозвать согласие и удалить эти поля, выключите его и сохраните профиль.</span>
+      </label>
       {errors.form ? (
         <div className="mt-5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {errors.form}

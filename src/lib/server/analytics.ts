@@ -1,6 +1,9 @@
 import "server-only";
 
 import type { Prisma } from "@prisma/client";
+import { cookies } from "next/headers";
+import { analyticsConsentId } from "@/lib/server/analytics-consent";
+import { ANALYTICS_CONSENT_COOKIE_NAME, COOKIE_CONSENT_COOKIE_NAME } from "@/lib/cookie-constants";
 import type { NextRequest } from "next/server";
 
 import type {
@@ -95,11 +98,18 @@ export function getDeviceTypeFromUserAgent(userAgent: string | null | undefined)
 }
 
 export function getRequestPath(request: NextRequest) {
-  return `${request.nextUrl.pathname}${request.nextUrl.search}`;
+  return request.nextUrl.pathname;
 }
 
 export async function recordAnalyticsEvent(input: RecordAnalyticsEventInput) {
   try {
+    const cookieStore = await cookies();
+    if (cookieStore.get(COOKIE_CONSENT_COOKIE_NAME)?.value !== "all") return false;
+    const consentId = analyticsConsentId(cookieStore.get(ANALYTICS_CONSENT_COOKIE_NAME)?.value);
+    if (!consentId) return false;
+    const since = new Date(Date.now() - 180 * 24 * 60 * 60 * 1000);
+    const consent = await prisma.consentRecord.findFirst({ where: { id: consentId, kind: "analytics", revokedAt: null, grantedAt: { gte: since } } });
+    if (!consent) return false;
     if (await shouldExcludeAnalyticsEvent(input)) {
       return true;
     }
@@ -110,10 +120,10 @@ export async function recordAnalyticsEvent(input: RecordAnalyticsEventInput) {
         entityType: input.entityType,
         entityId: sanitizeOptionalIdentifier(input.entityId),
         entityName: sanitizeOptionalText(input.entityName, 180),
-        userId: sanitizeOptionalIdentifier(input.userId),
-        sessionId: sanitizeOptionalIdentifier(input.sessionId),
-        path: sanitizeOptionalText(input.path, 500) ?? "/",
-        referrer: sanitizeOptionalText(input.referrer, 500),
+        userId: null,
+        sessionId: consentId,
+        path: sanitizeOptionalText(input.path?.split("?")[0], 500) ?? "/",
+        referrer: null,
         deviceType: input.deviceType ?? "desktop",
         metadata: input.metadata ? (input.metadata as Prisma.InputJsonValue) : undefined,
       },

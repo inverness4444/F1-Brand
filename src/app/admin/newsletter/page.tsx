@@ -9,6 +9,7 @@ import {
   adminNewsletterSubscriberStatusOptions,
 } from "@/lib/admin-constants";
 import { formatDateTime } from "@/lib/account-utils";
+import { newsletterEligibilityWhere } from "@/lib/server/newsletter";
 import { prisma } from "@/lib/prisma";
 import { createPrivateMetadata } from "@/lib/seo";
 import { sanitizeSearchQuery } from "@/lib/security-utils";
@@ -71,7 +72,7 @@ export default async function AdminNewsletterPage({ searchParams }: PageProps) {
     }),
     prisma.newsletterSubscriber.count({ where }),
     prisma.newsletterSubscriber.count(),
-    prisma.newsletterSubscriber.count({ where: { status: "ACTIVE" } }),
+    prisma.newsletterSubscriber.count({ where: newsletterEligibilityWhere() }),
   ]);
   const paginationParams = {
     q: params.q || undefined,
@@ -89,7 +90,7 @@ export default async function AdminNewsletterPage({ searchParams }: PageProps) {
                 Подписчики на новости
               </h2>
               <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600">
-                Email-адреса для ручной рассылки. Автоматическая отправка писем не подключена.
+                Для рассылки доступны только адреса с двумя действующими согласиями. Старые подписки без доказательств согласия в выгрузку не попадают. Перед каждой отправкой получите свежий список и включите персональную ссылку отказа из CSV в каждое письмо. Автоматическая отправка не подключена.
               </p>
             </div>
             <div className="grid gap-3 sm:grid-cols-3">
@@ -167,12 +168,12 @@ export default async function AdminNewsletterPage({ searchParams }: PageProps) {
                     </td>
                     <td className="px-5 py-4">
                       <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
-                        {adminNewsletterSubscriberStatusLabel[subscriber.status]}
+                        {subscriber.status === "ACTIVE" && (!subscriber.dataConsentAt || !subscriber.adsConsentAt) ? "Нет согласий — отправка запрещена" : adminNewsletterSubscriberStatusLabel[subscriber.status]}
                       </span>
                     </td>
                     <td className="px-5 py-4 text-slate-600">{subscriber.source || "—"}</td>
                     <td className="px-5 py-4 text-right">
-                      <CopySubscriberEmailButton email={subscriber.email} />
+                      {subscriber.dataConsentAt && subscriber.adsConsentAt && subscriber.status === "ACTIVE" ? <CopySubscriberEmailButton email={subscriber.email} /> : null}
                     </td>
                   </tr>
                 ))}

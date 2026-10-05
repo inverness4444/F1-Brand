@@ -91,7 +91,7 @@ export function HeaderSearchPanel({
     <div className="grid min-h-[28rem] grid-cols-[15rem_minmax(0,1fr)]">
       <div className="border-r border-[var(--line)] bg-[#f5f4f0] px-5 py-5">
         <p className="text-[0.82rem] font-semibold text-[#111111]">
-          {normalizedQuery ? "Suggested Searches" : "Popular Searches"}
+          {normalizedQuery ? "Подходящие запросы" : "Популярные запросы"}
         </p>
         <div className="mt-4 space-y-2">
           {desktopSearchSuggestions.slice(0, 10).map((item) => (

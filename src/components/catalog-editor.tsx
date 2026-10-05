@@ -3,6 +3,7 @@
 import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { Download, Eye, EyeOff, ImagePlus, Loader2, Plus, RotateCcw, Save, Search, Trash2, Upload } from "lucide-react";
+import { ProductComplianceEditor } from "@/components/product-compliance-editor";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import {
@@ -1537,6 +1538,7 @@ export function CatalogEditor() {
                   )}
                 </div>
 
+                <ProductComplianceEditor product={draft} onChange={(value) => updateDraft("compliance", value)} />
                 <label className="space-y-2">
                   <span className="text-sm font-medium text-slate-900">Описание товара</span>
                   <textarea

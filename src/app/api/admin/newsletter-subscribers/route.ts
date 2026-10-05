@@ -1,6 +1,7 @@
 import type { NewsletterSubscriberStatus, Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
+import { newsletterEligibilityWhere, newsletterUnsubscribeUrl } from "@/lib/server/newsletter";
 import { prisma } from "@/lib/prisma";
 import { apiError, noStoreJson } from "@/lib/server/api";
 import { requireAdminApiUser } from "@/lib/server/admin-auth";
@@ -31,7 +32,7 @@ function subscriberWhere(searchParams: URLSearchParams): Prisma.NewsletterSubscr
     where.status = status;
   }
 
-  return where;
+  return { AND: [where, newsletterEligibilityWhere()] };
 }
 
 function csvCell(value: string | null | undefined) {
@@ -41,19 +42,21 @@ function csvCell(value: string | null | undefined) {
 
 function subscribersCsv(
   subscribers: Array<{
+    id: string;
     email: string;
     status: string;
     source: string | null;
     createdAt: Date;
   }>,
 ) {
-  const header = ["email", "status", "createdAt", "source"];
+  const header = ["email", "status", "createdAt", "source", "unsubscribeUrl"];
   const rows = subscribers.map((subscriber) =>
     [
       csvCell(subscriber.email),
       csvCell(subscriber.status),
       csvCell(subscriber.createdAt.toISOString()),
       csvCell(subscriber.source),
+      csvCell(newsletterUnsubscribeUrl(subscriber.id)),
     ].join(","),
   );
 
@@ -80,6 +83,7 @@ export async function GET(request: NextRequest) {
     const subscribers = await prisma.newsletterSubscriber.findMany({
       where,
       select: {
+        id: true,
         email: true,
         status: true,
         source: true,
@@ -103,6 +107,7 @@ export async function GET(request: NextRequest) {
         email: subscriber.email,
         status: subscriber.status,
         source: subscriber.source,
+        unsubscribeUrl: newsletterUnsubscribeUrl(subscriber.id),
         createdAt: subscriber.createdAt.toISOString(),
       })),
     });

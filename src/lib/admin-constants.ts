@@ -1,4 +1,5 @@
 export const adminNavigation = [
+  { href: "/admin/compliance", label: "Готовность магазина" },
   { href: "/admin/products", label: "Редактор каталога" },
   { href: "/admin/users", label: "Пользователи" },
   { href: "/admin/orders", label: "Заказы" },

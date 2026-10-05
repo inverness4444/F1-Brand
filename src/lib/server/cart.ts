@@ -12,6 +12,7 @@ import { prisma } from "@/lib/prisma";
 import { SECURITY_LIMITS } from "@/lib/security-utils";
 import { hashSessionToken } from "@/lib/server/auth";
 import { cartSelectionSchema } from "@/lib/validation-schemas";
+import { PublicApiError } from "@/lib/server/public-error";
 
 const GUEST_CART_MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
 const GUEST_CART_TOKEN_REGEX = /^[a-z0-9_-]{32,128}$/i;
@@ -212,13 +213,20 @@ async function replaceCartItems(
   items: CartSelection[],
   target: "user" | "guest",
 ) {
+  const normalizedItems = normalizeCartSelections(items);
+  const resolvedItems = await resolveAvailableCartItems(tx, normalizedItems);
+  if (resolvedItems.length !== normalizedItems.length) {
+    throw new PublicApiError("Выбранный товар или вариант недоступен. Обновите корзину и попробуйте снова.", 409);
+  }
+  if (resolvedItems.some((item, index) => item.quantity !== normalizedItems[index].quantity)) {
+    throw new PublicApiError("Для выбранного количества недостаточно товара на складе. Уменьшите количество в корзине.", 409);
+  }
+
   if (target === "user") {
     await tx.cartItem.deleteMany({ where: { cartId } });
   } else {
     await tx.guestCartItem.deleteMany({ where: { cartId } });
   }
-
-  const resolvedItems = await resolveAvailableCartItems(tx, items);
 
   if (resolvedItems.length === 0) {
     return;

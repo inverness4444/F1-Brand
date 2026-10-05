@@ -10,12 +10,17 @@
     "typecheck": "tsc --noEmit -p tsconfig.typecheck.json",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
     "db:seed": "tsx prisma/seed.ts",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "catalog:sync": "NODE_PATH=./node_modules/next/dist/compiled node --conditions=react-server --import tsx scripts/sync-catalog.ts",
+    "legal:check": "tsx scripts/legal-check.ts",
+    "data:retention": "tsx scripts/retention.ts",
+    "test:legal": "tsx --test tests/legal.test.ts",
+    "test:legal:integration": "tsx tests/legal-integration.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",
-    "@vercel/analytics": "^2.0.1",
     "bcryptjs": "^3.0.3",
     "clsx": "^2.1.1",
     "lucide-react": "^0.511.0",

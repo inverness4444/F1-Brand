@@ -1,6 +1,7 @@
 import "server-only";
+import { productComplianceSchema } from "@/lib/validation-schemas";
 
-import type { Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { unstable_cache } from "next/cache";
 
 import type {
@@ -280,6 +281,7 @@ export function productFromDb(product: DbProduct, options: CollectionReadOptions
   ].filter((value): value is string => Boolean(value)));
   return {
     id: product.id,
+    compliance: product.compliance ? productComplianceSchema.parse(product.compliance) : null,
     slug: product.slug,
     name: product.name,
     category: asCategory(product.category?.name),
@@ -355,7 +357,7 @@ async function readCatalogProductsFresh() {
       ],
     });
 
-    return products.map((product) => productFromDb(product));
+    return filterPublicProducts(products.map((product) => productFromDb(product)));
   } catch (error) {
     if (!shouldFallbackToFileCatalog()) {
       throw error;
@@ -589,6 +591,7 @@ async function deleteProductFromFileCatalog(productId: string) {
 
   return {
     id: product.id,
+    compliance: product.compliance ? productComplianceSchema.parse(product.compliance) : null,
     slug: product.slug,
   };
 }
@@ -683,28 +686,28 @@ export async function readCatalogCollectionsFromDb(options: CollectionReadOption
   return readCachedVisibleCatalogCollections();
 }
 
-async function ensureCategory(category: CatalogCategory) {
+async function ensureCategory(category: CatalogCategory, db: Prisma.TransactionClient = prisma) {
   const slug = slugify(category);
-  return prisma.category.upsert({
+  return db.category.upsert({
     where: { slug },
     create: { id: slug, slug, name: category },
     update: { name: category },
   });
 }
 
-async function ensureCollection(name: string, visible?: boolean) {
+async function ensureCollection(name: string, visible?: boolean, db: Prisma.TransactionClient = prisma) {
   const slug = slugify(name || "collection");
   const collectionName = name || "Collection";
   const visibilityUpdate = typeof visible === "boolean" ? { visible } : {};
 
-  const collection = await prisma.collection.upsert({
+  const collection = await db.collection.upsert({
     where: { slug },
     create: { id: slug, slug, name: collectionName, visible: visible ?? true },
     update: { name: collectionName, ...visibilityUpdate },
   });
 
   if (typeof visible === "boolean") {
-    await prisma.collection.updateMany({
+    await db.collection.updateMany({
       where: {
         name: collectionName,
       },
@@ -717,8 +720,8 @@ async function ensureCollection(name: string, visible?: boolean) {
   return collection;
 }
 
-async function ensureSize(value: ProductSize) {
-  return prisma.size.upsert({
+async function ensureSize(value: ProductSize, db: Prisma.TransactionClient = prisma) {
+  return db.size.upsert({
     where: { value },
     create: {
       id: slugify(value),
@@ -732,8 +735,8 @@ async function ensureSize(value: ProductSize) {
   });
 }
 
-async function ensureColor(value: ProductColor) {
-  return prisma.color.upsert({
+async function ensureColor(value: ProductColor, db: Prisma.TransactionClient = prisma) {
+  return db.color.upsert({
     where: { value },
     create: {
       id: slugify(value),
@@ -750,13 +753,13 @@ function skuFor(product: Product, size: ProductSize, color: ProductColor) {
   return `${product.slug}-${size}-${color}`.toUpperCase().replace(/[^A-Z0-9]+/g, "-");
 }
 
-async function createUniqueProductSlug(baseSlug: string, productId: string) {
+async function createUniqueProductSlug(baseSlug: string, productId: string, db: Prisma.TransactionClient = prisma) {
   const normalizedBase = slugify(baseSlug) || "product";
   let candidate = normalizedBase;
   let index = 2;
 
   while (true) {
-    const existing = await prisma.product.findUnique({
+    const existing = await db.product.findUnique({
       where: { slug: candidate },
       select: { id: true },
     });
@@ -794,188 +797,201 @@ function variantKey(size: ProductSize, color: ProductColor) {
   return `${size}::${color}`;
 }
 
-export async function upsertProductFromCatalogPayload(product: Product) {
-  if (isFileCatalogForced()) {
-    return upsertProductInFileCatalog(product);
-  }
+export async function upsertProductInDatabase(product: Product) {
+  return prisma.$transaction(async (tx) => {
+    const category = await ensureCategory(product.category, tx);
+    const primaryCollection = product.collection ? await ensureCollection(product.collection, undefined, tx) : null;
+    const slug = await createUniqueProductSlug(product.slug || product.name, product.id, tx);
+    const status = product.status ?? (product.badge === "OutOfStock" ? "ARCHIVED" : "ACTIVE");
+    const gallery = [...new Set(product.gallery.filter((url) => url && url !== product.image))];
+    const colorwayImages = Object.entries(product.colorwayImages ?? {})
+      .filter((entry): entry is [ProductColor, string] => Boolean(entry[1]));
+    const variantInputs = new Map(
+      (product.variants ?? []).map((variant) => [variantKey(variant.size, variant.color), variant]),
+    );
 
-  const category = await ensureCategory(product.category);
-  const primaryCollection = product.collection ? await ensureCollection(product.collection) : null;
-  const slug = await createUniqueProductSlug(product.slug || product.name, product.id);
-  const status = product.status ?? (product.badge === "OutOfStock" ? "ARCHIVED" : "ACTIVE");
-  const gallery = [...new Set(product.gallery.filter((url) => url && url !== product.image))];
-  const colorwayImages = Object.entries(product.colorwayImages ?? {})
-    .filter((entry): entry is [ProductColor, string] => Boolean(entry[1]));
-  const variantInputs = new Map(
-    (product.variants ?? []).map((variant) => [variantKey(variant.size, variant.color), variant]),
-  );
-
-  const savedProduct = await prisma.product.upsert({
-    where: { id: product.id },
-    create: {
-      id: product.id,
-      slug,
-      name: product.name,
-      description: product.description,
-      shortDescription: product.shortDescription,
-      priceCents: product.price,
-      oldPriceCents: product.oldPrice ?? null,
-      stock: product.stock ?? null,
-      designColors: product.colors,
-      colorways: product.colorways ?? [],
-      status,
-      badge: product.badge,
-      type: product.type,
-      gender: product.gender,
-      productKind: product.productType,
-      requiresShipping: product.requiresShipping,
-      popularity: product.popularity,
-      categoryId: category.id,
-      collectionId: primaryCollection?.id,
-      driverName: product.driverName,
-      driverSlug: product.driverSlug,
-      teamName: product.teamName,
-      teamSlug: product.teamSlug,
-      legendName: product.legendName,
-      legendSlug: product.legendSlug,
-      number: product.number,
-      hexPalette: product.hexPalette,
-    },
-    update: {
-      slug,
-      name: product.name,
-      description: product.description,
-      shortDescription: product.shortDescription,
-      priceCents: product.price,
-      oldPriceCents: product.oldPrice ?? null,
-      stock: product.stock ?? null,
-      designColors: product.colors,
-      colorways: product.colorways ?? [],
-      status,
-      badge: product.badge,
-      type: product.type,
-      gender: product.gender,
-      productKind: product.productType,
-      requiresShipping: product.requiresShipping,
-      popularity: product.popularity,
-      categoryId: category.id,
-      collectionId: primaryCollection?.id,
-      driverName: product.driverName,
-      driverSlug: product.driverSlug,
-      teamName: product.teamName,
-      teamSlug: product.teamSlug,
-      legendName: product.legendName,
-      legendSlug: product.legendSlug,
-      number: product.number,
-      hexPalette: product.hexPalette,
-    },
-  });
-
-  await prisma.productImage.deleteMany({ where: { productId: savedProduct.id } });
-  await prisma.productImage.createMany({
-    data: [
-      {
-        productId: savedProduct.id,
-        url: product.image,
-        alt: product.name,
-        color: null,
-        isPrimary: true,
-        sortOrder: 0,
-      },
-      ...gallery.map((url, index) => ({
-        productId: savedProduct.id,
-        url,
-        alt: product.name,
-        color: null,
-        isPrimary: false,
-        sortOrder: index + 1,
-      })),
-      ...colorwayImages.map(([color, url], index) => ({
-        productId: savedProduct.id,
-        url,
-        alt: `${product.name} — ${color}`,
-        color,
-        isPrimary: true,
-        sortOrder: gallery.length + index + 1,
-      })),
-    ],
-  });
-
-  await prisma.productCollection.deleteMany({ where: { productId: savedProduct.id } });
-  for (const collectionName of [...new Set([product.collection, ...product.collectionTags].filter(Boolean))]) {
-    const collection = await ensureCollection(collectionName);
-    await prisma.productCollection.upsert({
-      where: {
-        productId_collectionId: {
-          productId: savedProduct.id,
-          collectionId: collection.id,
-        },
-      },
+    const savedProduct = await tx.product.upsert({
+      where: { id: product.id },
       create: {
-        productId: savedProduct.id,
-        collectionId: collection.id,
+        id: product.id,
+        slug,
+        name: product.name,
+        description: product.description,
+        shortDescription: product.shortDescription,
+        compliance: product.compliance ? (product.compliance as unknown as Prisma.InputJsonValue) : Prisma.DbNull,
+        priceCents: product.price,
+        oldPriceCents: product.oldPrice ?? null,
+        stock: product.stock ?? null,
+        designColors: product.colors,
+        colorways: product.colorways ?? [],
+        status,
+        badge: product.badge,
+        type: product.type,
+        gender: product.gender,
+        productKind: product.productType,
+        requiresShipping: product.requiresShipping,
+        popularity: product.popularity,
+        categoryId: category.id,
+        collectionId: primaryCollection?.id,
+        driverName: product.driverName,
+        driverSlug: product.driverSlug,
+        teamName: product.teamName,
+        teamSlug: product.teamSlug,
+        legendName: product.legendName,
+        legendSlug: product.legendSlug,
+        number: product.number,
+        hexPalette: product.hexPalette,
       },
-      update: {},
+      update: {
+        slug,
+        name: product.name,
+        description: product.description,
+        shortDescription: product.shortDescription,
+        compliance: product.compliance ? (product.compliance as unknown as Prisma.InputJsonValue) : Prisma.DbNull,
+        priceCents: product.price,
+        oldPriceCents: product.oldPrice ?? null,
+        stock: product.stock ?? null,
+        designColors: product.colors,
+        colorways: product.colorways ?? [],
+        status,
+        badge: product.badge,
+        type: product.type,
+        gender: product.gender,
+        productKind: product.productType,
+        requiresShipping: product.requiresShipping,
+        popularity: product.popularity,
+        categoryId: category.id,
+        collectionId: primaryCollection?.id,
+        driverName: product.driverName,
+        driverSlug: product.driverSlug,
+        teamName: product.teamName,
+        teamSlug: product.teamSlug,
+        legendName: product.legendName,
+        legendSlug: product.legendSlug,
+        number: product.number,
+        hexPalette: product.hexPalette,
+      },
     });
-  }
 
-  const activeVariantIds: string[] = [];
-  const variantColorValues = product.colorways && product.colorways.length > 0
-    ? product.colorways
-    : [product.colors[0] ?? "Black"];
+    await tx.productImage.deleteMany({ where: { productId: savedProduct.id } });
+    await tx.productImage.createMany({
+      data: [
+        {
+          productId: savedProduct.id,
+          url: product.image,
+          alt: product.name,
+          color: null,
+          isPrimary: true,
+          sortOrder: 0,
+        },
+        ...gallery.map((url, index) => ({
+          productId: savedProduct.id,
+          url,
+          alt: product.name,
+          color: null,
+          isPrimary: false,
+          sortOrder: index + 1,
+        })),
+        ...colorwayImages.map(([color, url], index) => ({
+          productId: savedProduct.id,
+          url,
+          alt: `${product.name} — ${color}`,
+          color,
+          isPrimary: true,
+          sortOrder: gallery.length + index + 1,
+        })),
+      ],
+    });
 
-  for (const sizeValue of product.sizes) {
-    const size = await ensureSize(sizeValue);
-
-    for (const colorValue of variantColorValues) {
-      const color = await ensureColor(colorValue);
-      const variantInput = variantInputs.get(variantKey(sizeValue, colorValue));
-      const stock = product.stock ?? variantInput?.stock ?? (product.productType === "gift_certificate" ? 999 : 10);
-      const variant = await prisma.productVariant.upsert({
+    await tx.productCollection.deleteMany({ where: { productId: savedProduct.id } });
+    for (const collectionName of [...new Set([product.collection, ...product.collectionTags].filter(Boolean))]) {
+      const collection = await ensureCollection(collectionName, undefined, tx);
+      await tx.productCollection.upsert({
         where: {
-          productId_sizeId_colorId: {
+          productId_collectionId: {
             productId: savedProduct.id,
-            sizeId: size.id,
-            colorId: color.id,
+            collectionId: collection.id,
           },
         },
         create: {
           productId: savedProduct.id,
-          sizeId: size.id,
-          colorId: color.id,
-          sku: skuFor({ ...product, slug }, sizeValue, colorValue),
-          stock,
-          priceOverrideCents: variantInput?.priceOverride ?? null,
+          collectionId: collection.id,
         },
-        update: {
-          sku: skuFor({ ...product, slug }, sizeValue, colorValue),
-          stock,
-          priceOverrideCents: variantInput?.priceOverride ?? null,
-          active: true,
-        },
+        update: {},
       });
-      activeVariantIds.push(variant.id);
     }
+
+    const activeVariantIds: string[] = [];
+    const variantColorValues = product.colorways && product.colorways.length > 0
+      ? product.colorways
+      : [product.colors[0] ?? "Black"];
+
+    for (const sizeValue of product.sizes) {
+      const size = await ensureSize(sizeValue, tx);
+
+      for (const colorValue of variantColorValues) {
+        const color = await ensureColor(colorValue, tx);
+        const variantInput = variantInputs.get(variantKey(sizeValue, colorValue));
+        const stock = product.stock ?? variantInput?.stock ?? (product.productType === "gift_certificate" ? 999 : 10);
+        const variant = await tx.productVariant.upsert({
+          where: {
+            productId_sizeId_colorId: {
+              productId: savedProduct.id,
+              sizeId: size.id,
+              colorId: color.id,
+            },
+          },
+          create: {
+            productId: savedProduct.id,
+            sizeId: size.id,
+            colorId: color.id,
+            sku: skuFor({ ...product, slug }, sizeValue, colorValue),
+            stock,
+            priceOverrideCents: variantInput?.priceOverride ?? null,
+          },
+          update: {
+            sku: skuFor({ ...product, slug }, sizeValue, colorValue),
+            stock,
+            priceOverrideCents: variantInput?.priceOverride ?? null,
+            active: true,
+          },
+        });
+        activeVariantIds.push(variant.id);
+      }
+    }
+
+    await tx.productVariant.updateMany({
+      where: {
+        productId: savedProduct.id,
+        id: {
+          notIn: activeVariantIds,
+        },
+      },
+      data: {
+        active: false,
+      },
+    });
+
+    const refreshedProduct = await tx.product.findUniqueOrThrow({
+      where: { id: savedProduct.id },
+      include: dbProductInclude,
+    });
+
+    return productFromDb(refreshedProduct);
+  }, { timeout: 60_000 });
+}
+
+export async function upsertProductFromCatalogPayload(product: Product) {
+  if (isFileCatalogForced() && !isDatabaseConfigured()) {
+    return upsertProductInFileCatalog(product);
   }
 
-  await prisma.productVariant.updateMany({
-    where: {
-      productId: savedProduct.id,
-      id: {
-        notIn: activeVariantIds,
-      },
-    },
-    data: {
-      active: false,
-    },
-  });
-
-  const refreshedProduct = await prisma.product.findUniqueOrThrow({
-    where: { id: savedProduct.id },
-    include: dbProductInclude,
-  });
-
-  return productFromDb(refreshedProduct);
+  const savedProduct = await upsertProductInDatabase(product);
+  if (isFileCatalogForced()) {
+    // A file-backed storefront still needs the same product and variants in the order database.
+    return upsertProductInFileCatalog({ ...product, id: savedProduct.id, slug: savedProduct.slug });
+  }
+  return savedProduct;
 }
 
 export async function upsertCollectionFromCatalogPayload(
@@ -1127,7 +1143,7 @@ export async function upsertCollectionFromCatalogPayload(
 }
 
 export async function deleteProductFromDb(productId: string) {
-  if (isFileCatalogForced()) {
+  if (isFileCatalogForced() && !isDatabaseConfigured()) {
     return deleteProductFromFileCatalog(productId);
   }
 
@@ -1140,7 +1156,7 @@ export async function deleteProductFromDb(productId: string) {
   });
 
   if (!product) {
-    return null;
+    return isFileCatalogForced() ? deleteProductFromFileCatalog(productId) : null;
   }
 
   await prisma.product.update({
@@ -1158,7 +1174,7 @@ export async function deleteProductFromDb(productId: string) {
     },
   });
 
-  return product;
+  return isFileCatalogForced() ? deleteProductFromFileCatalog(productId) : product;
 }
 
 export async function deleteCollectionFromDb(collectionId: string) {
@@ -1186,7 +1202,7 @@ export async function deleteCollectionFromDb(collectionId: string) {
 }
 
 export async function replaceCatalogInDb(products: Product[], collections: CatalogCollection[]) {
-  if (isFileCatalogForced()) {
+  if (isFileCatalogForced() && !isDatabaseConfigured()) {
     await writeCatalogToFiles(products, collections);
     return;
   }
@@ -1198,7 +1214,7 @@ export async function replaceCatalogInDb(products: Product[], collections: Catal
   }
 
   for (const product of products) {
-    await upsertProductFromCatalogPayload(product);
+    await upsertProductInDatabase(product);
   }
 
   await prisma.product.updateMany({
@@ -1211,4 +1227,8 @@ export async function replaceCatalogInDb(products: Product[], collections: Catal
       status: "ARCHIVED",
     },
   });
+
+  if (isFileCatalogForced()) {
+    await writeCatalogToFiles(products, collections);
+  }
 }

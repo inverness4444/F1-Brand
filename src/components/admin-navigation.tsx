@@ -1,6 +1,6 @@
 "use client";
 
-import { BarChart3, Mail, Package, MapPinned, ReceiptText, Users } from "lucide-react";
+import { BarChart3, Mail, Package, MapPinned, ReceiptText, Users, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -8,6 +8,7 @@ import { adminNavigation } from "@/lib/admin-constants";
 import { cn } from "@/lib/utils";
 
 const iconMap = {
+  "/admin/compliance": ShieldCheck,
   "/admin/products": Package,
   "/admin/users": Users,
   "/admin/orders": ReceiptText,

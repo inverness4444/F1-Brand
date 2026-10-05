@@ -108,6 +108,7 @@ export type AdminOrderSummary = {
 };
 
 export type AdminOrderDetail = AdminOrderSummary & {
+  legalHold: boolean;
   items: AdminOrderItem[];
   amountPaidByBalance: number;
   amountPaidByExternalMethod: number;

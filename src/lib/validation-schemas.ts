@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { LEGAL_VERSION } from "@/lib/legal";
 
 import type {
   StoredUser,
@@ -191,8 +192,9 @@ export const registerPayloadSchema = z
       .min(8, "Пароль должен содержать минимум 8 символов.")
       .max(SECURITY_LIMITS.passwordMaxLength, "Пароль слишком длинный."),
     acceptedLegal: z.literal(true, {
-      errorMap: () => ({ message: "Подтвердите согласие с политикой и офертой." }),
+      errorMap: () => ({ message: "Примите пользовательское соглашение." }),
     }),
+    termsVersion: z.literal(LEGAL_VERSION),
   })
   .strict();
 
@@ -217,6 +219,8 @@ export const profilePayloadSchema = z.object({
     .refine((value) => value === null || /^\d{4}-\d{2}-\d{2}$/.test(value), "Укажите корректную дату."),
   favoriteDriver: optionalTextSchema(SECURITY_LIMITS.profileTextMaxLength).transform((value) => value || null),
   favoriteTeam: optionalTextSchema(SECURITY_LIMITS.profileTextMaxLength).transform((value) => value || null),
+  profileConsent: z.boolean(),
+  consentVersion: z.literal(LEGAL_VERSION),
 });
 
 export const adminUserUpdateSchema = z
@@ -302,6 +306,9 @@ const newsletterSourceSchema = z
 export const newsletterSubscriptionSchema = newsletterSchema
   .extend({
     source: newsletterSourceSchema,
+    dataConsent: z.literal(true, { errorMap: () => ({ message: "Дайте согласие на обработку почты для рассылки." }) }),
+    adsConsent: z.literal(true, { errorMap: () => ({ message: "Дайте отдельное согласие на получение рекламы." }) }),
+    consentVersion: z.literal(LEGAL_VERSION),
   })
   .strict();
 
@@ -439,6 +446,7 @@ export const authUserSchema = z.object({
   favoriteDriver: optionalTextSchema(SECURITY_LIMITS.profileTextMaxLength).transform((value) => value || null),
   favoriteTeam: optionalTextSchema(SECURITY_LIMITS.profileTextMaxLength).transform((value) => value || null),
   acceptedLegalAt: isoDateSchema,
+  profileConsentGranted: z.boolean().optional(),
   createdAt: isoDateSchema,
   updatedAt: isoDateSchema,
 });
@@ -520,6 +528,8 @@ export const orderItemSchema = z.object({
 });
 
 export const orderSchema = z.object({
+  deliveryDeadline: isoDateSchema.nullable().optional(),
+  offerVersion: z.string().nullable().optional(),
   id: z.string().transform((value) => sanitizeIdentifier(value, "")),
   orderNumber: z.string().transform((value) => sanitizeIdentifier(value.toUpperCase(), "")),
   userId: z
@@ -594,6 +604,8 @@ export const siteNotificationSchema = z.object({
 export const siteNotificationsSchema = z.array(siteNotificationSchema);
 
 export const checkoutPayloadSchema = z.object({
+  offerVersion: z.literal(LEGAL_VERSION),
+  deliveryDeadline: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable(),
   userId: z
     .string()
     .nullable()
@@ -610,6 +622,7 @@ export const checkoutPayloadSchema = z.object({
 
 export const adminOrderUpdateSchema = z
   .object({
+    legalHold: z.boolean().optional(),
     status: prismaOrderStatusSchema.optional(),
     paymentStatus: orderPaymentStatusSchema.optional(),
     fulfillmentStatus: orderFulfillmentStatusSchema.optional(),
@@ -631,7 +644,17 @@ export const persistedCartStateSchema = z
   })
   .passthrough();
 
+export const productComplianceSchema = z.object({
+  composition: optionalTextSchema(2000), manufacturer: optionalTextSchema(2000), manufacturerAddress: optionalTextSchema(2000),
+  countryOfOrigin: optionalTextSchema(200), careInstructions: optionalTextSchema(2000),
+  conformityKind: z.enum(["pending", "certificate", "declaration", "not_required"]),
+  conformityNumber: optionalTextSchema(300), conformityRegistryUrl: z.string().trim().max(2000), exemptionReason: optionalTextSchema(2000),
+  markingStatus: z.enum(["pending", "required_verified", "not_required"]), markingBasis: optionalTextSchema(2000),
+  rightsStatus: z.enum(["pending", "own", "licensed"]), rightsBasis: optionalTextSchema(2000),
+});
+
 export const productSchema = z.object({
+  compliance: productComplianceSchema.nullable().optional(),
   id: z.string().transform((value) => sanitizeIdentifier(value, "")),
   slug: z.string().transform((value) => sanitizeIdentifier(value, "")),
   name: requiredTextSchema(SECURITY_LIMITS.catalogNameMaxLength, "Укажите название товара."),

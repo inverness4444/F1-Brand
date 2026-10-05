@@ -91,6 +91,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
             }
           : {}),
         ...(input.comment !== undefined ? { comment: input.comment } : {}),
+        ...(input.legalHold !== undefined ? { legalHold: input.legalHold } : {}),
         ...("shippingAddress" in input
           ? {
               deliveryAddressSnapshot:

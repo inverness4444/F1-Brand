@@ -26,6 +26,7 @@ export type AuthUser = {
   favoriteDriver: string | null;
   favoriteTeam: string | null;
   acceptedLegalAt: string;
+  profileConsentGranted?: boolean;
   createdAt: string;
   updatedAt: string;
 };
@@ -51,6 +52,7 @@ export type RegisterPayload = {
   phone: string;
   password: string;
   acceptedLegal: boolean;
+  termsVersion: string;
 };
 
 export type LoginPayload = {
@@ -70,6 +72,8 @@ export type ProfilePayload = {
   birthday: string | null;
   favoriteDriver: string | null;
   favoriteTeam: string | null;
+  profileConsent: boolean;
+  consentVersion: string;
 };
 
 export type AddressInput = {
@@ -228,6 +232,8 @@ export type BalanceTransaction = {
 };
 
 export type Order = {
+  deliveryDeadline?: string | null;
+  offerVersion?: string | null;
   id: string;
   orderNumber: string;
   userId: string | null;
@@ -256,6 +262,8 @@ export type Order = {
 };
 
 export type CheckoutPayload = {
+  offerVersion: string;
+  deliveryDeadline: string | null;
   userId: string | null;
   customer: OrderCustomer;
   shippingAddress: OrderAddressSnapshot | null;

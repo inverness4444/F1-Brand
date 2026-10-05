@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import { COOKIE_CONSENT_COOKIE_NAME } from "@/lib/cookie-constants";
 import { analyticsEventPayloadSchema } from "@/lib/validation-schemas";
 import { getCurrentUser } from "@/lib/server/auth";
 import { apiError, noStoreJson } from "@/lib/server/api";
@@ -14,6 +15,9 @@ export const runtime = "nodejs";
 
 export async function POST(request: NextRequest) {
   try {
+    if (request.cookies.get(COOKIE_CONSENT_COOKIE_NAME)?.value !== "all") {
+      return noStoreJson({ ok: false }, { status: 403 });
+    }
     const rateLimit = await enforceRateLimit(request, "analytics-events", {
       maxAttempts: 240,
       windowMs: 5 * 60 * 1000,

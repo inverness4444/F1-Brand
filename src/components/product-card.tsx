@@ -204,7 +204,7 @@ function ProductCardComponent({
               <ProductBadgeTag badge={product.badge} className="mobile-product-badge" />
               {isGiftCertificate ? (
                 <span className="mobile-product-badge rounded-full border border-[#f0dcc9] bg-[#fff6ef] px-3 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-[#7b2220]">
-                  Digital Gift Card
+                  Электронный подарочный сертификат
                 </span>
               ) : null}
             </div>

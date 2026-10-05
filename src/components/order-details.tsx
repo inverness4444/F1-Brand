@@ -54,8 +54,10 @@ export function OrderDetails({
               </span>
             </div>
             <p className="mt-2 text-sm text-slate-500">Оформлен {formatDateTime(order.createdAt)}</p>
+            {order.deliveryDeadline ? <p className="mt-2 text-sm text-slate-600">Передача не позднее {new Intl.DateTimeFormat("ru-RU", { timeZone: "Europe/Moscow", dateStyle: "long" }).format(new Date(order.deliveryDeadline))}</p> : null}
           </div>
           <div className="flex flex-wrap gap-3">
+            <a href={`/api/account/orders/${encodeURIComponent(order.id)}/confirmation`} className="button-base button-secondary rounded-2xl">Скачать условия и возврат</a>
             {order.paymentStatus === "PENDING" && order.payment?.confirmationUrl ? (
               <a href={order.payment.confirmationUrl} className="button-base button-primary rounded-2xl">
                 Продолжить оплату
@@ -102,7 +104,7 @@ export function OrderDetails({
                   </Link>
                   {item.productKind === "gift_certificate" ? (
                     <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-[#7b2220]">
-                      <span>Digital Gift Card</span>
+                      <span>Электронный подарочный сертификат</span>
                       <span>Без доставки</span>
                       <span>Количество: {item.quantity}</span>
                     </div>

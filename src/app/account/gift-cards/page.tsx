@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { CreditCard, Gift, History, Wallet } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -100,6 +101,12 @@ export default function AccountGiftCardsPage() {
 
   return (
     <div className="space-y-5">
+      <div className="card-panel mb-5 space-y-3 p-5 text-sm leading-6 text-slate-600">
+        <p>Неиспользованная оплаченная сумма сертификата и её остаток на балансе подлежат денежному возврату по требованию. Активация не отменяет это право.</p>
+        <a href="mailto:velocityclub@mail.ru?subject=Возврат%20неиспользованной%20суммы%20сертификата" className="font-semibold underline">Запросить возврат денег</a> · <Link href="/returns" className="underline">Порядок возврата</Link>
+        <p>Укажите контакт аккаунта и номер покупки. Не отправляйте коды сертификатов в публичные сообщения.</p>
+      </div>
+
       <div className="card-panel p-5 sm:p-6">
         <p className="section-kicker">Баланс и сертификаты</p>
         <h2 className="mt-3 text-2xl font-semibold text-slate-900">Баланс и подарочные сертификаты</h2>

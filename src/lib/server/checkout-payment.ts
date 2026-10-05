@@ -1,5 +1,9 @@
 import "server-only";
 
+import { LEGAL_VERSION, offerText, returnInstructionsText } from "@/lib/legal";
+import { getDeliveryDeadline, canCheckoutWithDeliveryDeadline } from "@/lib/delivery-promise";
+import { PublicApiError } from "@/lib/server/public-error";
+import { assertCommerceReady } from "@/lib/server/legal-readiness";
 import crypto from "node:crypto";
 
 import type { Prisma, User } from "@prisma/client";
@@ -59,6 +63,7 @@ type CheckoutItem = {
   productType: string;
   productKind: string;
   requiresShipping: boolean;
+  productInfoSnapshot: Prisma.InputJsonValue | undefined;
   color: string;
   size: string;
   quantity: number;
@@ -140,6 +145,7 @@ function buildCheckoutItem(variant: CheckoutVariant, quantity: number): Checkout
     productType: variant.product.type,
     productKind: variant.product.productKind,
     requiresShipping: variant.product.requiresShipping,
+    productInfoSnapshot: variant.product.compliance ? variant.product.compliance as Prisma.InputJsonValue : undefined,
     color: variant.color.value,
     size: variant.size.value,
     quantity,
@@ -279,6 +285,7 @@ async function clearUserCart(userId: string | null | undefined) {
 
 export async function createCheckoutPayment(payloadInput: unknown, requestUrl: string, currentUser: User | null) {
   const payload = checkoutPayloadSchema.parse(payloadInput);
+  assertCommerceReady();
 
   if (!currentUser) {
     throw new Error("unauthorized");
@@ -309,6 +316,10 @@ export async function createCheckoutPayment(payloadInput: unknown, requestUrl: s
       throw new Error("Выберите способ доставки.");
     }
 
+    const deliveryDeadline = summary.requiresShipping ? getDeliveryDeadline() : null;
+    if (!canCheckoutWithDeliveryDeadline(summary.requiresShipping, deliveryDeadline)) throw new PublicApiError("Срок доставки нужно уточнить у поддержки до оплаты.", 409);
+    if (payload.deliveryDeadline !== deliveryDeadline) throw new PublicApiError("Срок доставки изменился. Обновите страницу и подтвердите условия заново.", 409);
+
     const balance = currentUser
       ? await tx.userBalance.upsert({
           where: { userId: currentUser.id },
@@ -332,6 +343,12 @@ export async function createCheckoutPayment(payloadInput: unknown, requestUrl: s
     const isPaidInternally = amountToPay === 0;
     const provider = amountToPay > 0 ? getYooKassaProviderMode() : "MOCK";
     const orderNumber = buildOrderNumber();
+    if (provider === "YOOKASSA" && !shouldSendReceipt()) throw new PublicApiError("Онлайн-оплата временно недоступна. Свяжитесь с поддержкой.", 503);
+    if (provider === "YOOKASSA" && items.some((item) => item.productKind === "gift_certificate" || (item.productInfoSnapshot as { markingStatus?: string } | undefined)?.markingStatus === "required_verified")) {
+      throw new PublicApiError("Для этой покупки свяжитесь с поддержкой: требуется оформление аванса или маркировки через онлайн-кассу.", 503);
+    }
+    // This integration cannot fiscalize advance offsets or marked goods correctly yet.
+    if (process.env.NODE_ENV === "production" && balanceUsage.amountPaidByBalance > 0) throw new PublicApiError("Для оплаты с баланса свяжитесь с поддержкой: необходимо оформить зачёт аванса и чек.", 503);
     const receiptRequired = shouldSendReceipt() && amountToPay > 0;
     const receipt = receiptRequired
       ? buildYooKassaReceipt({
@@ -346,6 +363,10 @@ export async function createCheckoutPayment(payloadInput: unknown, requestUrl: s
     const createdOrder = await tx.order.create({
       data: {
         orderNumber,
+        deliveryDeadline: deliveryDeadline ? new Date(`${deliveryDeadline}T20:59:59.999Z`) : null,
+        offerVersion: LEGAL_VERSION,
+        offerSnapshot: offerText(),
+        returnInstructions: returnInstructionsText(),
         userId: currentUser?.id,
         status: isPaidInternally ? "PAID" : "AWAITING_PAYMENT",
         paymentStatus: isPaidInternally ? "SUCCEEDED" : "NOT_STARTED",
@@ -383,6 +404,7 @@ export async function createCheckoutPayment(payloadInput: unknown, requestUrl: s
             productType: item.productType,
             productKind: item.productKind,
             requiresShipping: item.requiresShipping,
+            productInfoSnapshot: item.productInfoSnapshot,
             color: item.color,
             size: item.size,
             quantity: item.quantity,

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { InfoPageLayout, InfoSectionCard } from "@/components/info-pages";
+import { seller, sellerDescription } from "@/lib/legal";
 import { createPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = createPageMetadata({
@@ -13,10 +14,6 @@ export const metadata: Metadata = createPageMetadata({
 
 const socialLinks = [
   { label: "Telegram", href: "https://t.me/f1velocityclub" },
-  {
-    label: "Instagram",
-    href: "https://www.instagram.com/f1velocityclub?igsh=MWJ2ZmhoeHBuMHFkeg%3D%3D&utm_source=qr",
-  },
   { label: "TikTok", href: "https://www.tiktok.com/@f1velocityclub" },
   { label: "VK", href: "https://vk.ru/f1velocityclub" },
 ];
@@ -29,6 +26,8 @@ export default function ContactsPage() {
       description="Если у вас есть вопросы по заказу, доставке, возврату, размерам или наличию товара - напишите нам удобным способом."
     >
       <div className="grid gap-4">
+        <InfoSectionCard title="Продавец и владелец сайта" body={sellerDescription} />
+        <InfoSectionCard title="Претензии и возвраты" body={`Требования принимаются на ${seller.email}. Укажите номер заказа или иные сведения о покупке и контакт для ответа. ${seller.returnAddress ? `Адрес возврата: ${seller.returnAddress}; получатель: ${seller.returnRecipient || seller.name}.` : "Перед отправкой возврата получите адрес и сведения о получателе у поддержки."} Возврат возможен почтой или перевозчиком.`} />
         <InfoSectionCard
           title="Поддержка покупателей"
           body={
@@ -50,7 +49,7 @@ export default function ContactsPage() {
                   velocityclub@mail.ru
                 </Link>
               </p>
-              <p>Время ответа: ежедневно с 10:00 до 22:00</p>
+              <p>Время ответа: ежедневно с 10:00 до 22:00 по московскому времени</p>
             </div>
           }
         />

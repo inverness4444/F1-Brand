@@ -45,7 +45,7 @@ export function GiftCardVisual({
         <div className="flex items-start justify-between gap-3">
           <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-white/90">
             <WalletCards className="size-3.5" />
-            Digital Gift Card
+            Электронный подарочный сертификат
           </div>
           <Gift className={cn("text-white/85", compact ? "size-4" : "size-5")} />
         </div>

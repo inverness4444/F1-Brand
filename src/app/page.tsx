@@ -14,7 +14,7 @@ export const metadata = createPageMetadata({
   absoluteTitle: true,
   path: "/",
   description:
-    "Velocity Club — интернет-магазин одежды и мерча в гоночном стиле: футболки, худи, аксессуары, подарочные сертификаты и motorsport-inspired streetwear для фанатов автоспорта.",
+    "Velocity Club — интернет-магазин одежды и мерча в гоночном стиле: футболки, худи, аксессуары, подарочные сертификаты и одежду в стиле автоспорта для фанатов автоспорта.",
   image: "/og-default.jpg",
 });
 

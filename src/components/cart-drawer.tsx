@@ -240,7 +240,7 @@ export function CartDrawer() {
 
                           {entry.product.productType === "gift_certificate" ? (
                             <div className="mt-3 flex flex-wrap items-center gap-2 text-xs uppercase tracking-[0.14em] text-[#7b2220]">
-                              <span>Digital Gift Card</span>
+                              <span>Электронный подарочный сертификат</span>
                               <span>•</span>
                               <span>Без доставки</span>
                             </div>

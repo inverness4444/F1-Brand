@@ -43,6 +43,7 @@ function buildContentSecurityPolicy() {
 }
 
 const nextConfig: NextConfig = {
+  distDir: process.env.NEXT_DIST_DIR || ".next",
   experimental: {
     middlewareClientMaxBodySize: "64mb",
   },
@@ -92,6 +93,10 @@ const nextConfig: NextConfig = {
       {
         source: "/checkout/:path*",
         headers: [noIndexHeader],
+      },
+      {
+        source: "/newsletter/unsubscribe",
+        headers: [noIndexHeader, { key: "Referrer-Policy", value: "no-referrer" }],
       },
       {
         source: "/login",

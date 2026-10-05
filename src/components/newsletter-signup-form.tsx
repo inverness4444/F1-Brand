@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { LEGAL_VERSION } from "@/lib/legal";
 import { Loader2 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -46,6 +48,8 @@ export function NewsletterSignupForm({
   const pathname = usePathname();
   const pushToast = useToastStore((state) => state.pushToast);
   const [email, setEmail] = useState("");
+  const [dataConsent, setDataConsent] = useState(false);
+  const [adsConsent, setAdsConsent] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState(successMessage);
   const [submitted, setSubmitted] = useState(false);
@@ -59,6 +63,7 @@ export function NewsletterSignupForm({
     try {
       const payload = newsletterSubscriptionSchema.parse({
         email,
+        dataConsent, adsConsent, consentVersion: LEGAL_VERSION,
         source: source ?? defaultNewsletterSource(pathname),
       });
       const response = await fetch("/api/newsletter/subscribe", {
@@ -92,8 +97,8 @@ export function NewsletterSignupForm({
         },
       });
     } catch (nextError) {
-      const fieldErrors = getZodFieldErrors<"email">(nextError);
-      setError(fieldErrors.email ?? getErrorMessage(nextError, "Не удалось оформить подписку."));
+      const fieldErrors = getZodFieldErrors<"email" | "dataConsent" | "adsConsent" | "consentVersion">(nextError);
+      setError(fieldErrors.email ?? fieldErrors.dataConsent ?? fieldErrors.adsConsent ?? fieldErrors.consentVersion ?? getErrorMessage(nextError, "Не удалось оформить подписку."));
       setSubmitted(false);
       trackAnalyticsEvent({
         eventType: "newsletter_subscribe_error",
@@ -113,6 +118,7 @@ export function NewsletterSignupForm({
       <form onSubmit={handleSubmit} className={className}>
         <input
           type="email"
+          aria-label="Электронная почта для подписки"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           autoComplete="email"
@@ -133,6 +139,11 @@ export function NewsletterSignupForm({
           )}
         </button>
       </form>
+      <div className="mt-4 space-y-3 text-sm leading-6 text-[#5f615f]">
+        <label className="flex items-start gap-3"><input type="checkbox" checked={dataConsent} onChange={(event) => setDataConsent(event.target.checked)} className="mt-1 size-4 shrink-0" /><span>Даю <Link href="/consent/newsletter_data" target="_blank" className="underline underline-offset-4">согласие на обработку электронной почты для рассылки</Link>.</span></label>
+        <label className="flex items-start gap-3"><input type="checkbox" checked={adsConsent} onChange={(event) => setAdsConsent(event.target.checked)} className="mt-1 size-4 shrink-0" /><span>Отдельно соглашаюсь <Link href="/consent/newsletter_ads" target="_blank" className="underline underline-offset-4">получать рекламу и предложения Velocity Club</Link>.</span></label>
+        <p>Подписка добровольна. <Link href="/privacy" target="_blank" className="underline">Политика обработки данных</Link>. Отказ — по ссылке в письме или на velocityclub@mail.ru.</p>
+      </div>
 
       {error ? <p className="mt-3 text-sm text-red-700">{error}</p> : null}
       {submitted && !error ? <p className="mt-3 text-sm text-emerald-800">{message}</p> : null}

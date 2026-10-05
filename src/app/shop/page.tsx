@@ -23,7 +23,7 @@ export async function generateMetadata({ searchParams }: ShopPageProps): Promise
     title: "Каталог Velocity Club",
     products,
     fallback:
-      "Каталог Velocity Club: одежда и мерч в гоночном стиле, футболки, худи, аксессуары, подарочные сертификаты и motorsport-inspired streetwear сезона 2026.",
+      "Каталог Velocity Club: одежда и мерч в гоночном стиле, футболки, худи, аксессуары, подарочные сертификаты и одежду в стиле автоспорта сезона 2026.",
   });
 
   return createPageMetadata({

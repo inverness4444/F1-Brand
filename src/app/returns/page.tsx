@@ -1,52 +1,15 @@
 import type { Metadata } from "next";
-
 import { InfoCTA, InfoPageLayout, InfoSectionGrid } from "@/components/info-pages";
+import { returnSections, LEGAL_DATE, LEGAL_VERSION } from "@/lib/legal";
 import { createPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = createPageMetadata({
-  title: "Возврат",
-  path: "/returns",
-  description:
-    "Условия возврата и обмена товаров Velocity Club: сроки, сохранение товарного вида, брак, неправильный товар и оформление возврата.",
+  title: "Возврат и обмен", path: "/returns", description: "Возврат и обмен интернет-магазина Velocity Club.",
 });
 
-const returnSections = [
-  {
-    title: "Условия возврата",
-    body: "Возврат возможен, если товар не был в использовании, сохранён товарный вид, сохранены бирки и упаковка, а с момента получения прошло не более 14 дней.",
-  },
-  {
-    title: "Что нельзя вернуть",
-    body: "Возврат может быть недоступен для товаров, изготовленных индивидуально под заказ, если на них нет брака или ошибки со стороны магазина.",
-  },
-  {
-    title: "Если пришёл брак или неправильный товар",
-    body: "Если вы получили товар с браком, неправильный размер, цвет или модель — напишите нам. Мы заменим товар или вернём деньги.",
-  },
-  {
-    title: "Как оформить возврат",
-    body: "Свяжитесь с нами через Telegram или email, укажите номер заказа и причину возврата. Мы подскажем дальнейшие шаги.",
-  },
-  {
-    title: "Срок возврата денежных средств",
-    body: "После получения и проверки товара возврат денежных средств производится тем же способом, которым был оплачен заказ, если иной способ не согласован отдельно.",
-  },
-];
-
-export default function ReturnsPage() {
-  return (
-    <InfoPageLayout
-      title="Возврат"
-      path="/returns"
-      description="Вы можете оформить возврат или обмен товара, если он не подошёл по размеру, цвету или модели."
-    >
-      <InfoSectionGrid sections={returnSections} />
-      <InfoCTA
-        title="Остались вопросы?"
-        text="Подготовьте номер заказа и напишите нам — мы поможем с обменом или возвратом."
-        buttonLabel="Связаться с нами"
-        href="/contacts"
-      />
-    </InfoPageLayout>
-  );
+export default function LegalPage() {
+  return <InfoPageLayout title="Возврат и обмен" path="/returns" description={`Редакция от ${LEGAL_DATE}. Версия ${LEGAL_VERSION}.`}>
+    <InfoSectionGrid sections={returnSections} />
+    <InfoCTA title="Обращения покупателей" text="Напишите нам по вопросам заказа, возврата или обработки данных." buttonLabel="Контакты продавца" href="/contacts" />
+  </InfoPageLayout>;
 }

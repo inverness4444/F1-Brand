@@ -1,6 +1,7 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
+import { LEGAL_VERSION } from "@/lib/legal";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -70,6 +71,7 @@ export function RegisterForm() {
         password,
         confirmPassword,
         acceptedLegal,
+        termsVersion: LEGAL_VERSION,
       });
       void _confirmPassword;
 
@@ -188,9 +190,10 @@ export function RegisterForm() {
             className="mt-1 h-4 w-4 rounded border-slate-300 text-red-600 focus:ring-red-500"
           />
           <span>
-            Я согласен с политикой конфиденциальности и публичной офертой.
+            Я принимаю <Link href="/terms" target="_blank" className="underline underline-offset-4">пользовательское соглашение</Link>.
           </span>
         </label>
+        <p className="text-sm leading-6 text-slate-500">Данные аккаунта обрабатываются для работы личного кабинета и исполнения договора. <Link href="/privacy" target="_blank" className="underline underline-offset-4">Политика обработки данных</Link>. Регистрация не подписывает вас на рекламу.</p>
         {errors.acceptedLegal ? <span className="error-text block">{errors.acceptedLegal}</span> : null}
 
         {errors.form ? (

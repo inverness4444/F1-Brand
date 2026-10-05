@@ -6,12 +6,12 @@ export function NewsletterSection() {
   return (
     <section id="newsletter" className="mt-24 scroll-mt-28 px-4 sm:mt-28 sm:px-10 lg:px-[4.4rem]">
       <div className="grid min-h-[30rem] items-center gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1fr)] lg:gap-20 xl:gap-24">
-        <div className="max-w-[48rem]">
+        <div className="min-w-0 max-w-[48rem]">
           <h2 className="font-[var(--font-heading)] text-[clamp(2rem,3.2vw,3.4rem)] font-medium leading-[1.05] text-[#050505]">
             Подписка на новости
           </h2>
           <p className="mt-7 max-w-[38rem] text-[1.02rem] leading-8 text-[#343434] sm:text-[1.12rem] sm:leading-9">
-            Получайте закрытые предложения, ранние анонсы новых дропов и превью коллекций прямо на почту.
+            Получайте закрытые предложения, ранние анонсы новых выпусков и обзоры коллекций прямо на почту.
           </p>
 
           <NewsletterSignupForm

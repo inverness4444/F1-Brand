@@ -1,7 +1,9 @@
 import bcrypt from "bcryptjs";
+import { assertPersonalDataReady } from "@/lib/server/legal-readiness";
 import { NextRequest, NextResponse } from "next/server";
 
 import { normalizeEmail } from "@/lib/account-utils";
+import { consentRecordData } from "@/lib/server/legal-consents";
 import { registerPayloadSchema } from "@/lib/validation-schemas";
 import {
   attachSessionCookie,
@@ -26,6 +28,7 @@ export const runtime = "nodejs";
 export async function POST(request: NextRequest) {
   try {
     assertProtectedMutation(request);
+    assertPersonalDataReady();
     const rateLimit = await enforceRateLimit(request, "auth-register", {
       maxAttempts: 8,
       windowMs: 15 * 60 * 1000,
@@ -56,6 +59,8 @@ export async function POST(request: NextRequest) {
         phone: input.phone,
         passwordHash,
         role: "USER",
+        acceptedLegalAt: new Date(),
+        consentRecords: { create: consentRecordData("terms", "/register", email) },
         sessions: {
           create: {
             tokenHash: hashSessionToken(token),

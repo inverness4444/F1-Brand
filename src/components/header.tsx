@@ -362,7 +362,7 @@ export function Header() {
                   setOpenMenu(null);
                   setHoveredNavLabel(null);
                 }}
-                placeholder="Search ..."
+                placeholder="Поиск…"
                 className={cn(
                   "min-h-[2.85rem] w-[16rem] border-[#e3e2dc] pl-5 pr-2 shadow-none 2xl:w-[21rem]",
                   isTransparentDesktopSearch
@@ -479,7 +479,7 @@ export function Header() {
                   value={query}
                   onChange={(value) => setQuery(sanitizeSearchQuery(value))}
                   onSubmit={submitSearch}
-                  placeholder="Search ..."
+                  placeholder="Поиск…"
                   className="w-full"
                 />
               </div>
@@ -521,7 +521,7 @@ export function Header() {
                 onChange={(value) => setQuery(sanitizeSearchQuery(value))}
                 onSubmit={submitSearch}
                 onFocus={() => trackSearchOpen("mobile_drawer")}
-                placeholder="Search ..."
+                placeholder="Поиск…"
                 className="mobile-drawer-search mt-5 min-h-[3.75rem] pl-4 pr-3 sm:min-h-[4rem] sm:pl-5"
                 inputClassName="mobile-drawer-search-input text-base sm:text-base"
                 iconClassName="mobile-drawer-search-icon h-10 w-10"

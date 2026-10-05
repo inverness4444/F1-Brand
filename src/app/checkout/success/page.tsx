@@ -112,6 +112,11 @@ export default function CheckoutSuccessPage() {
           </div>
         </div>
 
+        {order ? <div className="card-panel space-y-3 p-5">
+          {order.deliveryDeadline ? <p>Передача заказа не позднее {new Intl.DateTimeFormat("ru-RU", { timeZone: "Europe/Moscow", dateStyle: "long" }).format(new Date(order.deliveryDeadline))}.</p> : null}
+          <a href={`/api/account/orders/${encodeURIComponent(order.id)}/confirmation`} className="font-semibold underline underline-offset-4">Скачать подтверждение заказа и правила возврата</a>
+          <p className="text-sm text-slate-500">Сохраните документ. Это подтверждение условий заказа; кассовый чек предоставляется отдельно.</p>
+        </div> : null}
         {order?.giftCertificatesIssued.length ? (
           <div className="card-panel p-5 sm:p-6">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
@@ -123,7 +128,7 @@ export default function CheckoutSuccessPage() {
                 </p>
               </div>
               <p className="text-sm leading-7 text-slate-500">
-                Код также будет отправлен на email после подключения backend/email service.
+                Сохраните код в личном кабинете или передайте получателю. Неиспользованную оплаченную сумму можно вернуть по обращению в поддержку.
               </p>
             </div>
 

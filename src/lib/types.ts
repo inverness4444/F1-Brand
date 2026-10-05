@@ -1,3 +1,5 @@
+import type { ProductCompliance } from "@/lib/product-compliance";
+
 export type CatalogCategory = "Pilots" | "Teams" | "Legends" | "Accessories" | "Essentials" | "Gifts";
 
 export type CommerceProductKind = "standard" | "gift_certificate";
@@ -86,6 +88,7 @@ export type Product = {
   number?: number;
   hexPalette: string[];
   variants?: ProductVariant[];
+  compliance?: ProductCompliance | null;
 };
 
 export type ProductVariant = {

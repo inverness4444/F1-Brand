@@ -1,8 +1,9 @@
-import { Instagram } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import type { SVGProps } from "react";
 
+import { seller } from "@/lib/legal";
+import { CookieSettingsButton } from "@/components/cookie-settings-button";
 import { footerColumns } from "@/lib/data/storefront";
 
 type SocialLabel = (typeof footerColumns.social)[number]["label"];
@@ -42,10 +43,6 @@ function VkIcon(props: SVGProps<SVGSVGElement>) {
 }
 
 function SocialIcon({ label }: { label: SocialLabel }) {
-  if (label === "Instagram") {
-    return <Instagram className="size-7" aria-hidden="true" />;
-  }
-
   if (label === "Telegram") {
     return <TelegramIcon className="size-7" />;
   }
@@ -138,8 +135,14 @@ export function Footer() {
                   {link.label}
                 </Link>
               ))}
+              <CookieSettingsButton />
             </div>
           </div>
+        </div>
+        <div className="mt-8 border-t border-white/20 pt-5 text-sm leading-6 text-white/70 lg:ml-[22rem] xl:ml-[27rem]">
+          <p>{seller.name} · ИНН {seller.inn} · ОГРНИП {seller.ogrnip}</p>
+          {seller.address ? <p>Адрес: {seller.address}</p> : null}
+          <a href={`mailto:${seller.email}`} className="underline underline-offset-4">{seller.email}</a>
         </div>
       </div>
     </footer>

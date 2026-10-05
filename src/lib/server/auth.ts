@@ -1,3 +1,4 @@
+import { LEGAL_VERSION } from "@/lib/legal";
 import "server-only";
 
 import crypto from "node:crypto";
@@ -107,6 +108,7 @@ export function toAuthUser(user: User): AuthUser {
     favoriteDriver: user.favoriteDriver,
     favoriteTeam: user.favoriteTeam,
     acceptedLegalAt: user.acceptedLegalAt.toISOString(),
+    profileConsentGranted: user.profileConsentAt !== null && user.profileConsentVersion === LEGAL_VERSION,
     createdAt: user.createdAt.toISOString(),
     updatedAt: user.updatedAt.toISOString(),
   };

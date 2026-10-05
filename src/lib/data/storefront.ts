@@ -21,15 +21,11 @@ export const footerColumns = {
     { label: "Вопросы и ответы", href: "/faq" },
   ],
   legal: [
-    { label: "Политика конфиденциальности", href: "/privacy" },
+    { label: "Политика обработки данных", href: "/privacy" },
     { label: "Пользовательское соглашение", href: "/terms" },
     { label: "Договор оферты", href: "/offer" },
   ],
   social: [
-    {
-      label: "Instagram",
-      href: "https://www.instagram.com/f1velocityclub?igsh=MWJ2ZmhoeHBuMHFkeg%3D%3D&utm_source=qr",
-    },
     { label: "Telegram", href: "https://t.me/f1velocityclub" },
     { label: "TikTok", href: "https://www.tiktok.com/@f1velocityclub" },
     { label: "ВКонтакте", href: "https://vk.ru/f1velocityclub" },

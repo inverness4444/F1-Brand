@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { RotateCcw, Ruler, ShieldCheck, Truck } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
@@ -93,7 +94,7 @@ export function ProductInfo({
         <ProductBadgeTag badge={product.badge} className="px-3 py-1.5 text-[0.72rem]" />
         {isGiftCertificate ? (
           <div className="inline-flex rounded-full border border-[#f0dcc9] bg-[#fff6ef] px-3 py-1.5 text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-[#7b2220]">
-            Digital Gift Card
+            Электронный подарочный сертификат
           </div>
         ) : null}
       </div>
@@ -284,20 +285,25 @@ export function ProductInfo({
           <div className="mt-3 space-y-2 text-sm leading-7 text-[#5f615f]">
             <p>{productTypeLabels[product.type]}</p>
             <p>{getCollectionLabel(product.collection)}</p>
-            <p>Чистая спортивная подача</p>
-            <p>Коммерческая подача в стиле премиального спортивного ритейла</p>
+            {product.compliance ? <>
+              <p>Состав / материал: {product.compliance.composition}</p>
+              <p>Изготовитель: {product.compliance.manufacturer}</p>
+              <p>Адрес изготовителя: {product.compliance.manufacturerAddress}</p>
+              <p>Страна производства: {product.compliance.countryOfOrigin}</p>
+              {product.compliance.conformityKind === "certificate" || product.compliance.conformityKind === "declaration" ? <p>{product.compliance.conformityKind === "certificate" ? "Сертификат" : "Декларация"}: <a className="underline" href={product.compliance.conformityRegistryUrl} target="_blank" rel="noreferrer">{product.compliance.conformityNumber} — реестр Росаккредитации</a></p> : null}
+            </> : null}
           </div>
         </details>
         <details className="border-b border-[var(--line)] py-4">
           <summary className="cursor-pointer text-sm font-semibold text-[#111111]">Доставка и возврат</summary>
           <p className="mt-3 text-sm leading-7 text-[#5f615f]">
-            Бесплатная доставка от 4000 ₽, безопасная оплата и простой возврат в течение 14 дней.
+            Бесплатная доставка от 4000 ₽. Возврат товара надлежащего качества — 14 дней после получения. <Link href="/delivery" className="underline">Условия доставки</Link> и <Link href="/returns" className="underline">порядок возврата</Link>.
           </p>
         </details>
         <details className="border-b border-[var(--line)] py-4">
           <summary className="cursor-pointer text-sm font-semibold text-[#111111]">Уход</summary>
           <p className="mt-3 text-sm leading-7 text-[#5f615f]">
-            Стирать при 30°C, не отбеливать и сушить на ровной поверхности, чтобы сохранить форму и внешний вид.
+            {product.compliance?.careInstructions || "Следуйте инструкции изготовителя на маркировке товара. Уточнить сведения можно у поддержки до покупки."}
           </p>
         </details>
       </div>

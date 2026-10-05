@@ -60,6 +60,7 @@ export const adminOrderSelect = {
   balanceBeforeCents: true,
   balanceAfterCents: true,
   usedBalance: true,
+  legalHold: true,
   createdAt: true,
   updatedAt: true,
   user: {
@@ -219,6 +220,7 @@ export function adminOrderFromDb(order: AdminOrderRow): AdminOrderDetail {
     balanceBefore: order.balanceBeforeCents,
     balanceAfter: order.balanceAfterCents,
     usedBalance: order.usedBalance,
+    legalHold: order.legalHold,
     payment: order.payment
       ? {
           provider: order.payment.provider,

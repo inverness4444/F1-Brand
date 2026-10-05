@@ -154,6 +154,8 @@ function shippingAddressSnapshot(order: Order): OrderAddressSnapshot | null {
 
 export function orderFromDb(order: DbOrder): AccountOrder {
   return {
+    deliveryDeadline: order.deliveryDeadline?.toISOString() ?? null,
+    offerVersion: order.offerVersion,
     id: order.id,
     orderNumber: order.orderNumber,
     userId: order.userId,
